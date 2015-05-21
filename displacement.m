@@ -30,7 +30,7 @@ load(fni,'IMA');
 imi = IMA(:,:,1);
 load(fnf, 'IMA');
 imf = IMA(:,:,351);
-load(fnt);
+load(fnt,'PX','PY');
 numframes = size(PX,2);
 
 %% Load background and general mask
@@ -104,5 +104,6 @@ totaltr=((PX(diskmove,numframes)-PX(diskmove,1)).^2+(PY(diskmove,numframes)-PY(d
 %totdisplacement=sum(totaltr);
 participationratio=sum(totaltr.^4)/(sum(totaltr.^2)^2);
 %% Save results
+[git_version, ~] = evalc('system(''git describe --dirty --alway'')');
 fnn =sprintf('/aline%i/rotdrum%i/o%02d/Trackeds_%i.mat',folder,folder,En,NEn);
-save(fnn,'centerfraction','dr','diskmove','increment','participationratio','imagediff');
+save(fnn,'git_version','centerfraction','dr','diskmove','increment','participationratio','imagediff','folder','En','NEn','initial','final','D');
