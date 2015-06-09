@@ -10,7 +10,8 @@
 %  
 % NItracked = find(yestrack);
 
-
+%!git add displacement.m
+%!git commit -m "added git version in output"
 
 
 

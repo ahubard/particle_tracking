@@ -28,7 +28,7 @@ w=0.8;  %Width of ideal particle
 %circle=(((xx-(D/2+1)).^2+(yy-(D/2+1)).^2)<(D/2*1.001)^2); %Circle of particle radius.
 
 %% Parameters for Original image and ideal one
-maskfile = sprintf('/aline%i/rotdrum%i/mask430.mat',folder,folder);
+maskfile = sprintf('/aline%i/rotdrum%i/mask604.mat',folder,folder);
 load(maskfile);
 Cutoff=11.5;      % minimum peak intensity
 MinSep=6.08;      % minimum separation between peaks 5.5

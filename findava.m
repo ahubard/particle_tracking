@@ -29,7 +29,7 @@ circle=(((xx-(intD/2+1)).^2+(yy-(intD/2+1)).^2)<(intD/2*1.001)^2); %Circle of pa
 maskfile = sprintf('/aline/rotdrum/mask430.mat');
 load(maskfile);
 
-%Actualize baclground
+%Actualize background
 iml=readrot(fn,info.Nx,info.Ny,Ne,0,0);
 
   im=readrot(fn,info.Nx,info.Ny,nframe,0,0);
