@@ -1,4 +1,4 @@
-function [bk1 bk2] = getbackground(En,ni,folder,order)
+function [norm_coef] = getbackground(En,ni,folder,order)
 % En is the experiment series number
 % ni number of file
 % folder number of aline in Poincare
@@ -45,7 +45,12 @@ for nframe=1:Ne
     
 end
 
-save(fn,'bk1','bk2','-append');
+%save
+if (order == 1);
+    save(fn,'bk1','-append');
+else
+    save(fn,'bk2','-append');
+end
 
 
 end
