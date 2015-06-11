@@ -13,7 +13,7 @@ Ne=351;
 pxs=zeros(3500,Ne);
 pys=zeros(3500,Ne);
 Npf=zeros(1,Ne);
-
+surfacebestfitline = zeros(2,Ne);
 %% Create background
 bgfile = sprintf('/aline%i/rotdrum%i/o%i/back%i.mat',folder,folder,En,En);
 load(bgfile,'bk1','bk2');
@@ -90,6 +90,7 @@ for nframe=1:Ne
    lo = linearfit(2)*nvector(2); %Distance of bestfitline to origin. 
    dpointtoline = px*nvector(1) + py*nvector(2) - lo;
    insiders = (dpointtoline > -D*4); %Points that are in the region of interest
+   surfacebestfitline(:,nframe) = linearfit;
    
    %Get rid of outliers
    Npf(nframe) = sum(insiders);
@@ -102,7 +103,7 @@ for nframe=1:Ne
    
 end
 [git_version, ~] = evalc('system(''git describe --dirty --alway'')');
-save(nfn,'git_version','pys','pxs','Npf');
+save(nfn,'git_version','pys','pxs','Npf','surfacebestfitline');
 
 
 end
