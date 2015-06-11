@@ -7,7 +7,6 @@ nfn=sprintf('/aline%i/rotdrum%i/o%02d/positions%02d_%05d.mat',folder,folder,En,E
 
 %% File size
 fninfo=sprintf('/aline%i/rotdrum%i/o%02d/infof%i00001.mat',folder,folder,En,En);
-
 load(fninfo);
 Ne=351;
 %% Particle centers
@@ -16,19 +15,21 @@ pys=zeros(3500,Ne);
 Npf=zeros(1,Ne);
 
 %% Create background
-backg=sprintf('/aline%i/rotdrum%i/back319.mat',folder,folder);
-load(backg,'bg','bbg','bbg2');
-
+bgfile = sprintf('/aline%i/rotdrum%i/o%i/back%i.mat',folder,folder,En,En);
+load(bgfile,'bk1','bk2');
+bg = bk1*0;
+bbg = bg;
+bbg2 =bbg;
 %% Ideal Particle
 D=10;    %diameter of ideal particle
 w=0.8;  %Width of ideal particle
 
-%% Create image size grid
-%[xx, yy]=ndgrid(1:D+1,1:D+1);
-%circle=(((xx-(D/2+1)).^2+(yy-(D/2+1)).^2)<(D/2*1.001)^2); %Circle of particle radius.
+%% Create filter
+se = strel('disk',D+4);
+filtercof = 50;
 
 %% Parameters for Original image and ideal one
-maskfile = sprintf('/aline%i/rotdrum%i/mask430.mat',folder,folder);
+maskfile = sprintf('/aline%i/rotdrum%i/mask%i.mat',folder,folder,En,En);
 load(maskfile);
 Cutoff=11.5;      % minimum peak intensity
 MinSep=6.08;      % minimum separation between peaks 5.5
@@ -42,46 +43,36 @@ os=(ss-1)/2;                   % (size-1)/2 of ideal p
 rr=abs(xx+1i*yy);    % radial coordinate
 %% Main loop over images
 for nframe=1:Ne
+      
     
     
-    im=IMA(:,:,nframe);
-    bg=max(bg,im);
-    bbg(im>0)=max(bbg(im>0),bg(im>0)-im(im>0));
+      
     
-    first = 1:200;
-    second = 201:1076;
-    third = 1076:info.Nx;
+    im = IMA(:,:,nframe);
+    bgmask = (imopen(im.*mk./bk1,se))>filtercof;
+    normcoef = sum(sum(im.*bgmask))/sum(bgmask(:));
     
-    bbg2=bg;
-    bbg2((bg(:,first)-bbg(:,first))<40)=bbg((bg(:,first)-bbg(:,first))<40);
+    im = im/normcoef;
     
-    bgp = bg(:,second);
-    bbgp = bbg(:,second);
-    bbg2p = bbg2(:,second);
-    bbg2p((bgp-bbgp)<50)= bbgp((bgp-bbgp)<50);
-    bbg2(:,second) = bbg2p;
-    
-    bgp = bg(:,third);
-    bbgp = bbg(:,third);
-    bbg2p = bbg2(:,third);
-    bbg2p((bgp-bbgp)<25)= bbgp((bgp-bbgp)<25);
-    bbg2(:,third) = bbg2p;
-    
+  
+    bg=max(bk1,im);
+    bbg(im>0)=max(bk2(im>0),bg(im>0)-im(im>0));
+    bbg2(bgmask) = bg(bgmask); 
+    bbg2(bgmask==0) = bbg(bgmask==0);
     
     
     low = 0.1;
-    high = 0.98;
+    high = 0.95;
     sim=(clip((bg-im)./bbg2,low,high)-low)/(high-low);
     A=isnan(sim);
     sim(A)=0;
     
-
     
     %Chi image ipf is the ideal image
     [ichi]=chiimg(sim,ipf(rr,D,w),[],[],'same');
     % find pixel accurate centers using chi-squared
     
-    [Np, py, px]=findpeaks(mk./ichi,mk,Cutoff,MinSep);  % find maxima
+    [~, py, px]=findpeaks(mk./ichi,mk,Cutoff,MinSep);  % find maxima
     
 % Keep only insiders 
     [xs ix] = sort(ceil(px/binsize));
@@ -98,7 +89,7 @@ for nframe=1:Ne
    nvector = [-linearfit(1) 1]/(sqrt(linearfit(1)^2+1)); %normalvector to bestfit line
    lo = linearfit(2)*nvector(2); %Distance of bestfitline to origin. 
    dpointtoline = px*nvector(1) + py*nvector(2) - lo;
-   insiders = (dpointtoline > -D*3); %Points that are in the region of interest
+   insiders = (dpointtoline > -D*4); %Points that are in the region of interest
    
    %Get rid of outliers
    Npf(nframe) = sum(insiders);
@@ -110,8 +101,8 @@ for nframe=1:Ne
     
    
 end
-%save(backg,'bg','bbg','bbg2');
-save(nfn,'pys','pxs','Npf');
+[git_version, ~] = evalc('system(''git describe --dirty --alway'')');
+save(nfn,'git_version','pys','pxs','Npf');
 
 
 end

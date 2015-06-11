@@ -29,7 +29,7 @@ for nframe=1:Ne
      im=IMA(:,:,nframe);
      backni = backni + mask.*im./mean(mask(:).*im(:));
      normni = normni + mask;
-     maxback = max(maxback,im./mean(im(:)));
+     maxback = max(maxback,im./mean(mask(:).*im(:)));
      
      
 
