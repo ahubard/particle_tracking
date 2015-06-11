@@ -3,7 +3,7 @@
 
 
 function  nfiles = mytrack(folder,En,NEn,initial,final,D)
-
+[git_version, ~] = evalc('system(''git describe --dirty --alway'')');
 [px,py,NPF,initial] = stickfiles(folder,En,initial,final,D);
 
 nfiles = final-initial+1;
@@ -58,13 +58,14 @@ if (nfiles)
             mask(trivialbondt2)=0;
             nontrivialt2 = find(mask);
             
-            
+            x1n = x1(nontrivialt1);
+            x2n = x2(nontrivialt2);
             y1n = y1(nontrivialt1);
             y2n = y2(nontrivialt2);
             
             %Check if particles are in the bottom and dont care about them
-            nontrivialt1 = nontrivialt1(y1n<maxy);
-            nontrivialt2 = nontrivialt2(y2n<maxy);
+            nontrivialt1 = nontrivialt1(and(y1n<maxy,mk(sub2ind(size(mk),y1n,x1n))));
+            nontrivialt2 = nontrivialt2(and(y2n<maxy,mk(sub2ind(size(mk),y2n,x2n))));
             x1n = x1(nontrivialt1);
             y1n = y1(nontrivialt1);
             x2n = x2(nontrivialt2);
@@ -171,10 +172,10 @@ if (nfiles)
     
     
     %% Save
-    save(sprintf('/aline%i/rotdrum%i/o%02d/Tracked_%i.mat',folder,folder,En,NEn),'PX','PY');
+    save(sprintf('/aline%i/rotdrum%i/o%02d/Tracked_%i.mat',folder,folder,En,NEn),'PX','PY','git_version');
     
 else
-    save(sprintf('/aline%i/rotdrum%i/o%02d/NoAvalanche_%i.mat',folder,folder,En,NEn),'nfiles');
+    save(sprintf('/aline%i/rotdrum%i/o%02d/NoAvalanche_%i.mat',folder,folder,En,NEn),'nfiles','git_version');
 end
 
 
