@@ -80,6 +80,7 @@ for nframe=1:Ne
     ys = py(ix);
     ya = zeros(1,length(bindex)-1);
     xa = ya;
+    
     for bin = 1:length(bindex)-1;
         ya(bin) = min(ys(bindex(bin)+1:bindex(bin+1)));
         xa(bin) = binsize*(bin + xs(1)-1);
