@@ -1,8 +1,14 @@
-function keep = discriminate(folder,En,ni,D,w)
+function [keep, IMA,mk,bk1,bk2,info] = discriminate(folder,En,ni,D,w,Cutoff,MinSep)
 %% Reads file in folder"aline<folder>/rotdrum<folder>/o<En>/onestep<En>_<ni>...
 %and checks if there is an avalanche in it. Using that D is the diameter of
 %ideal particle,and w the ideal particle width of the brightness. 
-
+% keep = 0, no avalanche or perceptible movement, keep = 1, only one of the
+% conditions was fullfilled, probably there is just solid angle rotation,
+% keep = 2, both conditions fullfilled, some of the particles moved in an
+% avalanche. IMA is the series of pictures with images, bk1,bk2 are the
+% background, mk the mask. 
+% Cutoff=11.5;      % minimum peak intensity
+% MinSep=6.08;      % minimum separation between peaks 5.5
 %% Cutoff to decide if there is an avalanche. 
 cutoffpr = 8e-4;
 cutoffdiff = 10;
@@ -32,21 +38,16 @@ bbg = bg;
 bbg2 =bbg;
 load(fno,'IMA');
 
+
 info.Nx = size(IMA,2);
 info.Ny = size(IMA,1);
-Numframe = size(IMA,3);
+info.Numframe = size(IMA,3);
 
 %% Find particles positions of first image
 
 % Create filter
 se = strel('disk',D+4);
 filtercof = 50;
-
-% Parameters for Original image and ideal one
-
-Cutoff=11.5;      % minimum peak intensity
-MinSep=6.08;      % minimum separation between peaks 5.5
-
 
 % setup for ideal particle
 
@@ -83,7 +84,7 @@ simo = sim;
 %% Compare first image with last image at particles positions. 
 
 %Normalize last image
-iml = IMA(:,:,Numframe);
+iml = IMA(:,:,info.Numframe);
 bgmask = (imopen(iml.*mk./bk1,se))>filtercof;
 normcoef = sum(sum(iml.*bgmask))/sum(bgmask(:));
 iml = iml/normcoef;
@@ -130,6 +131,6 @@ end
 maxdifp = max(difp);
 participationratio =  sum(difp.^4)/(sum(difp.^2)).^2;
 
-keep = ((maxdifp < cutoffdiff)+(participationratio < cutoffpr)) > 0 ;
-save(fno,'keep','-append');
+keep = ((maxdifp > cutoffdiff)+(participationratio > cutoffpr)) > 0 ;
+
 
