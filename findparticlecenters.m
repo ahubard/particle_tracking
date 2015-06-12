@@ -1,4 +1,4 @@
-function  D = findparticlecenters(En,ni,folder,D,w,Cutoff,MinSep)
+function  keep = findparticlecenters(En,ni,folder,D,w,Cutoff,MinSep)
 %% findinrot  find the particles in the rotating drum.
  [git_version, ~] = evalc('system(''git describe --dirty --alway'')');
 %% Check if there is really an avalanche
@@ -79,6 +79,7 @@ if (keep == 2)
         [~, py, px]=findpeaks(mk./ichi,mk,Cutoff,MinSep);  % find maxima
         
         % Keep only insiders
+        binsize = 15;
         [xs ix] = sort(ceil(px/binsize));
         bindex = [0 ;find(diff(xs)>0)];
         ys = py(ix);

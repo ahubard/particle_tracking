@@ -131,6 +131,6 @@ end
 maxdifp = max(difp);
 participationratio =  sum(difp.^4)/(sum(difp.^2)).^2;
 
-keep = ((maxdifp > cutoffdiff)+(participationratio > cutoffpr)) > 0 ;
+keep = ((maxdifp > cutoffdiff)+(participationratio > cutoffpr)) ;
 
 

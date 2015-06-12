@@ -14,7 +14,8 @@ nfiles = final-initial+1;
 if (nfiles)
     
     t0=1;
-    maxy = 380;
+    NY = size(mk,1);
+    maxy = NY-2*D;
     maxdisptrivial = D/2;  %smaller than particle diameter
     maxdispnontrivial = 3*D/2;
     NPmax = max(NPF);
@@ -112,7 +113,7 @@ if (nfiles)
                 
                 if(nbnewtrackt1~=nbnewtrackt2)
                     
-                    save(sprintf('/aline%i/rotdrum%i/o%02d/Warning3_%i_%i',folder,folder,En,NEn,t1),'x1n','x2n','y1n','y2n','nontrivialt1','nontrivialt2');
+                    save(sprintf('/aline%i/rotdrum%i/o%02d/Warning3_%i_%i.mat',folder,folder,En,NEn,t1),'x1n','x2n','y1n','y2n','nontrivialt1','nontrivialt2');
                     if(nbnewtrackt1<nbnewtrackt2) %particles appeared that have no track
                         %warning('appeared particle stil here')
                         nbnewtrackt2 = nbnewtrackt1;
@@ -133,7 +134,7 @@ if (nfiles)
                 
                 if (sum(assignment == 0) > 0)
                     
-                        save(sprintf('/aline%i/rotdrum%i/o%02d/Warning3_%i_%i',folder,folder,En,NEn,t1),'x1n','x2n','y1n','y2n','nontrivialt1','nontrivialt2');
+                        save(sprintf('/aline%i/rotdrum%i/o%02d/Warning3_%i_%i.mat',folder,folder,En,NEn,t1),'x1n','x2n','y1n','y2n','nontrivialt1','nontrivialt2');
                         nontrivialt1 = nontrivialt1(assignment>0);
                         assignment = assignment(assignment>0);
                         nbnewtrackt1 =nbnewtrackt2;
@@ -170,7 +171,8 @@ if (nfiles)
         VY = PY(:,t2) - PY(:,t1);
         
         x1 = PX(idt1,t2) + VX(idt1) ;
-        y1 = PY(idt1,t2) + VY(idt1) ;
+        y1 = min(PY(idt1,t2) + VY(idt1),NY) ; % In case velocity make particle out of the boundary. 
+        
     end
     
     
