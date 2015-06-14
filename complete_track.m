@@ -3,7 +3,7 @@
 
 %% Define your folder and Experiment number En and information file of the experiment;
 folder = 2;
-En = 105;
+En = 106;
 Cutoff = 11.5;      % minimum peak intensity
 MinSep = 6.08;      % minimum separation between peaks 5.5
 D = 10;
@@ -13,12 +13,12 @@ avanofile = sprintf('/aline%i/rotdrum%i/o%i/Avanonestep%i.mat',folder,folder,En,
 load(avanofile,'avan','navfile'); % navfile are the files that contained posible avalanches. 
 avalanchefiles = zeros(size(navfile));
 NAVFILE = navfile;
-save(avanofile,'-append');
+save(avanofile,'NAVFILE','-append');
 %% Find Particle centers using the cluster.
 
 for ii = 1:length(navfile)
     ni = navfile(ii);
-    jobs(ii) = batch(sched,'findparticlecenters',1,...
+    j(ii) = batch(sched,'findparticlecenters',1,...
         {En,ni,folder,D,w,Cutoff,MinSep},'Filedependencies',...
         {'clip.m','chiimg.m','findpeaks.m','ipf.m','discriminate.m'});
     
@@ -26,7 +26,7 @@ end
 
 %% Wait for cluster to finish finding particle centers.
 for ii = length(navfile)+[-32:0]
-    wait(jobs(ii))
+    wait(j(ii))
 end
 clear jobs
 sprintf ('Done finding centers')
@@ -45,18 +45,18 @@ finalfileindex = navfile(changefileindex);
 
 %% Launch mytrack to conect particle positions.
 for ii = 1:length(initialfileindex)
-    trjob(ii)=batch(sched,'mytrack',1,{folder,En,ii,firstfile(ii),finalfile(ii),D},'Filedependencies',{'stickfiles.m','adjacent.m','assignmentoptimal.m'});
+    j(ii)=batch(sched,'mytrack',1,{folder,En,ii,firstfile(ii),finalfile(ii),D},'Filedependencies',{'stickfiles.m','adjacent.m','assignmentoptimal.m'});
      
 end
 %% Wait for cluster to finish tracking jobs
 for ii = length(navfile)+(-32:0)
-    wait(trjobs(ii))
+    wait(j(ii))
 end
-clear trjobs
+clear j
 sprintf ('Done conecting the centers')
 %% Find how much particles moves
 for ii = 1:length(initialfileindex)
-    trjob(ii)=batch(sched,'displacement',1,{folder,En,ii,initialfileindex(ii),finalfileindex(ii),D});
+    j(ii)=batch(sched,'displacement',1,{folder,En,ii,initialfileindex(ii),finalfileindex(ii),D});
      
 end
 
