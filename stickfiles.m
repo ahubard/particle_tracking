@@ -4,7 +4,7 @@ function [px,py,NPF,initial] = stickfiles(folder,En,initial,final,D)
 fn = sprintf('/aline%i/rotdrum%i/o%02d/positions%02d_%05d.mat',folder,folder,En,En,initial);
 
 
-load(fno,'IMA');
+
 load(fn,'pxs','pys','Npf');
 
 

@@ -2,13 +2,13 @@
 %using Hungaring  optimization algorithm assignmentoptimal
 
 
-function  nfiles = mytrack(folder,En,NEn,initial,final,D)
+function  nfiles = mytrack(folder,En,NEn,initial,final,D,mk)
 
 
 [git_version, ~] = evalc('system(''git describe --dirty --alway'')');
 [px,py,NPF,initial] = stickfiles(folder,En,initial,final,D);
-maskfile = sprintf('/aline%i/rotdrum%i/o%i/mask%i.mat',folder,folder,En,En);
-load(maskfile,'mk');
+% maskfile = sprintf('/aline%i/rotdrum%i/o%i/mask%i.mat',folder,folder,En,En);
+% load(maskfile,'mk');
 nfiles = final-initial+1;
 
 if (nfiles)
@@ -38,7 +38,7 @@ if (nfiles)
         y2 = py(1:NPF(t2),t2);
         NPT1 = length(x1);
         
-        %Get adjacent matrix for distances smaller than maxdisp by ising function
+        %Get adjacent matrix for distances smaller than maxdisp by using function
         %that bins the positions
         [~, trivialbondt1,trivialbondt2] = adjacent(x1,y1,x2,y2,maxdisptrivial);
         

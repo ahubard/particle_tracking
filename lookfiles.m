@@ -17,6 +17,8 @@ end
 nofile = find(trackf+noava == 0);
 firstfile = initialfileindex(nofile);
 finalfile = finalfileindex(nofile);
+length(firstfile)
+
 
 for ii = 1:length(firstfile);
     NEn = nofile(ii);

@@ -47,7 +47,7 @@ ysize=size(IMA,1);
 %% Get the particles involved in avalanche.
 iframe1=(PX(:,1)>0);                             %Particles indexes on first frame
 ilastframe=(PX(:,numframes)>0);                         %On last frame
-iframe=find((ilastframe.*iframe1)==1);          %Particles didnt dissapear in the tracking
+iframe=find((ilastframe.*iframe1)==1);          %Particles that didnt dissapear in the tracking
 nbparticles=length(iframe);
 
 px1=PX(iframe,1);
@@ -96,9 +96,9 @@ end
 %% Find displacements of such particles btw nframes
 increment=10;
 %dt = increment/2;
-dx=(PX(diskmove,1+increment:1:numframes)-PX(diskmove,1:1:numframes-increment))/increment;
-dy=(PY(diskmove,1+increment:1:numframes)-PY(diskmove,1:1:numframes-increment))/increment;
-dr=dx.^2+dy.^2;
+dx =(PX(diskmove,1+increment:1:numframes)-PX(diskmove,1:1:numframes-increment))/increment;
+dy =(PY(diskmove,1+increment:1:numframes)-PY(diskmove,1:1:numframes-increment))/increment;
+dr = dx.^2+dy.^2;
 %dr=sqrt(dr);
 totaltr=((PX(diskmove,numframes)-PX(diskmove,1)).^2+(PY(diskmove,numframes)-PY(diskmove,1)).^2);
 
