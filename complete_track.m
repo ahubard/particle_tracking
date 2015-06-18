@@ -66,3 +66,13 @@ for ii = 1:length(initialfileindex)
      
 end
 
+%% Get tracked files
+ nbtracked = zeros(1,length(initialfileindex));
+ for tt =1:length(initialfileindex)
+fnn =sprintf('/aline%i/rotdrum%i/o%02d/Tracked_%i.mat',folder,folder,En,tt);
+nbtracked(tt) = exist(fnn,'file');
+ end
+
+nbtracked = find(nbtracked);
+save(avanofile,'nbtracked','initialfileindex','finalfileindex','-append');
+
