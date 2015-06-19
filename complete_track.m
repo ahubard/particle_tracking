@@ -38,7 +38,7 @@ save (bgfile,'bk1');
 
 for ii = 1:602
     ni = navfile(ii);
-    j(ii) = batch(sched,'getbackground',1,{En,ni,folder,1});
+    j(ii) = batch(sched,'getbackground',1,{En,ni,folder,2});
 end
 bk = mk*0;
 
