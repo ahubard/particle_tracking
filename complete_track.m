@@ -9,16 +9,51 @@ MinSep = 6.08;      % minimum separation between peaks 5.5
 D = 10;
 w = 0.8;
 
-
-maskfile = '/aline1/rotdrum1/o103/mask103.mat';
-load(maskfile,'mk');
-
+%% Experiment file
 avanofile = sprintf('/aline%i/rotdrum%i/o%i/Avanonestep%i.mat',folder,folder,En,En);
 load(avanofile,'avan','navfile'); % navfile are the files that contained posible avalanches. 
 avalanchefiles = zeros(size(navfile));
 NAVFILE = navfile;
 save(avanofile,'NAVFILE','-append');
-% Find Particle centers using the cluster.
+%% Get background and mask
+
+maskfile = '/aline1/rotdrum1/o103/mask103.mat';
+load(maskfile,'mk');
+bgfile = sprintf('/aline%i/rotdrum%i/o%i/back%i.mat',folder,folder,En,En);
+
+for ii = 1:602
+    ni = navfile(ii);
+    j(ii) = batch(sched,'getbackground',1,{En,ni,folder,1});
+end
+bk = mk*0;
+
+for ii = 1:602
+    ni = navfile(ii);
+    fn = sprintf('/aline%i/rotdrum%i/o%02d/onestep%02d_%05d.mat',folder,folder,En,En,ni);
+    load(fn,'bk1');
+    bk = max(bk,bk1);
+end
+bk1 = bk;
+save (bgfile,'bk1');
+
+for ii = 1:602
+    ni = navfile(ii);
+    j(ii) = batch(sched,'getbackground',1,{En,ni,folder,1});
+end
+bk = mk*0;
+
+for ii = 1:602
+    ni = navfile(ii);
+    fn = sprintf('/aline%i/rotdrum%i/o%02d/onestep%02d_%05d.mat',folder,folder,En,En,ni);
+    load(fn,'bk2');
+    bk = max(bk,bk2);
+end
+bk2 = bk;
+save (bgfile,'bk2','-append');
+
+
+%% Find Particle centers using the cluster.
+
 
 
 for ii = 1:length(navfile)
