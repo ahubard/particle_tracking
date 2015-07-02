@@ -1,3 +1,4 @@
+%function [keep] = discriminate(folder,En,ni,D,w,Cutoff,MinSep)
 function [keep, IMA,mk,bk1,bk2,info] = discriminate(folder,En,ni,D,w,Cutoff,MinSep)
 %% Reads file in folder"aline<folder>/rotdrum<folder>/o<En>/onestep<En>_<ni>...
 %and checks if there is an avalanche in it. Using that D is the diameter of

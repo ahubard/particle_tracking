@@ -3,7 +3,7 @@
 
 %% Define your folder and Experiment number En and information file of the experiment;
 folder = 2;
-En = 108;
+En = 109;
 Cutoff = 11.5;      % minimum peak intensity
 MinSep = 6.08;      % minimum separation between peaks 5.5
 D = 10;
