@@ -1,6 +1,6 @@
 
 %% Main Sekeleton to track particles
-
+sched=findResource('scheduler', 'type', 'jobmanager', 'lookupURL','poincare.engr.ccny.cuny.edu');  %Open scheduler
 %% Define your folder and Experiment number En and information file of the experiment;
 folder = 2;
 En = 109;
