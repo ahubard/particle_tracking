@@ -15,7 +15,7 @@
 
 
 
-function [Nummoved]=displacement(folder,En,NEn)
+function [Nummoved]=displacement(folder,En,NEn,initial,final)
 
 %% File to load
 
@@ -58,4 +58,4 @@ participationratio=sum(totaltr.^4)/(sum(totaltr.^2)^2);
 %% Save results
 [git_version, ~] = evalc('system(''git describe --dirty --alway'')');
 fnn =sprintf('/aline%i/rotdrum%i/o%02d/Trackeds_%i.mat',folder,folder,En,NEn);
-save(fnn,'git_version','PX','PY','centerfraction','drraw','drfil','diskmove','increment','participationratio','imagediff','folder','En','NEn','initial','final','D');
+save(fnn,'git_version','PX','PY','drraw','drfil','diskmove','increment','participationratio','folder','En','NEn','initial','final');
