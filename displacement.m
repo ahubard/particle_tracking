@@ -44,10 +44,10 @@ Nummoved = length(diskmove);
 %% Find displacements of such particles btw nframes
 increment=10;
 %dt = increment/2;
-dxraw =(PX(:,1+increment:1:numframes)-PX(:,1:1:numframes-increment))/increment;
+dxraw =(PX(diskmove,1+increment:1:numframes)-PX(diskmove,1:1:numframes-increment))/increment;
 dyraw =(PY(diskmove,1+increment:1:numframes)-PY(diskmove,1:1:numframes-increment))/increment;
 drraw = dxraw.^2+dyraw.^2;
-dxfil =(x(:,1+increment:1:numframes)-x(:,1:1:numframes-increment))/increment;
+dxfil =(x(diskmove,1+increment:1:numframes)-x(diskmove,1:1:numframes-increment))/increment;
 dyfil =(y(diskmove,1+increment:1:numframes)-y(diskmove,1:1:numframes-increment))/increment;
 drfil = dxfil.^2+dyfil.^2;
 %dr=sqrt(dr);
