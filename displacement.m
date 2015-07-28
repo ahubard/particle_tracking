@@ -15,12 +15,12 @@
 
 
 
-function [Nummoved]=displacement(folder,En,NEn,initial,final,git_version)
+function [count]=displacement(folder,En,NEn,count,initial,final,git_version)
 
 %% File to load
 
-%fnt =sprintf('/aline%i/rotdrum%i/o%02d/Tracked_%i.mat',folder,folder,En,NEn);
-fnt =sprintf('Tracked_%i.mat',NEn);
+fnt =sprintf('/aline%i/rotdrum%i/o%02d/Tracked_%i.mat',folder,folder,En,NEn);
+%fnt =sprintf('Tracked_%i.mat',NEn);
 if(exist(fnt,'file'))
 load(fnt,'PX','PY');
 numframes = size(PX,2);
@@ -42,7 +42,7 @@ y = filter(b,a,PY')';
 %% Find the particles that moved. 
 totaldelta = abs(x(:,windowSize+1)-x(:,end)+1i*(y(:,windowSize+1)-y(:,end)));
 diskmove = find(totaldelta >0.9);
-Nummoved = length(diskmove);
+%Nummoved = length(diskmove);
 %% Find displacements of such particles btw nframes
 increment=10;
 %dt = increment/2;
@@ -59,7 +59,8 @@ totaltr=((PX(diskmove,numframes)-PX(diskmove,1)).^2+(PY(diskmove,numframes)-PY(d
 participationratio=sum(totaltr.^4)/(sum(totaltr.^2)^2);
 %% Save results
 
-%fnn =sprintf('/aline%i/rotdrum%i/o%02d/Trackeds_%i.mat',folder,folder,En,NEn);
-fnn =sprintf('Trackeds_%i.mat',NEn);
+fnn =sprintf('/aline%i/rotdrum%i/o%02d/Displacement_%i.mat',folder,folder,En,count);
+count = count + 1;
+%fnn =sprintf('Trackeds_%i.mat',NEn);
 save(fnn,'git_version','PX','PY','drraw','drfil','diskmove','increment','participationratio','folder','En','NEn','initial','final');
 end
