@@ -65,7 +65,7 @@ for ii = 1:length(navfile)
 end
 
 %% Wait for cluster to finish finding particle centers.
-for ii = length(navfile)+[-32:0]
+for ii = length(navfile)+(-32:0)
    wait(j(ii))
 end
 clear j

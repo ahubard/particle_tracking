@@ -2,7 +2,7 @@
 %using Hungaring  optimization algorithm assignmentoptimal
 
 
-function  nfiles = mytrack(folder,En,NEn,initial,final,D,mk)
+%function  nfiles = mytrack(folder,En,NEn,initial,final,D,mk)
 
 
 [git_version, ~] = evalc('system(''git describe --dirty --alway'')');
