@@ -15,11 +15,13 @@
 
 
 
-function [Nummoved]=displacement(folder,En,NEn,initial,final)
+function [Nummoved]=displacement(folder,En,NEn,initial,final,git_version)
 
 %% File to load
 
-fnt =sprintf('/aline%i/rotdrum%i/o%02d/Tracked_%i.mat',folder,folder,En,NEn);
+%fnt =sprintf('/aline%i/rotdrum%i/o%02d/Tracked_%i.mat',folder,folder,En,NEn);
+fnt =sprintf('Tracked_%i.mat',NEn);
+if(exist(fnt,'file'))
 load(fnt,'PX','PY');
 numframes = size(PX,2);
 
@@ -47,8 +49,8 @@ increment=10;
 dxraw =(PX(diskmove,1+increment:1:numframes)-PX(diskmove,1:1:numframes-increment))/increment;
 dyraw =(PY(diskmove,1+increment:1:numframes)-PY(diskmove,1:1:numframes-increment))/increment;
 drraw = dxraw.^2+dyraw.^2;
-dxfil =(x(diskmove,1+increment:1:numframes)-x(diskmove,1:1:numframes-increment))/increment;
-dyfil =(y(diskmove,1+increment:1:numframes)-y(diskmove,1:1:numframes-increment))/increment;
+dxfil =(x(diskmove,windowSize+increment:1:numframes)-x(diskmove,windowSize:1:numframes-increment))/increment;
+dyfil =(y(diskmove,windowSize+increment:1:numframes)-y(diskmove,windowSize:1:numframes-increment))/increment;
 drfil = dxfil.^2+dyfil.^2;
 %dr=sqrt(dr);
 totaltr=((PX(diskmove,numframes)-PX(diskmove,1)).^2+(PY(diskmove,numframes)-PY(diskmove,1)).^2);
@@ -56,6 +58,8 @@ totaltr=((PX(diskmove,numframes)-PX(diskmove,1)).^2+(PY(diskmove,numframes)-PY(d
 %totdisplacement=sum(totaltr);
 participationratio=sum(totaltr.^4)/(sum(totaltr.^2)^2);
 %% Save results
-[git_version, ~] = evalc('system(''git describe --dirty --alway'')');
-fnn =sprintf('/aline%i/rotdrum%i/o%02d/Trackeds_%i.mat',folder,folder,En,NEn);
+
+%fnn =sprintf('/aline%i/rotdrum%i/o%02d/Trackeds_%i.mat',folder,folder,En,NEn);
+fnn =sprintf('Trackeds_%i.mat',NEn);
 save(fnn,'git_version','PX','PY','drraw','drfil','diskmove','increment','participationratio','folder','En','NEn','initial','final');
+end
