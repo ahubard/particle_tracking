@@ -32,6 +32,7 @@ a = 1;
 for nf = 1:count
     fnn =sprintf('/aline%i/rotdrum%i/o%02d/Displacement_%i.mat',folder,folder,En,nf);
     %fnn =sprintf('Displacement_%i.mat',nf);
+    clear('diskmove','drraw','drfil');
     
     if(exist(fnn,'file'))
         load(fnn,'diskmove','drfil','drraw');
@@ -43,7 +44,7 @@ for nf = 1:count
     if (diskmove)%Check there was no error in the file. 
         
         drmask = (drfil>=cutoffperparticle);  %Use filter dr to determine which particles moved at each time step.
-        avalanche = sum(drraw(:,ceil(windowSize/2):length(drraw)-floor(windowSize/2)).*drmask);
+        avalanche = sum(drraw(:,ceil(windowSize/2):size(drraw,2)-floor(windowSize/2)).*drmask);
         findavalanche = filter(b,a,(avalanche>cutoffofsum)); %use both numbers tdecide, if they are moving they should move for at least 10 time steps, if they stop the same
         % Find how many avalanches per file findavalanche = 0 means no
         % avalanche there.
@@ -68,7 +69,7 @@ for nf = 1:count
         
         
         for na = 1:length(t1)
-            if( sum((findavalanche(t1(na):min(t2(na),length(drfil))))>=1-eps)) %Check if there is indeed avalanches between t1-t2
+            if( sum((findavalanche(t1(na):min(t2(na),length(avalanche))))>=1-eps)) %Check if there is indeed avalanches between t1-t2
                 Number_Avalanches = Number_Avalanches+1;
                 Avalanche_size(Number_Avalanches) = sum (avalanche(t1(na):t2(na)));
                 Avalanche_duration(Number_Avalanches) = length(t1(na):t2(na));
