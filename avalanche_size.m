@@ -1,15 +1,15 @@
+function Number_Avalanches = avalanche_size(folder,En)
 %% Gather the basic info
-% folder = 1;
-% En = 104;
-% %avanofile = sprintf('/aline%i/rotdrum%i/o%i/Avanonestep%i.mat',folder,folder,En,En);
-% avanofile = sprintf('Avanonestep%i.mat',En);
-%
-% if (exist(avanofile,'file'))
-%     load (avanofile,'count');
-% else
-%     save(sprintf('Warning. The file: %s does not exist.mat',avanofile));
-%     error('Error, avanofile does not exist');
-% end
+
+avanofile = sprintf('/aline%i/rotdrum%i/o%i/Avanonestep%i.mat',folder,folder,En,En);
+%avanofile = sprintf('Avanonestep%i.mat',En);
+
+if (exist(avanofile,'file'))
+    load (avanofile,'count');
+else
+    save(sprintf('Warning. The file: %s does not exist.mat',avanofile));
+    error('Error, avanofile does not exist');
+end
 
 [git_version, ~] = evalc('system(''git describe --dirty --alway'')');
 
@@ -30,8 +30,8 @@ a = 1;
 
 %% Main loop
 for nf = 1:count
-    %fnn =sprintf('/aline%i/rotdrum%i/o%02d/Displacement_%i.mat',folder,folder,En,nf);
-    fnn =sprintf('Displacement_%i.mat',nf);
+    fnn =sprintf('/aline%i/rotdrum%i/o%02d/Displacement_%i.mat',folder,folder,En,nf);
+    %fnn =sprintf('Displacement_%i.mat',nf);
     
     if(exist(fnn,'file'))
         load(fnn,'diskmove','drfil','drraw');
@@ -39,6 +39,7 @@ for nf = 1:count
         save(sprintf('Warning. The file: %s does not exist.mat',fnn));
         error('Error, Displacementfile does not exist');
     end
+    
     if (diskmove)%Check there was no error in the file. 
         
         drmask = (drfil>=cutoffperparticle);  %Use filter dr to determine which particles moved at each time step.
@@ -82,8 +83,8 @@ Avalanche_size = Avalanche_size(1:Number_Avalanches);
 Avalanche_duration = Avalanche_duration(1:Number_Avalanches);
 Normalized_avalanche = Normalized_avalanche(:,1:Number_Avalanches);
 
-%file_save =sprintf('/aline%i/rotdrum%i/o%02d/Avalanches_%i.mat',folder,folder,En,En);
-    file_save =sprintf('Avalanches_%i.mat',En);
-    save(file_save,'Number_Avalanches','Avalanche_duration','Avalanche_size','Normalized_avalanche');
+file_save =sprintf('/aline%i/rotdrum%i/o%02d/Avalanches_%i.mat',folder,folder,En,En);
+%file_save =sprintf('Avalanches_%i.mat',En);
+save(file_save,'git_version','Number_Avalanches','Avalanche_duration','Avalanche_size','Normalized_avalanche');
     
     

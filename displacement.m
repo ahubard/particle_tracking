@@ -61,6 +61,6 @@ participationratio=sum(totaltr.^4)/(sum(totaltr.^2)^2);
 
 fnn =sprintf('/aline%i/rotdrum%i/o%02d/Displacement_%i.mat',folder,folder,En,count);
 count = count + 1;
-%fnn =sprintf('Trackeds_%i.mat',NEn);
-save(fnn,'git_version','PX','PY','drraw','drfil','diskmove','increment','participationratio','folder','En','NEn','initial','final');
+%fnn =sprintf('Displacement_%i.mat',Count);
+save(fnn,'git_version','windowSize', 'PX','PY','drraw','drfil','diskmove','increment','participationratio','folder','En','NEn','initial','final');
 end
