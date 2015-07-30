@@ -1,6 +1,9 @@
 
 %% Main Sekeleton to track particles
 sched=findResource('scheduler', 'type', 'jobmanager', 'lookupURL','poincare.engr.ccny.cuny.edu');  %Open scheduler
+
+[git_version, ~] = evalc('system(''git describe --dirty --alway'')');
+
 %% Define your folder and Experiment number En and information file of the experiment;
 folder = 2;
 En = 109;
@@ -96,18 +99,18 @@ end
 clear j
 sprintf ('Done conecting the centers')
 % Find how much particles moves
-for ii = 1:length(initialfileindex)
-   j(ii)=batch(sched,'displacement',1,{folder,En,ii,initialfileindex(ii),finalfileindex(ii),D});
-     
-end
-
-%% Get tracked files
- nbtracked = zeros(1,length(initialfileindex));
- for tt =1:length(initialfileindex)
-fnn =sprintf('/aline%i/rotdrum%i/o%02d/Tracked_%i.mat',folder,folder,En,tt);
-nbtracked(tt) = exist(fnn,'file');
- end
-
-nbtracked = find(nbtracked);
-save(avanofile,'nbtracked','initialfileindex','finalfileindex','-append');
+% for ii = 1:length(initialfileindex)
+%    j(ii)=batch(sched,'displacement',1,{folder,En,ii,initialfileindex(ii),finalfileindex(ii),D});
+%      
+% end
+% 
+% %% Get tracked files
+%  nbtracked = zeros(1,length(initialfileindex));
+%  for tt =1:length(initialfileindex)
+% fnn =sprintf('/aline%i/rotdrum%i/o%02d/Tracked_%i.mat',folder,folder,En,tt);
+% nbtracked(tt) = exist(fnn,'file');
+%  end
+% 
+% nbtracked = find(nbtracked);
+% save(avanofile,'nbtracked','initialfileindex','finalfileindex','-append');
 
