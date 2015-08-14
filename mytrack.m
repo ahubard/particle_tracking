@@ -2,7 +2,7 @@
 %using Hungaring  optimization algorithm assignmentoptimal
 
 
-%function  nfiles = mytrack(folder,En,NEn,initial,final,D,mk)
+function  nfiles = mytrack(folder,En,NEn,initial,final,D,mk)
 
 
 [git_version, ~] = evalc('system(''git describe --dirty --alway'')');
@@ -90,59 +90,60 @@ if (nfiles)
                 %[length(x1n) length(x2n)]
                 
                 [adjacentmatrix, trivialbondt1, trivialbondt2, distMatrix] = adjacent(x1n,y1n,x2n,y2n,maxdispnontrivial);
-                idt1(numtrackedt1+(1:length(trivialbondt1))) = nontrivialt1(trivialbondt1);
-                idt2(numtrackedt2+(1:length(trivialbondt2))) = nontrivialt2(trivialbondt2);
-                
-                
-                numtrackedt1 = length(idt1);
-                numtrackedt2 = length(idt2);
-                mask1 = ones(1,length(x1n));
-                mask1(trivialbondt1)=0;
-                nontrivialt1 = nontrivialt1((mask1>0));
-                nbnewtrackt1 = sum(mask1);
-                
-                mask2 = ones(1,length(x2n));
-                mask2(trivialbondt2)=0;
-                nontrivialt2 = nontrivialt2((mask2>0));
-                nbnewtrackt2 = sum(mask2);
-                
-                distMatrix = distMatrix(mask1>0,mask2>0);
-                distMatrix(adjacentmatrix(mask1>0,mask2>0)==0) = inf; %Set forbiden conections to infinity.
-                
-                [assignment, ~] = assignmentoptimal(distMatrix); %Call hungarian algorithm to find perfect matching
-                
-                if(nbnewtrackt1~=nbnewtrackt2)
+                if (adjacentmatrix)
+                    idt1(numtrackedt1+(1:length(trivialbondt1))) = nontrivialt1(trivialbondt1);
+                    idt2(numtrackedt2+(1:length(trivialbondt2))) = nontrivialt2(trivialbondt2);
                     
-                    save(sprintf('/aline%i/rotdrum%i/o%02d/Warning3_%i_%i.mat',folder,folder,En,NEn,t1),'x1n','x2n','y1n','y2n','nontrivialt1','nontrivialt2');
-                    if(nbnewtrackt1<nbnewtrackt2) %particles appeared that have no track
-                        %warning('appeared particle stil here')
-                        nbnewtrackt2 = nbnewtrackt1;
-                    else %particle disappeared so assignment has zeros
-                        %warning('its gone');
+                    
+                    numtrackedt1 = length(idt1);
+                    numtrackedt2 = length(idt2);
+                    mask1 = ones(1,length(x1n));
+                    mask1(trivialbondt1)=0;
+                    nontrivialt1 = nontrivialt1((mask1>0));
+                    nbnewtrackt1 = sum(mask1);
+                    
+                    mask2 = ones(1,length(x2n));
+                    mask2(trivialbondt2)=0;
+                    nontrivialt2 = nontrivialt2((mask2>0));
+                    nbnewtrackt2 = sum(mask2);
+                    
+                    distMatrix = distMatrix(mask1>0,mask2>0);
+                    distMatrix(adjacentmatrix(mask1>0,mask2>0)==0) = inf; %Set forbiden conections to infinity.
+                    
+                    [assignment, ~] = assignmentoptimal(distMatrix); %Call hungarian algorithm to find perfect matching
+                    
+                    if(nbnewtrackt1~=nbnewtrackt2)
+                        
+                        save(sprintf('/aline%i/rotdrum%i/o%02d/Warning3_%i_%i.mat',folder,folder,En,NEn,t1),'x1n','x2n','y1n','y2n','nontrivialt1','nontrivialt2');
+                        if(nbnewtrackt1<nbnewtrackt2) %particles appeared that have no track
+                            %warning('appeared particle stil here')
+                            nbnewtrackt2 = nbnewtrackt1;
+                        else %particle disappeared so assignment has zeros
+                            %warning('its gone');
+                            nontrivialt1 = nontrivialt1(assignment>0);
+                            assignment = assignment(assignment>0);
+                            nbnewtrackt1 =nbnewtrackt2;
+                        end
+                        
+                        
+                        
+                        
+                        
+                        
+                        
+                    end
+                    
+                    if (sum(assignment == 0) > 0)
+                        
+                        save(sprintf('/aline%i/rotdrum%i/o%02d/Warning3_%i_%i.mat',folder,folder,En,NEn,t1),'x1n','x2n','y1n','y2n','nontrivialt1','nontrivialt2');
                         nontrivialt1 = nontrivialt1(assignment>0);
                         assignment = assignment(assignment>0);
                         nbnewtrackt1 =nbnewtrackt2;
                     end
                     
-                    
-                    
-                    
-                    
-                    
-                    
+                    idt1(numtrackedt1+(1:nbnewtrackt1)) = nontrivialt1;
+                    idt2(numtrackedt2+(1:nbnewtrackt2)) = nontrivialt2(assignment);
                 end
-                
-                if (sum(assignment == 0) > 0)
-                    
-                        save(sprintf('/aline%i/rotdrum%i/o%02d/Warning3_%i_%i.mat',folder,folder,En,NEn,t1),'x1n','x2n','y1n','y2n','nontrivialt1','nontrivialt2');
-                        nontrivialt1 = nontrivialt1(assignment>0);
-                        assignment = assignment(assignment>0);
-                        nbnewtrackt1 =nbnewtrackt2;
-                end
-                
-                idt1(numtrackedt1+(1:nbnewtrackt1)) = nontrivialt1;
-                idt2(numtrackedt2+(1:nbnewtrackt2)) = nontrivialt2(assignment);
-                
             end
         end
         
@@ -172,7 +173,7 @@ if (nfiles)
         
         x1 = PX(idt1,t2) + VX(idt1) ;
         y1 = min(PY(idt1,t2) + VY(idt1),NY) ; % In case velocity make particle out of the boundary. 
-        
+        y1 = max(y1,1);  %in case y1 is negative. 
     end
     
     
