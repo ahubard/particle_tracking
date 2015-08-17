@@ -99,11 +99,10 @@ end
 clear j
 sprintf ('Done conecting the centers')
 % Find how much particles moves
-% for ii = 1:length(initialfileindex)
-%    j(ii)=batch(sched,'displacement',1,{folder,En,ii,initialfileindex(ii),finalfileindex(ii),D});
-%      
-% end
-% 
+ for ii = 1:length(initialfileindex)
+    j(ii)=batch(sched,'displacement',1,{folder,En,ii,ii,initialfileindex(ii),finalfileindex(ii),git_version});      
+ end
+
 % %% Get tracked files
 %  nbtracked = zeros(1,length(initialfileindex));
 %  for tt =1:length(initialfileindex)

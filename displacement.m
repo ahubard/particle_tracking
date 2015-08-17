@@ -16,11 +16,13 @@
 
 
 function [count]=displacement(folder,En,NEn,count,initial,final,git_version)
-
+[git_version, ~] = evalc('system(''git describe --dirty --alway'')');
 %% File to load
-
-fnt =sprintf('/aline%i/rotdrum%i/o%02d/Tracked_%i.mat',folder,folder,En,NEn);
-%fnt =sprintf('Tracked_%i.mat',NEn);
+if(En<100)
+    fnt =sprintf('/aline%i/rotdrum%i/o%02d/Tracked_%i%03i.mat',folder,folder,En,En,NEn);
+else
+    fnt =sprintf('/aline%i/rotdrum%i/o%02d/Tracked_%i.mat',folder,folder,En,NEn);
+end 
 if(exist(fnt,'file'))
 load(fnt,'PX','PY');
 numframes = size(PX,2);
