@@ -29,7 +29,7 @@ a = 1;
 
 
 %% Main loop
-for nf = 1:count
+for nf = 1:count-1
     fnn =sprintf('/aline%i/rotdrum%i/o%02d/Displacement_%i.mat',folder,folder,En,nf);
     %fnn =sprintf('Displacement_%i.mat',nf);
     clear('diskmove','drraw','drfil');
@@ -46,7 +46,7 @@ for nf = 1:count
         drmask = (drfil>=cutoffperparticle);  %Use filter dr to determine which particles moved at each time step.
         avalanche = sum(drraw(:,ceil(windowSize/2):size(drraw,2)-floor(windowSize/2)).*drmask);
         findavalanche = filter(b,a,(avalanche>cutoffofsum)); %use both numbers tdecide, if they are moving they should move for at least 10 time steps, if they stop the same
-        % Find how many avalanches per file findavalanche = 0 means no
+        % Find how many avalancheso13 per file findavalanche = 0 means no
         % avalanche there.
         
         %Posible beginings and endings of avalanches
