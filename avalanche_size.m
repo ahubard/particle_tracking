@@ -21,7 +21,7 @@ Number_Avalanches = 0;
 %% Cutoff values
 cutoffperparticle = 0.01;    %If drfil (filtered particle displacement) is smaller
 % cutof then the particle didn move.
-cutoffofsum = 0.03;
+cutoffofsum = 0.06;
 windowSize = 5;
 minstepsbtwav = 10; %same as increment. Minimal amount of steps whit no displacement to say the avalanche is over.
 b = (1/minstepsbtwav)*ones(1,minstepsbtwav);
