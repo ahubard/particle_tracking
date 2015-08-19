@@ -19,11 +19,11 @@ Avalanche_duration = zeros(1,4*count);
 Normalized_avalanche = zeros(101,4*count);
 Number_Avalanches = 0;
 %% Cutoff values
-cutoffperparticle = 0.01;    %If drfil (filtered particle displacement) is smaller
+cutoffperparticle = 0.02;    %If drfil (filtered particle displacement) is smaller
 % cutof then the particle didn move.
-cutoffofsum = 0.01;
+cutoffofsum = 0.02;
 windowSize = 5;
-minstepsbtwav = 10; %same as increment. Minimal amount of steps whit no displacement to say the avalanche is over.
+minstepsbtwav = 8; %same as increment. Minimal amount of steps whit no displacement to say the avalanche is over.
 b = (1/minstepsbtwav)*ones(1,minstepsbtwav);
 a = 1;
 
