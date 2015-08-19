@@ -80,7 +80,7 @@ for nf = 1:count-1
                 Avalanche_displacement(Number_Avalanches) = sum (sqrt(avalanche(t1(na):t2(na))));
                 deltat = length(t1(na):t2(na));
                 Avalanche_duration(Number_Avalanches) = deltat;
-                avalanchenormalized = interp1((0:deltat+2)/(deltat+2),[0 sqrt(avalanche(t1(na):t2(na))) 0],(0:.01:1),'pchip');
+                avalanchenormalized = interp1((0:deltat+1)/(deltat+1),[0 sqrt(avalanche(t1(na):t2(na))) 0],(0:.01:1),'pchip');
                 Normalized_avalanche(:,Number_Avalanches) = avalanchenormalized/max(avalanchenormalized);
             end
             
