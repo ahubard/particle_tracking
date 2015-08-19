@@ -19,11 +19,11 @@ Avalanche_duration = zeros(1,4*count);
 Normalized_avalanche = zeros(101,4*count);
 Number_Avalanches = 0;
 %% Cutoff values
-cutoffperparticle = 0.02;    %If drfil (filtered particle displacement) is smaller
+cutoffperparticle = 0.01;    %If drfil (filtered particle displacement) is smaller
 % cutof then the particle didn move.
-cutoffofsum = 0.02;
+cutoffofsum = 0.03;
 windowSize = 5;
-minstepsbtwav = 8; %same as increment. Minimal amount of steps whit no displacement to say the avalanche is over.
+minstepsbtwav = 10; %same as increment. Minimal amount of steps whit no displacement to say the avalanche is over.
 b = (1/minstepsbtwav)*ones(1,minstepsbtwav);
 a = 1;
 
@@ -79,12 +79,13 @@ for nf = 1:count-1
             
         end
     end
+    fprintf('In file %i the number of avalanches is %i\n',nf,Number_Avalanches);
 end
 Avalanche_size = Avalanche_size(1:Number_Avalanches);
 Avalanche_duration = Avalanche_duration(1:Number_Avalanches);
 Normalized_avalanche = Normalized_avalanche(:,1:Number_Avalanches);
 
-file_save =sprintf('/aline%i/rotdrum%i/o%02d/Avalanches_%i.mat',folder,folder,En,En);
+file_save =sprintf('/aline%i/rotdrum%i/o%02d/Avalanchesn_%i.mat',folder,folder,En,En);
 %file_save =sprintf('Avalanches_%i.mat',En);
 save(file_save,'git_version','Number_Avalanches','Avalanche_duration','Avalanche_size','Normalized_avalanche');
     
