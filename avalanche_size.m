@@ -14,10 +14,14 @@ end
 [git_version, ~] = evalc('system(''git describe --dirty --alway'')');
 
 %% Initialize variables.
-Avalanche_size = zeros(1,4*count);
+Avalanche_displacement = zeros(1,4*count);
 Avalanche_duration = zeros(1,4*count);
+Avalanche_particles =zeros(1,4*count);
 Normalized_avalanche = zeros(101,4*count);
 Number_Avalanches = 0;
+Noavalanches = zeros(1,count);
+Avalanche_time = cell(2,count);
+
 %% Cutoff values
 cutoffperparticle = 0.01;    %If drfil (filtered particle displacement) is smaller
 % cutof then the particle didn move.
@@ -44,6 +48,7 @@ for nf = 1:count-1
     if (diskmove)%Check there was no error in the file. 
         
         drmask = (drfil>=cutoffperparticle);  %Use filter dr to determine which particles moved at each time step.
+        particles = sum(drmask);
         avalanche = sum(drraw(:,ceil(windowSize/2):size(drraw,2)-floor(windowSize/2)).*drmask);
         findavalanche = filter(b,a,(avalanche>cutoffofsum)); %use both numbers tdecide, if they are moving they should move for at least 10 time steps, if they stop the same
         % Find how many avalancheso13 per file findavalanche = 0 means no
@@ -71,22 +76,27 @@ for nf = 1:count-1
         for na = 1:length(t1)
             if( sum((findavalanche(t1(na):min(t2(na),length(avalanche))))>=1-eps)) %Check if there is indeed avalanches between t1-t2
                 Number_Avalanches = Number_Avalanches+1;
-                Avalanche_size(Number_Avalanches) = sum (avalanche(t1(na):t2(na)));
+                Avalanche_particles(Number_Avalanches) = sum(particles(t1(na):t2(na)));
+                Avalanche_displacement(Number_Avalanches) = sum (sqrt(avalanche(t1(na):t2(na))));
                 Avalanche_duration(Number_Avalanches) = length(t1(na):t2(na));
-                avalanchenormalized = interp1( (0:(t2(na)-t1(na)))/(t2(na)-t1(na)),avalanche(t1(na):t2(na)),(0:.01:1),'pchip');
+                avalanchenormalized = interp1( (0:(t2(na)-t1(na)))/(t2(na)-t1(na)),sqrt(avalanche(t1(na):t2(na))),(0:.01:1),'pchip');
                 Normalized_avalanche(:,Number_Avalanches) = avalanchenormalized/max(avalanchenormalized);
             end
             
         end
     end
     fprintf('In file %i the number of avalanches is %i\n',nf,Number_Avalanches);
+    Avalanche_time{1,nf} = T1;
+    Avalanche_time{2,nf} = T2;
+ Noavalanches(nf) = Number_Avalanches;
 end
-Avalanche_size = Avalanche_size(1:Number_Avalanches);
+Avalanche_displacement = Avalanche_displacement(1:Number_Avalanches);
 Avalanche_duration = Avalanche_duration(1:Number_Avalanches);
 Normalized_avalanche = Normalized_avalanche(:,1:Number_Avalanches);
+Avalanche_particles = Avalanche_particles(1:Number_Avalanches);
 
 file_save =sprintf('/aline%i/rotdrum%i/o%02d/Avalanchesn_%i.mat',folder,folder,En,En);
 %file_save =sprintf('Avalanches_%i.mat',En);
-save(file_save,'git_version','Number_Avalanches','Avalanche_duration','Avalanche_size','Normalized_avalanche');
+save(file_save,'git_version','Noavalanches','Avalanche_particles','Number_Avalanches','Avalanche_duration','Avalanche_displacement','Normalized_avalanche','Avalanche_time');
     
     
