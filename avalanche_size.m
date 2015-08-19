@@ -78,8 +78,9 @@ for nf = 1:count-1
                 Number_Avalanches = Number_Avalanches+1;
                 Avalanche_particles(Number_Avalanches) = sum(particles(t1(na):t2(na)));
                 Avalanche_displacement(Number_Avalanches) = sum (sqrt(avalanche(t1(na):t2(na))));
-                Avalanche_duration(Number_Avalanches) = length(t1(na):t2(na));
-                avalanchenormalized = interp1( (0:(t2(na)-t1(na)))/(t2(na)-t1(na)),sqrt(avalanche(t1(na):t2(na))),(0:.01:1),'pchip');
+                deltat = length(t1(na):t2(na));
+                Avalanche_duration(Number_Avalanches) = deltat;
+                avalanchenormalized = interp1((0:deltat+2)/(deltat+2),[0 sqrt(avalanche(t1(na):t2(na))) 0],(0:.01:1),'pchip');
                 Normalized_avalanche(:,Number_Avalanches) = avalanchenormalized/max(avalanchenormalized);
             end
             
