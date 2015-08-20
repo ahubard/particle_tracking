@@ -21,7 +21,6 @@ Normalized_avalanche = zeros(101,4*count);
 Number_Avalanches = 0;
 Noavalanches = zeros(1,count);
 Avalanche_time = cell(2,count);
-
 %% Cutoff values
 cutoffperparticle = 0.01;    %If drfil (filtered particle displacement) is smaller
 % cutof then the particle didn move.
@@ -78,9 +77,9 @@ for nf = 1:count-1
                 Number_Avalanches = Number_Avalanches+1;
                 Avalanche_particles(Number_Avalanches) = sum(particles(t1(na):t2(na)));
                 Avalanche_displacement(Number_Avalanches) = sum (sqrt(avalanche(t1(na):t2(na))));
-                deltat = length(t1(na):t2(na));
-                Avalanche_duration(Number_Avalanches) = deltat;
-                avalanchenormalized = interp1((0:deltat+1)/(deltat+1),[0 sqrt(avalanche(t1(na):t2(na))) 0],(0:.01:1),'pchip');
+                deltat = t2(na)-t1(na);
+                Avalanche_duration(Number_Avalanches) = deltat+3; %Adding the frame before and the frame after for completion.  
+                avalanchenormalized = interp1(([ 0 windowSize+(0:deltat) deltat+2*windowSize])/(deltat+2*windowSize),[0 sqrt(avalanche(t1(na):t2(na))) 0],(0:.01:1),'pchip');
                 Normalized_avalanche(:,Number_Avalanches) = avalanchenormalized/max(avalanchenormalized);
             end
             
@@ -96,7 +95,7 @@ Avalanche_duration = Avalanche_duration(1:Number_Avalanches);
 Normalized_avalanche = Normalized_avalanche(:,1:Number_Avalanches);
 Avalanche_particles = Avalanche_particles(1:Number_Avalanches);
 
-file_save =sprintf('/aline%i/rotdrum%i/o%02d/Avalanchesn_%i.mat',folder,folder,En,En);
+file_save =sprintf('/aline%i/rotdrum%i/o%02d/Avalanches_%i.mat',folder,folder,En,En);
 %file_save =sprintf('Avalanches_%i.mat',En);
 save(file_save,'git_version','Noavalanches','Avalanche_particles','Number_Avalanches','Avalanche_duration','Avalanche_displacement','Normalized_avalanche','Avalanche_time');
     
