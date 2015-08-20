@@ -84,11 +84,12 @@ for nf = 1:count-1
             end
             
         end
+        Avalanche_time{1,nf} = t1;
+        Avalanche_time{2,nf} = t2;
+        Noavalanches(nf) = Number_Avalanches;    
     end
     %fprintf('In file %i the number of avalanches is %i\n',nf,Number_Avalanches);
-    Avalanche_time{1,nf} = t1;
-    Avalanche_time{2,nf} = t2;
- Noavalanches(nf) = Number_Avalanches;
+ 
 end
 Avalanche_displacement = Avalanche_displacement(1:Number_Avalanches);
 Avalanche_duration = Avalanche_duration(1:Number_Avalanches);
