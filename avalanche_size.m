@@ -7,7 +7,7 @@ avanofile = sprintf('/aline%i/rotdrum%i/o%i/Avanonestep%i.mat',folder,folder,En,
 if (exist(avanofile,'file'))
     load (avanofile,'count');
 else
-    save(sprintf('Warning. The file: %s does not exist.mat',avanofile));
+    save(sprintf('AWarning. The file: %s does not exist.mat',avanofile));
     error('Error, avanofile does not exist');
 end
 
@@ -20,7 +20,12 @@ Avalanche_particles =zeros(1,4*count);
 Normalized_avalanche = zeros(101,4*count);
 Number_Avalanches = 0;
 Noavalanches = zeros(1,count);
-Avalanche_time = cell(2,count);
+DELTAR = zeros(1,4*count);
+NoParticles_moved = zeros(1,4*count);
+Max_particle_dis = zeros(1,4*count);
+Initial_Angle = zeros(1,4*count);
+Final_Angle = zeros(1,4*count); 
+Avalanche_time = cell(2,4*count);
 %% Cutoff values
 cutoffperparticle = 0.01;    %If drfil (filtered particle displacement) is smaller
 % cutof then the particle didn move.
@@ -34,11 +39,11 @@ a = 1;
 %% Main loop
 for nf = 1:count-1
     fnn =sprintf('/aline%i/rotdrum%i/o%02d/Displacement_%i.mat',folder,folder,En,nf);
-    %fnn =sprintf('Displacement_%i.mat',nf);
-    clear('diskmove','drraw','drfil');
+   
+    clear('diskmove','drraw','drfil','PX','PY');
     
     if(exist(fnn,'file'))
-        load(fnn,'diskmove','drfil','drraw');
+        load(fnn,'diskmove','drfil','drraw','PX','PY');
     else
         save(sprintf('Warning. The file: %s does not exist.mat',fnn));
         error('Error, Displacementfile does not exist');
@@ -79,6 +84,14 @@ for nf = 1:count-1
                 Avalanche_displacement(Number_Avalanches) = sum (sqrt(avalanche(t1(na):t2(na))));
                 deltat = t2(na)-t1(na);
                 Avalanche_duration(Number_Avalanches) = deltat+3; %Adding the frame before and the frame after for completion.  
+                DELTAR(Number_Avalanches) = sum(sqrt((PX(diskmove,t2(na))-PX(diskmove,t1(na))).^2+...
+                    (PY(diskmove,t2(na))-PY(diskmove,t1(na))).^2));
+                NoParticles_moved(Number_Avalanches) = sum(((PX(diskmove,t2(na))-PX(diskmove,t1(na))).^2+...
+                    (PY(diskmove,t2(na))-PY(diskmove,t1(na))).^2)>sqrt(2));
+                Max_particle_dis(Number_Avalanches) = max(sqrt((PX(diskmove,t2(na))-PX(diskmove,t1(na))).^2+...
+                    (PY(diskmove,t2(na))-PY(diskmove,t1(na))).^2));
+                Initial_Angle(Number_Avalanches) =  estimate_angle(PX(:,t1(na)),PY(:,t1(na)));
+                Final_Angle(Number_Avalanches)=  estimate_angle(PX(:,t2(na)),PY(:,t2(na)));
                 avalanchenormalized = interp1(([ 0 windowSize+(0:deltat) deltat+2*windowSize])/(deltat+2*windowSize),[0 sqrt(avalanche(t1(na):t2(na))) 0],(0:.01:1),'pchip');
                 Normalized_avalanche(:,Number_Avalanches) = avalanchenormalized/max(avalanchenormalized);
             end
@@ -95,9 +108,15 @@ Avalanche_displacement = Avalanche_displacement(1:Number_Avalanches);
 Avalanche_duration = Avalanche_duration(1:Number_Avalanches);
 Normalized_avalanche = Normalized_avalanche(:,1:Number_Avalanches);
 Avalanche_particles = Avalanche_particles(1:Number_Avalanches);
+DELTAR = DELTAR(1:Number_Avalanches);
+NoParticles_moved = NoParticles_moved(1:Number_Avalanches);
+Max_particle_dis = Max_particle_dis(1:Number_Avalanches);
+Initial_Angle = Initial_Angle(1:Number_Avalanches);
+Final_Angle = Final_Angle(1:Number_Avalanches); 
+
 
 file_save =sprintf('/aline%i/rotdrum%i/o%02d/Avalanches_%i.mat',folder,folder,En,En);
 %file_save =sprintf('Avalanches_%i.mat',En);
-save(file_save,'git_version','Noavalanches','Avalanche_particles','Number_Avalanches','Avalanche_duration','Avalanche_displacement','Normalized_avalanche','Avalanche_time');
+save(file_save,'git_version','DELTAR','NoParticles_moved','Max_particle_dis','Initial_Angle','Final_Angle','Noavalanches','Avalanche_particles','Number_Avalanches','Avalanche_duration','Avalanche_displacement','Normalized_avalanche','Avalanche_time');
     
     
