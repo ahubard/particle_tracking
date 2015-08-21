@@ -139,6 +139,6 @@ Final_Angle = Final_Angle(1:Number_Avalanches);
 
 file_save =sprintf('/aline%i/rotdrum%i/o%02d/Avalanches_%i.mat',folder,folder,En,En);
 %file_save =sprintf('Avalanches_%i.mat',En);
-save(file_save,'git_version','DELTAR','NoParticles_moved','Max_particle_dis','Initial_Angle','Final_Angle','Noavalanches','Avalanche_particles','Number_Avalanches','Avalanche_duration','Avalanche_displacement','Normalized_avalanche','Avalanche_time');
+save(file_save,'git_version','DELTAR','NoParticles_moved','Max_particle_dis','Initial_Angle','Final_Angle','Noavalanches','Avalanche_particles','Number_Avalanches','Avalanche_duration','Avalanche_displacement','Normalized_avalanche','Avalanche_time','Dheight');
     
     
