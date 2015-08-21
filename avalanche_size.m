@@ -17,9 +17,11 @@ salpha = sin(alpha*pi/180);
 calpha = cos(alpha*pi/180);
 %% Initialize variables.
 Avalanche_displacement = zeros(1,4*count);
+Avalanche_energy = zeros(1,4*count);
 Avalanche_duration = zeros(1,4*count);
 Avalanche_particles =zeros(1,4*count);
 Normalized_avalanche = zeros(101,4*count);
+Normalized_energy = zeros(101,4*count);
 Number_Avalanches = 0;
 Noavalanches = zeros(1,count);
 DELTAR = zeros(1,4*count);
@@ -89,7 +91,8 @@ for nf = 1:count-1
                 Avalanche_particles(Number_Avalanches) = sum(particles(t1(na):t2(na)));
                 
                 Avalanche_displacement(Number_Avalanches) = sum (sqrt(avalanche(t1(na):t2(na))));
-               
+               Avalanche_energy(Number_Avalanches) = sum ((avalanche(t1(na):t2(na))));
+                
                 deltat = t2(na)-t1(na);
                 Avalanche_duration(Number_Avalanches) = deltat+3; %Adding the frame before and the frame after for completion.  
                 
@@ -115,6 +118,9 @@ for nf = 1:count-1
                
                 avalanchenormalized = interp1(([ 0 windowSize+(0:deltat) deltat+2*windowSize])/(deltat+2*windowSize),[0 sqrt(avalanche(t1(na):t2(na))) 0],(0:.01:1),'pchip');
                 Normalized_avalanche(:,Number_Avalanches) = avalanchenormalized/max(avalanchenormalized);
+                
+                energynormalized = interp1(([ 0 windowSize+(0:deltat) deltat+2*windowSize])/(deltat+2*windowSize),[0 sqrt(avalanche(t1(na):t2(na))) 0],(0:.01:1),'pchip');
+                Normalized_energy(:,Number_Avalanches) = avalanchenormalized/max(avalanchenormalized);
             end
             
         end
@@ -126,8 +132,10 @@ for nf = 1:count-1
  
 end
 Avalanche_displacement = Avalanche_displacement(1:Number_Avalanches);
+Avalanche_energy = Avalanche_energy(1:Number_Avalanches);
 Avalanche_duration = Avalanche_duration(1:Number_Avalanches);
 Normalized_avalanche = Normalized_avalanche(:,1:Number_Avalanches);
+Normalized_energy = Normalized_energy(:,1:Number_Avalanches);
 Avalanche_particles = Avalanche_particles(1:Number_Avalanches);
 DELTAR = DELTAR(1:Number_Avalanches);
 Dheight = Dheight(1:Number_Avalanches);
@@ -139,6 +147,6 @@ Final_Angle = Final_Angle(1:Number_Avalanches);
 
 file_save =sprintf('/aline%i/rotdrum%i/o%02d/Avalanches_%i.mat',folder,folder,En,En);
 %file_save =sprintf('Avalanches_%i.mat',En);
-save(file_save,'git_version','DELTAR','NoParticles_moved','Max_particle_dis','Initial_Angle','Final_Angle','Noavalanches','Avalanche_particles','Number_Avalanches','Avalanche_duration','Avalanche_displacement','Normalized_avalanche','Avalanche_time','Dheight');
+save(file_save,'git_version','Normalized_energy','DELTAR','NoParticles_moved','Max_particle_dis','Initial_Angle','Final_Angle','Noavalanches','Avalanche_particles','Number_Avalanches','Avalanche_duration','Avalanche_displacement','Normalized_avalanche','Avalanche_time','Dheight');
     
     
