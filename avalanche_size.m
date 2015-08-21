@@ -149,5 +149,5 @@ Rotation_step=Rotation_step(:,1:Number_Avalanches);
 
 file_save =sprintf('/aline%i/rotdrum%i/o%02d/Avalanches_%i.mat',folder,folder,En,En);
 %file_save =sprintf('Avalanches_%i.mat',En);
-save(file_save,'git_version','Number_Avalanches','Normalized_energy','DELTAR','NoParticles_moved','Max_particle_dis','Initial_Angle','Final_Angle','Noavalanches','Avalanche_particles','Number_Avalanches','Avalanche_duration','Avalanche_displacement','Normalized_avalanche','Avalanche_time','Dheight');
+save(file_save,'git_version','Rotation_step','Avalanche_energy','Number_Avalanches','Normalized_energy','DELTAR','NoParticles_moved','Max_particle_dis','Initial_Angle','Final_Angle','Noavalanches','Avalanche_particles','Number_Avalanches','Avalanche_duration','Avalanche_displacement','Normalized_avalanche','Avalanche_time','Dheight');
 
