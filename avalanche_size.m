@@ -12,7 +12,9 @@ else
 end
 
 [git_version, ~] = evalc('system(''git describe --dirty --alway'')');
-
+alpha = 29;  %Angle from the horizontal from experiment.  
+salpha = sin(alpha*pi/180);
+calpha = cos(alpha*pi/180);
 %% Initialize variables.
 Avalanche_displacement = zeros(1,4*count);
 Avalanche_duration = zeros(1,4*count);
@@ -21,12 +23,14 @@ Normalized_avalanche = zeros(101,4*count);
 Number_Avalanches = 0;
 Noavalanches = zeros(1,count);
 DELTAR = zeros(1,4*count);
+Dheight = zeros(1,4*count);
 NoParticles_moved = zeros(1,4*count);
 Max_particle_dis = zeros(1,4*count);
 Initial_Angle = zeros(1,4*count);
 Final_Angle = zeros(1,4*count); 
-Avalanche_time = cell(2,4*count);
+Avalanche_time = cell(2,count);
 %% Cutoff values
+
 cutoffperparticle = 0.01;    %If drfil (filtered particle displacement) is smaller
 % cutof then the particle didn move.
 cutoffofsum = 0.06;
@@ -79,20 +83,36 @@ for nf = 1:count-1
         
         for na = 1:length(t1)
             if( sum((findavalanche(t1(na):min(t2(na),length(avalanche))))>=1-eps)) %Check if there is indeed avalanches between t1-t2
+                
                 Number_Avalanches = Number_Avalanches+1;
+               
                 Avalanche_particles(Number_Avalanches) = sum(particles(t1(na):t2(na)));
+                
                 Avalanche_displacement(Number_Avalanches) = sum (sqrt(avalanche(t1(na):t2(na))));
+               
                 deltat = t2(na)-t1(na);
                 Avalanche_duration(Number_Avalanches) = deltat+3; %Adding the frame before and the frame after for completion.  
+                
+                particlesthatmoved = (((PX(diskmove,t2(na))-PX(diskmove,t1(na))).^2+...
+                    (PY(diskmove,t2(na))-PY(diskmove,t1(na))).^2)>1); % More than one pixel
+                
                 DELTAR(Number_Avalanches) = sum(sqrt(((PX(diskmove,t2(na))-PX(diskmove,t1(na))).^2+...
-                    (PY(diskmove,t2(na))-PY(diskmove,t1(na))).^2).*(((PX(diskmove,t2(na))-PX(diskmove,t1(na))).^2+...
-                    (PY(diskmove,t2(na))-PY(diskmove,t1(na))).^2)>sqrt(2))));
-                NoParticles_moved(Number_Avalanches) = sum(((PX(diskmove,t2(na))-PX(diskmove,t1(na))).^2+...
-                    (PY(diskmove,t2(na))-PY(diskmove,t1(na))).^2)>sqrt(2));
+                    (PY(diskmove,t2(na))-PY(diskmove,t1(na))).^2).*particlesthatmoved));
+                
+                Dheight(Number_Avalanches) = sum(((PY(diskmove,t2(na))*calpha+PX(diskmove,t2(na))*salpha)-...
+                    (PY(diskmove,t1(na))*calpha+PX(diskmove,t1(na))*salpha)).*particlesthatmoved);
+                    
+                
+                
+                NoParticles_moved(Number_Avalanches) = sum(particlesthatmoved);
+                
                 Max_particle_dis(Number_Avalanches) = max(sqrt((PX(diskmove,t2(na))-PX(diskmove,t1(na))).^2+...
                     (PY(diskmove,t2(na))-PY(diskmove,t1(na))).^2));
+                
                 Initial_Angle(Number_Avalanches) =  estimate_angle(PX(:,t1(na)),PY(:,t1(na)));
+               
                 Final_Angle(Number_Avalanches)=  estimate_angle(PX(:,t2(na)),PY(:,t2(na)));
+               
                 avalanchenormalized = interp1(([ 0 windowSize+(0:deltat) deltat+2*windowSize])/(deltat+2*windowSize),[0 sqrt(avalanche(t1(na):t2(na))) 0],(0:.01:1),'pchip');
                 Normalized_avalanche(:,Number_Avalanches) = avalanchenormalized/max(avalanchenormalized);
             end
@@ -110,6 +130,7 @@ Avalanche_duration = Avalanche_duration(1:Number_Avalanches);
 Normalized_avalanche = Normalized_avalanche(:,1:Number_Avalanches);
 Avalanche_particles = Avalanche_particles(1:Number_Avalanches);
 DELTAR = DELTAR(1:Number_Avalanches);
+Dheight = Dheight(1:Number_Avalanches);
 NoParticles_moved = NoParticles_moved(1:Number_Avalanches);
 Max_particle_dis = Max_particle_dis(1:Number_Avalanches);
 Initial_Angle = Initial_Angle(1:Number_Avalanches);
