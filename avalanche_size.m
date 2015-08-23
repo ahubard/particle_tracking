@@ -24,7 +24,7 @@ Normalized_avalanche = zeros(101,4*count);
 Normalized_energy = zeros(101,4*count);
 Number_Avalanches = 0;
 Noavalanches = zeros(1,count);
-DELTAR = zeros(1,4*count);
+DELTAR = zeros(1,4*count); 
 Dheight = zeros(1,4*count);
 NoParticles_moved = zeros(1,4*count);
 Max_particle_dis = zeros(1,4*count);
@@ -119,10 +119,10 @@ for nf = 1:count-1
                 Final_Angle(Number_Avalanches)=  estimate_angle(PX(:,t2(na)),PY(:,t2(na)));
                 
                 avalanchenormalized = interp1(([ 0 windowSize+(0:deltat) deltat+2*windowSize])/(deltat+2*windowSize),[0 sqrt(avalanche(t1(na):t2(na))) 0],(0:.01:1),'pchip');
-                Normalized_avalanche(:,Number_Avalanches) = avalanchenormalized/max(avalanchenormalized);
+                Normalized_avalanche(:,Number_Avalanches) = avalanchenormalized;
                 
                 energynormalized = interp1(([ 0 windowSize+(0:deltat) deltat+2*windowSize])/(deltat+2*windowSize),[0 sqrt(avalanche(t1(na):t2(na))) 0],(0:.01:1),'pchip');
-                Normalized_energy(:,Number_Avalanches) = avalanchenormalized/max(avalanchenormalized);
+                Normalized_energy(:,Number_Avalanches) = avalanchenormalized;
             end
             
         end
