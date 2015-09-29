@@ -22,6 +22,10 @@ spectrum_displacement = zeros(maxT/2,4*count);
 spectrum_particles = zeros(maxT/2,4*count);
 spectrum_energy =zeros(maxT/2,4*count);
 
+mat_displacement = zeros(maxT,4*count);
+mat_particles = zeros(maxT,4*count);
+mat_energy =zeros(maxT,4*count);
+
 Avalanche_displacement = zeros(1,4*count);
 Avalanche_energy = zeros(1,4*count);
 Avalanche_duration = zeros(1,4*count);
@@ -128,6 +132,11 @@ for nf = 1:count-1
                 particlesmoving_t(deltat-1:maxT) = 0;
                 displacement_t(deltat-1:maxT) = 0;
                 energy_t(deltat-1:maxT) = 0;
+                mat_particles(:,Number_Avalanches) = particlesmoving_t;
+                mat_displacement(:,Number_Avalanches) = displacement_t;
+                mat_energy(:,Number_Avalanches) = energy_t;
+                
+                
                 % Fourier transform data
                 Fparticlesmoving_t = abs(fft(particlesmoving_t))/(maxT/2);
                 Fdisplacement_t = abs(fft(displacement_t))/(maxT/2);
@@ -178,6 +187,10 @@ Normalized_particles = Normalized_particles(:,1:Number_Avalanches);
 Normalized_avalanche = Normalized_avalanche(:,1:Number_Avalanches);
 Normalized_energy = Normalized_energy(:,1:Number_Avalanches);
 
+mat_particles = mat_particles(:,1:Number_Avalanches);
+mat_displacement = mat_displacement(:,1:Number_Avalanches);
+mat_energy =mat_energy(:,1:Number_Avalanches);
+
 spectrum_particles = spectrum_particles(:,1:Number_Avalanches);
 spectrum_displacement = spectrum_displacement(:,1:Number_Avalanches);
 spectrum_energy =spectrum_energy(:,1:Number_Avalanches);
@@ -196,6 +209,7 @@ file_save =sprintf('/aline%i/rotdrum%i/o%02d/Avalanches_%i.mat',folder,folder,En
 save(file_save,'git_version','Number_Avalanches','Noavalanches','Avalanche_time', ...
     'Avalanche_particles','Avalanche_displacement','Avalanche_energy','Avalanche_duration',...
     'Normalized_particles','Normalized_avalanche','Normalized_energy',...
+    'mat_particles','mat_displacement','mat_energy',...
     'spectrum_particles','spectrum_displacement','spectrum_energy',...
     'DELTAR','Dheight','NoParticles_moved','Max_particle_dis',...
     'Initial_Angle','Final_Angle','Rotation_step');
