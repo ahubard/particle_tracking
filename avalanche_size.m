@@ -75,7 +75,7 @@ for nf = 1:count-1
     
     if (diskmove)%Check there was no error in the file.
         
-        drmask = (drfil>=cutoffperparticle);  %Use filter dr to determine which particles moved at each time step.
+        drmask = (drfil2>=cutoffperparticle);  %Use filter dr to determine which particles moved at each time step.
         particles = sum(drmask);
         energy_avalanche = sum(drraw2(:,ceil(windowSize/2):size(drraw2,2)-floor(windowSize/2)).*drmask);
         vel_avalanche = sum(sqrt(drraw2(:,ceil(windowSize/2):size(drraw2,2)-floor(windowSize/2))).*drmask);
