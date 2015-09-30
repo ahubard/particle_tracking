@@ -22,11 +22,11 @@ alpha = 29;  %Angle from the horizontal from experiment.
 salpha = sin(alpha*pi/180);
 calpha = cos(alpha*pi/180);
 %% File to load
-%if(En<100)
-   % fnt =sprintf('/aline%i/rotdrum%i/o%02d/Tracked_%i%03i.mat',folder,folder,En,En,NEn);
-%else
+if(En<100)
+    fnt =sprintf('/aline%i/rotdrum%i/o%02d/Tracked_%i%03i.mat',folder,folder,En,En,NEn);
+else
     fnt =sprintf('/aline%i/rotdrum%i/o%02d/Tracked_%i.mat',folder,folder,En,NEn);
-%end
+end
 
 
 
@@ -74,5 +74,6 @@ if(exist(fnt,'file'))
     %fnn =sprintf('Displacement_%i.mat',Count);
     save(fnn,'git_version','windowSize', 'PX','PY','dh','drraw2','drfil2','diskmove','increment','participationratio','folder','En','NEn','initial','final');
 else
-    fprintf('The file%s does not exists\n',fnt)
+    save(sprintf('Warning. The file: %s does not exist.mat',fnt));
+    
 end
