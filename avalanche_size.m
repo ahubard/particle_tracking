@@ -5,23 +5,19 @@ avanofile = sprintf('/aline%i/rotdrum%i/o%i/Avanonestep%i.mat',folder,folder,En,
 %avanofile = sprintf('Avanonestep%i.mat',En);
 
 if (exist(avanofile,'file'))
-    load (avanofile,'count','avan');
+    load (avanofile,'count','avan','alpha','maxT');
 else
     save(sprintf('AWarning. The file: %s does not exist.mat',avanofile));
     error('Error, avanofile does not exist');
 end
 
 [git_version, ~] = evalc('system(''git describe --dirty --alway'')');
-alpha = 29;  %Angle from the horizontal from experiment.
+
 salpha = sin(alpha*pi/180);
 calpha = cos(alpha*pi/180);
-%% Initialize variables.
-maxT = 3248;
 
-spectrum_displacement = zeros(maxT/2,4*count);
-spectrum_particles = zeros(maxT/2,4*count);
-spectrum_energy = zeros(maxT/2,4*count);
-spectrum_potential = zeros(maxT/2,4*count);
+%% Initialize variables.
+
 
 mat_displacement = zeros(maxT,4*count);
 mat_particles = zeros(maxT,4*count);
@@ -38,6 +34,11 @@ Normalized_avalanche = zeros(101,4*count);
 Normalized_energy = zeros(101,4*count);
 Normalized_particles = zeros(101,4*count);
 Normalized_potential = zeros(101,4*count);
+
+% spectrum_displacement = zeros(maxT/2,4*count);
+% spectrum_particles = zeros(maxT/2,4*count);
+% spectrum_energy = zeros(maxT/2,4*count);
+% spectrum_potential = zeros(maxT/2,4*count);
 
 Number_Avalanches = 0;
 Noavalanches = zeros(1,count);
@@ -138,28 +139,29 @@ for nf = 1:count-1
                 potentialnormalized = interp1(([ 0 windowSize+(0:deltat) deltat+2*windowSize])/(deltat+2*windowSize),[0 potential_t 0],(0:.01:1),'pchip');
                 Normalized_potential(:,Number_Avalanches) = potentialnormalized;                
                 
-                % GET POWER SPECTRUM
+                
                 %Fill data with zeros to get power spectrum
                 particlesmoving_t(deltat-1:maxT) = 0;
                 displacement_t(deltat-1:maxT) = 0;
                 energy_t(deltat-1:maxT) = 0;
                 potential_t(deltat-1:maxT) = 0;
+                
                 mat_particles(:,Number_Avalanches) = particlesmoving_t;
                 mat_displacement(:,Number_Avalanches) = displacement_t;
                 mat_energy(:,Number_Avalanches) = energy_t;
                 mat_potential(:,Number_Avalanches) = potential_t;
                 
-                
-                % Fourier transform data
-                Fparticlesmoving_t = abs(fft(particlesmoving_t))/(maxT/2);
-                Fdisplacement_t = abs(fft(displacement_t))/(maxT/2);
-                Fenergy_t = abs(fft(energy_t))/(maxT/2);
-                Fpotential_t = abs(fft(potential_t))/(maxT/2);
-                %PowerSpectrum
-                spectrum_particles(:,Number_Avalanches) = Fparticlesmoving_t(1:maxT/2).^2;
-                spectrum_displacement(:,Number_Avalanches) = Fdisplacement_t(1:maxT/2).^2;
-                spectrum_energy(:,Number_Avalanches) = Fenergy_t(1:maxT/2).^2;
-                spectrum_potential(:,Number_Avalanches) = Fpotential_t(1:maxT/2).^2;
+%                 
+%                 % Fourier transform data
+%                 Fparticlesmoving_t = abs(fft(particlesmoving_t))/(maxT/2);
+%                 Fdisplacement_t = abs(fft(displacement_t))/(maxT/2);
+%                 Fenergy_t = abs(fft(energy_t))/(maxT/2);
+%                 Fpotential_t = abs(fft(potential_t))/(maxT/2);
+%                 %PowerSpectrum
+%                 spectrum_particles(:,Number_Avalanches) = Fparticlesmoving_t(1:maxT/2).^2;
+%                 spectrum_displacement(:,Number_Avalanches) = Fdisplacement_t(1:maxT/2).^2;
+%                 spectrum_energy(:,Number_Avalanches) = Fenergy_t(1:maxT/2).^2;
+%                 spectrum_potential(:,Number_Avalanches) = Fpotential_t(1:maxT/2).^2;
             
                 %Final-Initial data
                 particlesthatmoved = (((PX(diskmove,t2(na))-PX(diskmove,t1(na))).^2+...
@@ -193,10 +195,11 @@ for nf = 1:count-1
 end
 
 %% Resize matrices
+Avalanche_duration = Avalanche_duration(1:Number_Avalanches);
+
 Avalanche_particles = Avalanche_particles(1:Number_Avalanches);
 Avalanche_displacement = Avalanche_displacement(1:Number_Avalanches);
 Avalanche_energy = Avalanche_energy(1:Number_Avalanches);
-Avalanche_duration = Avalanche_duration(1:Number_Avalanches);
 Avalanche_potential = Avalanche_potential(1:Number_Avalanches);
 
 Normalized_particles = Normalized_particles(:,1:Number_Avalanches);
@@ -209,10 +212,10 @@ mat_displacement = mat_displacement(:,1:Number_Avalanches);
 mat_energy = mat_energy(:,1:Number_Avalanches);
 mat_potential = mat_potential(:,1:Number_Avalanches); 
 
-spectrum_particles = spectrum_particles(:,1:Number_Avalanches);
-spectrum_displacement = spectrum_displacement(:,1:Number_Avalanches);
-spectrum_energy = spectrum_energy(:,1:Number_Avalanches);
-spectrum_potential = spectrum_potential(:,1:Number_Avalanches);
+% spectrum_particles = spectrum_particles(:,1:Number_Avalanches);
+% spectrum_displacement = spectrum_displacement(:,1:Number_Avalanches);
+% spectrum_energy = spectrum_energy(:,1:Number_Avalanches);
+% spectrum_potential = spectrum_potential(:,1:Number_Avalanches);
 
 DELTAR = DELTAR(1:Number_Avalanches);
 Dheight = Dheight(1:Number_Avalanches);
@@ -224,12 +227,21 @@ Rotation_step=Rotation_step(:,1:Number_Avalanches);
 
 %% Save results to file
 file_save =sprintf('/aline%i/rotdrum%i/o%02d/Avalanches_%i.mat',folder,folder,En,En);
-%file_save =sprintf('Avalanches_%i.mat',En);
-save(file_save,'git_version','Number_Avalanches','Noavalanches','Avalanche_time', ...
+
+
+save(file_save,'git_version','MaxT','Number_Avalanches','Noavalanches','Avalanche_time', ...
     'Avalanche_particles','Avalanche_displacement','Avalanche_energy','Avalanche_duration','Avalanche_potential',...
     'Normalized_particles','Normalized_avalanche','Normalized_energy','Normalized_potential',...
     'mat_particles','mat_displacement','mat_energy','mat_potential',...
-    'spectrum_particles','spectrum_displacement','spectrum_energy','spectrum_potential',...
     'DELTAR','Dheight','NoParticles_moved','Max_particle_dis',...
     'Initial_Angle','Final_Angle','Rotation_step');
+
+% save(file_save,'git_version','MaxT','Number_Avalanches','Noavalanches','Avalanche_time', ...
+%     'Avalanche_particles','Avalanche_displacement','Avalanche_energy','Avalanche_duration','Avalanche_potential',...
+%     'Normalized_particles','Normalized_avalanche','Normalized_energy','Normalized_potential',...
+%     'mat_particles','mat_displacement','mat_energy','mat_potential',...
+%     'spectrum_particles','spectrum_displacement','spectrum_energy','spectrum_potential',...
+%     'DELTAR','Dheight','NoParticles_moved','Max_particle_dis',...
+%     'Initial_Angle','Final_Angle','Rotation_step');
+
 

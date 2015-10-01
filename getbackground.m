@@ -6,7 +6,12 @@ function [norm_coef] = getbackground(En,ni,folder,order)
 %% Get background goes over images to get the max of each one and normalize by the average light of each image.
 
 %% LOAD IMAGE
-fn=sprintf('/aline%i/rotdrum%i/o%02d/onestep%02d_%05d.mat',folder,folder,En,En,ni);
+if (En > 100)
+    fn=sprintf('/aline%i/rotdrum%i/o%02d/onestep%02d_%05d.mat',folder,folder,En,En,ni);
+else
+    fn=sprintf('/aline%i/rotdrum%i/o%02d/onestep%02d%05d.mat',folder,folder,En,En,ni);
+end
+
 load(fn,'IMA');
 bgfile = sprintf('/aline%i/rotdrum%i/o%i/back%i.mat',folder,folder,En,En);
 

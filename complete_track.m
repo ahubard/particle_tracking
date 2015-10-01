@@ -1,3 +1,7 @@
+%function complete_track(folder,En)
+
+sprintf('If you wanna track folder %i and experiment series %i press enter, otherwise cancel',folder,En)
+pause()
 
 %% Main Sekeleton to track particles
 sched=findResource('scheduler', 'type', 'jobmanager', 'lookupURL','poincare.engr.ccny.cuny.edu');  %Open scheduler
@@ -5,8 +9,9 @@ sched=findResource('scheduler', 'type', 'jobmanager', 'lookupURL','poincare.engr
 [git_version, ~] = evalc('system(''git describe --dirty --alway'')');
 
 %% Define your folder and Experiment number En and information file of the experiment;
-folder = 2;
-En = 109;
+% folder = 2;
+% En = 109;
+
 Cutoff = 11.5;      % minimum peak intensity
 MinSep = 6.08;      % minimum separation between peaks 5.5
 D = 10;
@@ -14,43 +19,67 @@ w = 0.8;
 
 %% Experiment file
 avanofile = sprintf('/aline%i/rotdrum%i/o%i/Avanonestep%i.mat',folder,folder,En,En);
-load(avanofile,'avan','navfile'); % navfile are the files that contained posible avalanches. 
+load(avanofile,'avan','navfile','mk'); % navfile are the files that contained posible avalanches.
 avalanchefiles = zeros(size(navfile));
 NAVFILE = navfile;
 save(avanofile,'NAVFILE','-append');
-%% Get background and mask
-
-maskfile = '/aline1/rotdrum1/o103/mask103.mat';
-load(maskfile,'mk');
+%% Get background
+Nbfiles = length(navfile);
 bgfile = sprintf('/aline%i/rotdrum%i/o%i/back%i.mat',folder,folder,En,En);
 
-for ii = 1:602
+schedulerindex = 1;
+for ii = 1:3:Nbfiles
     ni = navfile(ii);
-    j(ii) = batch(sched,'getbackground',1,{En,ni,folder,1});
+    jj(schedulerindex) = batch(sched,'getbackground',1,{En,ni,folder,1});
+    schedulerindex = schedulerindex+1;
 end
+
+for ii = (-32:-1)+schedulerindex
+    wait(jj(ii));
+end
+
 bk = mk*0;
 
-for ii = 1:602
+for ii = 1:3:Nbfiles
     ni = navfile(ii);
-    fn = sprintf('/aline%i/rotdrum%i/o%02d/onestep%02d_%05d.mat',folder,folder,En,En,ni);
+    
+    if (En > 100)
+        fn=sprintf('/aline%i/rotdrum%i/o%02d/onestep%02d_%05d.mat',folder,folder,En,En,ni);
+    else
+        fn=sprintf('/aline%i/rotdrum%i/o%02d/onestep%02d%05d.mat',folder,folder,En,En,ni);
+    end
+    
     load(fn,'bk1');
     bk = max(bk,bk1);
 end
+
 bk1 = bk;
 save (bgfile,'bk1');
 
-for ii = 1:602
+for ii = 1:3:Nbfiles
     ni = navfile(ii);
-    j(ii) = batch(sched,'getbackground',1,{En,ni,folder,2});
+    jj(schedulerindex) = batch(sched,'getbackground',1,{En,ni,folder,2});
+    schedulerindex = schedulerindex+1;
 end
+
+for ii = (-32:-1)+schedulerindex
+    wait(jj(ii));
+end
+
 bk = mk*0;
 
-for ii = 1:602
+for ii = 1:3:Nbfiles
     ni = navfile(ii);
-    fn = sprintf('/aline%i/rotdrum%i/o%02d/onestep%02d_%05d.mat',folder,folder,En,En,ni);
+    if (En > 100)
+        fn=sprintf('/aline%i/rotdrum%i/o%02d/onestep%02d_%05d.mat',folder,folder,En,En,ni);
+    else
+        fn=sprintf('/aline%i/rotdrum%i/o%02d/onestep%02d%05d.mat',folder,folder,En,En,ni);
+    end
+    
     load(fn,'bk2');
     bk = max(bk,bk2);
 end
+
 bk2 = bk;
 save (bgfile,'bk2','-append');
 
@@ -59,22 +88,23 @@ save (bgfile,'bk2','-append');
 
 
 
-for ii = 1:length(navfile)
+for ii = 1:Nbfiles
     ni = navfile(ii);
-    j(ii) = batch(sched,'findparticlecenters',1,...
+    jj(schedulerindex) = batch(sched,'findparticlecenters',1,...
         {En,ni,folder,D,w,Cutoff,MinSep},'Filedependencies',...
         {'clip.m','chiimg.m','findpeaks.m','ipf.m','discriminate.m'});
+    schedulerindex = schedulerindex+1;
     
 end
 
 %% Wait for cluster to finish finding particle centers.
-for ii = length(navfile)+(-32:0)
-   wait(j(ii))
+for ii = (-32:-1)+schedulerindex
+    wait(jj(ii));
 end
-clear j
+
 sprintf ('Done finding centers')
 % Actualize navfile and separate constinuos files in bunches
-for ii = 1:length(navfile)
+for ii = 1:Nbfiles
    ni = navfile(ii);
    fna = (sprintf('/aline%i/rotdrum%i/o%02d/no_avalanche_in_this_file%02d_%05d.mat',folder,folder,En,En,ni));
    avalanchefiles(ii) = exist(fna,'file');
@@ -89,14 +119,14 @@ save(avanofile,'navfile','-append');
 
 %% Launch mytrack to conect particle positions.
 for ii = 1:length(initialfileindex)
-   j(ii)=batch(sched,'mytrack',1,{folder,En,ii,initialfileindex(ii),finalfileindex(ii),D,mk},'Filedependencies',{'stickfiles.m','adjacent.m','assignmentoptimal.m'});
-     
+   j(schedulerindex)=batch(sched,'mytrack',1,{folder,En,ii,initialfileindex(ii),finalfileindex(ii),D,mk},'Filedependencies',{'stickfiles.m','adjacent.m','assignmentoptimal.m'});
+   schedulerindex = schedulerindex+1; 
 end
 %% Wait for cluster to finish tracking jobs
-for ii = length(initialfileindex)+(-32:0)
-   wait(j(ii))
+for ii = (-32:-1)+schedulerindex
+    wait(jj(ii));
 end
-clear j
+
 sprintf ('Done conecting the centers')
 % Find how much particles moves
 count = displacementscript(folder,En);

@@ -14,22 +14,22 @@
 %!git commit -m "added git version in output"
 
 
-
-function [count]=displacement(folder,En,NEn,count,initial,final,git_version)
+function [count]=displacement(folder,En,NEn,count,initial,final, alpha, git_version)
 [git_version, ~] = evalc('system(''git describe --dirty --alway'')');
 
-alpha = 29;  %Angle from the horizontal from experiment.
+%alpha = 29;  %Angle from the horizontal from experiment.
 salpha = sin(alpha*pi/180);
 calpha = cos(alpha*pi/180);
 %% File to load
+
+filedirectory = sprintf('/aline%i/rotdrum%i/o%02d/',folder,folder,En);
 if(En<100)
-    fnt =sprintf('/aline%i/rotdrum%i/o%02d/Tracked_%i%03i.mat',folder,folder,En,En,NEn);
+    filekernel =sprintf('Tracked_%i%03i',En,NEn);
 else
-    fnt =sprintf('/aline%i/rotdrum%i/o%02d/Tracked_%i.mat',folder,folder,En,NEn);
+    filekernel =sprintf('Tracked_%i',NEn);
 end
 
-
-
+fnt =sprintf('%s%s.mat',filedirectory,filekernel);
 
 %% 
 if(exist(fnt,'file'))
@@ -69,11 +69,11 @@ if(exist(fnt,'file'))
     participationratio = sum(totaltr.^4)/(sum(totaltr.^2)^2);
     %% Save results
     
-    fnn =sprintf('/aline%i/rotdrum%i/o%02d/Displacement_%i.mat',folder,folder,En,count);
+    fnn =sprintf('%sDisplacement_%i.mat',filedirectory,count);
     count = count + 1;
     %fnn =sprintf('Displacement_%i.mat',Count);
     save(fnn,'git_version','windowSize', 'PX','PY','dh','drraw2','drfil2','diskmove','increment','participationratio','folder','En','NEn','initial','final');
 else
-    save(sprintf('Warning. The file: %s does not exist.mat',fnt));
+    save(sprintf('%sWarning_The_file_%s_does_not_exist.mat',filedirectory,filekernel),'count');
     
 end

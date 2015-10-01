@@ -1,4 +1,5 @@
 %function [keep] = discriminate(folder,En,ni,D,w,Cutoff,MinSep)
+
 function [keep, IMA,mk,bk1,bk2,info] = discriminate(folder,En,ni,D,w,Cutoff,MinSep)
 %% Reads file in folder"aline<folder>/rotdrum<folder>/o<En>/onestep<En>_<ni>...
 %and checks if there is an avalanche in it. Using that D is the diameter of
@@ -15,24 +16,43 @@ cutoffpr = 8e-4;
 cutoffdiff = 10;
 
 %% Check if files exist and load them 
-
-maskfile = sprintf('/aline%i/rotdrum%i/o%i/mask%i.mat',folder,folder,En,En);
+avanofile = sprintf('/aline%i/rotdrum%i/o%i/Avanonestep%i.mat',folder,folder,En,En);
+gotmaskinfo = whos(matfile(avafile),'mk','xo','yo','R');
 bgfile = sprintf('/aline%i/rotdrum%i/o%i/back%i.mat',folder,folder,En,En);
-fno = sprintf('/aline%i/rotdrum%i/o%02d/onestep%02d_%05d.mat',folder,folder,En,En,ni);
- 
-if (exist(maskfile,'file') == 0)
-    comment1 = char('used /aline1/rotdrum1/o103/mask103.mat as a mask');
-    save(fno,'comment1','-append');
-    maskfile = '/aline1/rotdrum1/o103/mask103.mat';
+
+if (En > 100)
+    fno=sprintf('/aline%i/rotdrum%i/o%02d/onestep%02d_%05d.mat',folder,folder,En,En,ni);
+    
+    if (size(gotmaskinfo,1) < 4)
+        comment1 = char('used /aline1/rotdrum1/o103/mask103.mat as a mask');
+        save(fno,'comment1','-append');
+        avanofile = '/aline1/rotdrum1/o103/mask103.mat';
+    end
+    
+    if (exist(bgfile,'file') == 0)
+        comment2 = char('used /aline2/rotdrum2/o105/back105.mat as a background');
+        save(fno,'comment2','-append');
+        bgfile = '/aline2/rotdrum2/o105/back105.mat';
+    end
+else
+    fno=sprintf('/aline%i/rotdrum%i/o%02d/onestep%02d%05d.mat',folder,folder,En,En,ni);
+    
+    if (size(gotmaskinfo,1) < 4)
+        comment1 = char('used /aline1/rotdrum1/mask13.mat as a mask');
+        save(fno,'comment1','-append');
+        avanofile = '/aline1/rotdrum1/mask13.mat';
+    end
+    
+    if (exist(bgfile,'file') == 0)
+        comment2 = char('used /aline2/rotdrum2/back20.mat as a background');
+        save(fno,'comment2','-append');
+        bgfile = '/aline2/rotdrum2/back20.mat';
+    end
 end
 
-if (exist(bgfile,'file') == 0)
-    comment2 = char('used /aline2/rotdrum2/o105/back105.mat as a background');
-    save(fno,'comment2','-append');
-    bgfile = '/aline2/rotdrum2/o105/back105.mat';
-end
 
-load(maskfile,'mk','xo','yo','R');
+
+load(avanofile,'mk','xo','yo','R');
 load(bgfile,'bk1','bk2');
 bg = bk1*0;
 bbg = bg;
