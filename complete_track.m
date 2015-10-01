@@ -2,11 +2,11 @@
 
 sprintf('If you wanna track folder %i and experiment series %i press enter, otherwise cancel',folder,En)
 pause()
-
+sprintf('OK, here we go, we will start by opening the scheduler.')
 %% Main Sekeleton to track particles
 sched=findResource('scheduler', 'type', 'jobmanager', 'lookupURL','poincare.engr.ccny.cuny.edu');  %Open scheduler
 
-[git_version, ~] = evalc('system(''git describe --dirty --alway'')');
+[git_version, ~] = evalc('system(''git describe --dirty --alway'')')
 
 %% Define your folder and Experiment number En and information file of the experiment;
 % folder = 2;
@@ -55,7 +55,7 @@ end
 
 bk1 = bk;
 save (bgfile,'bk1');
-
+sprintf('Done with first part of the background')
 for ii = 1:3:Nbfiles
     ni = navfile(ii);
     jj(schedulerindex) = batch(sched,'getbackground',1,{En,ni,folder,2});
@@ -82,7 +82,7 @@ end
 
 bk2 = bk;
 save (bgfile,'bk2','-append');
-
+sprintf('Done with second part of the background')
 
 %% Find Particle centers using the cluster.
 
