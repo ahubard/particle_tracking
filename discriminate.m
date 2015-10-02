@@ -17,7 +17,7 @@ cutoffdiff = 10;
 
 %% Check if files exist and load them 
 avanofile = sprintf('/aline%i/rotdrum%i/o%i/Avanonestep%i.mat',folder,folder,En,En);
-gotmaskinfo = whos(matfile(avafile),'mk','xo','yo','R');
+gotmaskinfo = whos(matfile(avanofile),'mk','xo','yo','R');
 bgfile = sprintf('/aline%i/rotdrum%i/o%i/back%i.mat',folder,folder,En,En);
 
 if (En > 100)

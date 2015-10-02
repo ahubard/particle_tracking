@@ -85,7 +85,7 @@ save (bgfile,'bk2','-append');
 sprintf('Done with second part of the background')
 
 %% Find Particle centers using the cluster.
-
+schedulerindex = 2*length(1:3:Nbfiles)+1;
 
 
 for ii = 1:Nbfiles
@@ -119,7 +119,7 @@ save(avanofile,'navfile','-append');
 
 %% Launch mytrack to conect particle positions.
 for ii = 1:length(initialfileindex)
-   j(schedulerindex)=batch(sched,'mytrack',1,{folder,En,ii,initialfileindex(ii),finalfileindex(ii),D,mk},'Filedependencies',{'stickfiles.m','adjacent.m','assignmentoptimal.m'});
+   jj(schedulerindex)=batch(sched,'mytrack',1,{folder,En,ii,initialfileindex(ii),finalfileindex(ii),D,mk},'Filedependencies',{'stickfiles.m','adjacent.m','assignmentoptimal.m'});
    schedulerindex = schedulerindex+1; 
 end
 %% Wait for cluster to finish tracking jobs
