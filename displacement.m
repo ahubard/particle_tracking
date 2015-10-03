@@ -23,11 +23,11 @@ calpha = cos(alpha*pi/180);
 %% File to load
 
 filedirectory = sprintf('/aline%i/rotdrum%i/o%02d/',folder,folder,En);
-if(En<100)
-    filekernel =sprintf('Tracked_%i%03i',En,NEn);
-else
+%if(En<100)
+   % filekernel =sprintf('Tracked_%i%03i',En,NEn);
+%else
     filekernel =sprintf('Tracked_%i',NEn);
-end
+%end
 
 fnt =sprintf('%s%s.mat',filedirectory,filekernel);
 
