@@ -57,7 +57,7 @@ if(exist(fnt,'file'))
     %dt = increment/2;
     dxraw = (PX(diskmove,1+increment:1:numframes)-PX(diskmove,1:1:numframes-increment))/increment;
     dyraw = (PY(diskmove,1+increment:1:numframes)-PY(diskmove,1:1:numframes-increment))/increment;
-    dh = (dyraw*calpha+dxraw*salpha)-(dyraw*calpha+dxraw*salpha);
+    dh = (dyraw*calpha+dxraw*salpha);
     drraw2 = dxraw.^2+dyraw.^2;
     dxfil =(x(diskmove,windowSize+increment:1:numframes)-x(diskmove,windowSize:1:numframes-increment))/increment;
     dyfil =(y(diskmove,windowSize+increment:1:numframes)-y(diskmove,windowSize:1:numframes-increment))/increment;

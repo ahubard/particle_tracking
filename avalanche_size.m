@@ -24,6 +24,11 @@ mat_particles = zeros(maxT,4*count);
 mat_energy = zeros(maxT,4*count);
 mat_potential = zeros(maxT,4*count);
 
+correlation_particles = zeros(maxT,4*count);
+correlation_displacement = zeros(maxT,4*count);
+correlation_energy  = zeros(maxT,4*count);
+correlation_potential = zeros(maxT,4*count);
+
 Avalanche_displacement = zeros(1,4*count);
 Avalanche_energy = zeros(1,4*count);
 Avalanche_duration = zeros(1,4*count);
@@ -35,6 +40,8 @@ Normalized_energy = zeros(101,4*count);
 Normalized_particles = zeros(101,4*count);
 Normalized_potential = zeros(101,4*count);
 
+
+
 % spectrum_displacement = zeros(maxT/2,4*count);
 % spectrum_particles = zeros(maxT/2,4*count);
 % spectrum_energy = zeros(maxT/2,4*count);
@@ -42,7 +49,7 @@ Normalized_potential = zeros(101,4*count);
 
 Number_Avalanches = 0;
 Noavalanches = zeros(1,count);
-DELTAR = zeros(1,4*count); 
+DELTAR = zeros(1,4*count);
 Dheight = zeros(1,4*count);
 NoParticles_moved = zeros(1,4*count);
 Max_particle_dis = zeros(1,4*count);
@@ -117,6 +124,8 @@ for nf = 1:count-1
                 energy_t = energy_avalanche(t1(na):t2(na));
                 potential_t = dif_potential(t1(na):t2(na));
                 
+                
+                
                 %Sizes and duration
                 Avalanche_particles(Number_Avalanches) = sum(particlesmoving_t);
                 Avalanche_displacement(Number_Avalanches) = sum(displacement_t);
@@ -125,7 +134,7 @@ for nf = 1:count-1
                 
                 deltat = t2(na)-t1(na);
                 Avalanche_duration(Number_Avalanches) = deltat+3; %Adding the frame before and the frame after for completion.
-               
+                
                 %Find normalized avalanches
                 particlesnormalized = interp1(([ 0 windowSize+(0:deltat) deltat+2*windowSize])/(deltat+2*windowSize),[0 particlesmoving_t 0],(0:.01:1),'pchip');
                 Normalized_particles(:,Number_Avalanches) = particlesnormalized;
@@ -137,7 +146,7 @@ for nf = 1:count-1
                 Normalized_energy(:,Numhttps://docs.google.com/spreadsheets/d/1CpWqBXucE-rTpp7dCxFw2Ma0ViIOxMcD5a0AjdgKDUQ/edit#gid=1ber_Avalanches) = energynormalized;
                 
                 potentialnormalized = interp1(([ 0 windowSize+(0:deltat) deltat+2*windowSize])/(deltat+2*windowSize),[0 potential_t 0],(0:.01:1),'pchip');
-                Normalized_potential(:,Number_Avalanches) = potentialnormalized;                
+                Normalized_potential(:,Number_Avalanches) = potentialnormalized;
                 
                 
                 %Fill data with zeros to get power spectrum
@@ -151,18 +160,24 @@ for nf = 1:count-1
                 mat_energy(:,Number_Avalanches) = energy_t;
                 mat_potential(:,Number_Avalanches) = potential_t;
                 
-%                 
-%                 % Fourier transform data
-%                 Fparticlesmoving_t = abs(fft(particlesmoving_t))/(maxT/2);
-%                 Fdisplacement_t = abs(fft(displacement_t))/(maxT/2);
-%                 Fenergy_t = abs(fft(energy_t))/(maxT/2);
-%                 Fpotential_t = abs(fft(potential_t))/(maxT/2);
-%                 %PowerSpectrum
-%                 spectrum_particles(:,Number_Avalanches) = Fparticlesmoving_t(1:maxT/2).^2;
-%                 spectrum_displacement(:,Number_Avalanches) = Fdisplacement_t(1:maxT/2).^2;
-%                 spectrum_energy(:,Number_Avalanches) = Fenergy_t(1:maxT/2).^2;
-%                 spectrum_potential(:,Number_Avalanches) = Fpotential_t(1:maxT/2).^2;
-            
+                %correlations
+                correlation_particles(:,Number_Avalanches) = xcorr(particlesmoving_t);
+                correlation_displacement(:,Number_Avalanches) = xcorr(displacement_t);
+                correlation_energy(:,Number_Avalanches) = xcorr(energy_t);
+                correlation_potential(:,Number_Avalanches) = xcorr(potential_t);
+                
+                %
+                %                 % Fourier transform data
+                %                 Fparticlesmoving_t = abs(fft(particlesmoving_t))/(maxT/2);
+                %                 Fdisplacement_t = abs(fft(displacement_t))/(maxT/2);
+                %                 Fenergy_t = abs(fft(energy_t))/(maxT/2);
+                %                 Fpotential_t = abs(fft(potential_t))/(maxT/2);
+                %                 %PowerSpectrum
+                %                 spectrum_particles(:,Number_Avalanches) = Fparticlesmoving_t(1:maxT/2).^2;
+                %                 spectrum_displacement(:,Number_Avalanches) = Fdisplacement_t(1:maxT/2).^2;
+                %                 spectrum_energy(:,Number_Avalanches) = Fenergy_t(1:maxT/2).^2;
+                %                 spectrum_potential(:,Number_Avalanches) = Fpotential_t(1:maxT/2).^2;
+                
                 %Final-Initial data
                 particlesthatmoved = (((PX(diskmove,t2(na))-PX(diskmove,t1(na))).^2+...
                     (PY(diskmove,t2(na))-PY(diskmove,t1(na))).^2)>1); % More than one pixel
@@ -172,7 +187,7 @@ for nf = 1:count-1
                 
                 Dheight(Number_Avalanches) = sum(((PY(diskmove,t2(na))*calpha+PX(diskmove,t2(na))*salpha)-...
                     (PY(diskmove,t1(na))*calpha+PX(diskmove,t1(na))*salpha)).*particlesthatmoved);
-           
+                
                 
                 NoParticles_moved(Number_Avalanches) = sum(particlesthatmoved);
                 
@@ -210,7 +225,13 @@ Normalized_potential = Normalized_potential(:,1:Number_Avalanches);
 mat_particles = mat_particles(:,1:Number_Avalanches);
 mat_displacement = mat_displacement(:,1:Number_Avalanches);
 mat_energy = mat_energy(:,1:Number_Avalanches);
-mat_potential = mat_potential(:,1:Number_Avalanches); 
+mat_potential = mat_potential(:,1:Number_Avalanches);
+
+%correlations
+correlation_particles = correlation_particles(:,1:Number_Avalanches);
+correlation_displacement = correlation_displacement(:,1:Number_Avalanches);
+correlation_energy = correlation_energy(:,1:Number_Avalanches);
+correlation_potential = correlation_potential(:,1:Number_Avalanches);
 
 % spectrum_particles = spectrum_particles(:,1:Number_Avalanches);
 % spectrum_displacement = spectrum_displacement(:,1:Number_Avalanches);
@@ -233,6 +254,7 @@ save(file_save,'git_version','MaxT','Number_Avalanches','Noavalanches','Avalanch
     'Avalanche_particles','Avalanche_displacement','Avalanche_energy','Avalanche_duration','Avalanche_potential',...
     'Normalized_particles','Normalized_avalanche','Normalized_energy','Normalized_potential',...
     'mat_particles','mat_displacement','mat_energy','mat_potential',...
+    'correlation_particles', 'correlation_displacement', 'correlation_energy', 'correlation_potential',...
     'DELTAR','Dheight','NoParticles_moved','Max_particle_dis',...
     'Initial_Angle','Final_Angle','Rotation_step');
 
@@ -240,6 +262,7 @@ save(file_save,'git_version','MaxT','Number_Avalanches','Noavalanches','Avalanch
 %     'Avalanche_particles','Avalanche_displacement','Avalanche_energy','Avalanche_duration','Avalanche_potential',...
 %     'Normalized_particles','Normalized_avalanche','Normalized_energy','Normalized_potential',...
 %     'mat_particles','mat_displacement','mat_energy','mat_potential',...
+%     'correlation_particles', 'correlation_displacement', 'correlation_energy', 'correlation_potential',...
 %     'spectrum_particles','spectrum_displacement','spectrum_energy','spectrum_potential',...
 %     'DELTAR','Dheight','NoParticles_moved','Max_particle_dis',...
 %     'Initial_Angle','Final_Angle','Rotation_step');
