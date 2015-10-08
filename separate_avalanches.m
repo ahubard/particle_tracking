@@ -1,6 +1,5 @@
-function  order = Nb_over_boundary(folder, En, D, filenb)
-%% Separate the avalanches that touch the end of the rim with the ones that 
-%dont.
+function  Nb_over_boundary = separate_avalanches(folder, En, D, filenb)
+%% Gives the number of particle that hit the boundary in an avalanche. 
 
 %% Get boundary info
 file_for_boundary = sprintf('Avanonestep%i.mat',En);
