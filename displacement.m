@@ -64,15 +64,17 @@ if(exist(fnt,'file'))
     drfil2 = dxfil.^2+dyfil.^2;
     %dr=sqrt(dr);
     totaltr = ((PX(diskmove,numframes)-PX(diskmove,1)).^2+(PY(diskmove,numframes)-PY(diskmove,1)).^2);
-    
     %totdisplacement=sum(to).*particlesthatmoved)taltr);
     participationratio = sum(totaltr.^4)/(sum(totaltr.^2)^2);
-    %% Save results
+    %% Particles that go over the rim
+    Nb_over_boundary = separate_avalanches(filedirectory, En, D, PX,PY);
     
+    
+    %% Save results
     fnn =sprintf('%sDisplacement_%i.mat',filedirectory,count);
     count = count + 1;
     %fnn =sprintf('Displacement_%i.mat',Count);
-    save(fnn,'git_version','windowSize', 'PX','PY','dh','drraw2','drfil2','diskmove','increment','participationratio','folder','En','NEn','initial','final');
+    save(fnn,'git_version','windowSize', 'PX','PY','Nb_over_boundary','dh','drraw2','drfil2','diskmove','increment','participationratio','folder','En','NEn','initial','final');
 else
     save(sprintf('%sWarning_The_file_%s_does_not_exist.mat',filedirectory,filekernel),'count');
     

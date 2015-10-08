@@ -1,8 +1,8 @@
-function  Nb_over_boundary = separate_avalanches(folder, En, D, filenb)
+function  Nb_over_boundary = separate_avalanches(filedirectory, En, D, PX,PY)
 %% Gives the number of particle that hit the boundary in an avalanche. 
-
+% to separate avalanches afected by the boundaries. 
 %% Get boundary info
-file_for_boundary = sprintf('Avanonestep%i.mat',En);
+file_for_boundary = sprintf('%sAvanonestep%i.mat',filedirectory,En);
 %boundary is given by circle of radius R centered at (xo,yo),mk gives size
 %of the image.
 load(file_for_boundary,'mk','R','xo','yo'); 
@@ -12,8 +12,8 @@ ydiff2_max = max((1-yo)^2,(Ly-yo)^2);
 x_boundary_cuttof = xo-sqrt(R^2-ydiff2_max)+D/2;
 
 %% Find drop rim point.
-displacement_file = sprintf('Displacement_%i.mat',filenb);
-load(displacement_file,'PX','PY');
+% displacement_file = sprintf('Displacement_%i.mat',filenb);
+% load(displacement_file,'PX','PY');
 ii_near_boundary = find(PX(:,1)<x_boundary_cuttof);
 r_near_boundary = (PX(ii_near_boundary,1)-xo).^2 + (PY(ii_near_boundary,1)-yo).^2;
 ii_near_boundary = ii_near_boundary(r_near_boundary > (R-.75*D)^2);
