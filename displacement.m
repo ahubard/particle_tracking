@@ -16,7 +16,7 @@
 
 function [count]=displacement(folder,En,NEn,count,initial,final, alpha, git_version)
 [git_version, ~] = evalc('system(''git describe --dirty --alway'')');
-
+D = 10;
 %alpha = 29;  %Angle from the horizontal from experiment.
 salpha = sin(alpha*pi/180);
 calpha = cos(alpha*pi/180);
