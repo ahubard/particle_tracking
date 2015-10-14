@@ -143,7 +143,7 @@ for nf = 1:count-1
                 Normalized_avalanche(:,Number_Avalanches) = avalanchenormalized;
                 
                 energynormalized = interp1(([ 0 windowSize+(0:deltat) deltat+2*windowSize])/(deltat+2*windowSize),[0 energy_t 0],(0:.01:1),'pchip');
-                Normalized_energy(:,Numhttps://docs.google.com/spreadsheets/d/1CpWqBXucE-rTpp7dCxFw2Ma0ViIOxMcD5a0AjdgKDUQ/edit#gid=1ber_Avalanches) = energynormalized;
+                Normalized_energy(:,Number_Avalanches) = energynormalized;
                 
                 potentialnormalized = interp1(([ 0 windowSize+(0:deltat) deltat+2*windowSize])/(deltat+2*windowSize),[0 potential_t 0],(0:.01:1),'pchip');
                 Normalized_potential(:,Number_Avalanches) = potentialnormalized;
