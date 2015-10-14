@@ -1,4 +1,4 @@
-function Number_Avalanches = avalanche_size(folder,En)
+%function Number_Avalanches = avalanche_size(folder,En)
 %% Gather the basic info
 
 avanofile = sprintf('/aline%i/rotdrum%i/o%i/Avanonestep%i.mat',folder,folder,En,En);
@@ -24,10 +24,10 @@ mat_particles = zeros(maxT,4*count);
 mat_energy = zeros(maxT,4*count);
 mat_potential = zeros(maxT,4*count);
 
-correlation_particles = zeros(maxT,4*count);
-correlation_displacement = zeros(maxT,4*count);
-correlation_energy  = zeros(maxT,4*count);
-correlation_potential = zeros(maxT,4*count);
+correlation_particles = zeros(2*maxT-1,4*count);
+correlation_displacement = zeros(2*maxT-1,4*count);
+correlation_energy  = zeros(2*maxT-1,4*count);
+correlation_potential = zeros(2*maxT-1,4*count);
 
 Avalanche_displacement = zeros(1,4*count);
 Avalanche_energy = zeros(1,4*count);
