@@ -40,13 +40,13 @@ Normalized_energy = zeros(101,4*count);
 Normalized_particles = zeros(101,4*count);
 Normalized_potential = zeros(101,4*count);
 
-
+Nb_boundary = zeros(1,count);
 
 % spectrum_displacement = zeros(maxT/2,4*count);
 % spectrum_particles = zeros(maxT/2,4*count);
 % spectrum_energy = zeros(maxT/2,4*count);
 % spectrum_potential = zeros(maxT/2,4*count);
-
+Nb_boundary = zeros(1,count);
 Number_Avalanches = 0;
 Noavalanches = zeros(1,count);
 DELTAR = zeros(1,4*count);
@@ -72,10 +72,10 @@ a = 1;
 for nf = 1:count-1
     fnn =sprintf('/aline%i/rotdrum%i/o%02d/Displacement_%i.mat',folder,folder,En,nf);
     
-    clear('diskmove','dh','drraw2','drfil2','PX','PY','initial','final');
+    clear('diskmove','dh','drraw2','drfil2','PX','PY','initial','final','Nb_over_boundary');
     
     if(exist(fnn,'file'))
-        load(fnn,'diskmove','dh','drfil2','drraw2','PX','PY','initial','final');
+        load(fnn,'diskmove','dh','drfil2','drraw2','PX','PY','initial','final','Nb_over_boundary');
     else
         save(sprintf('Warning. The file: %s does not exist.mat',fnn));
         error('Error, Displacementfile does not exist');
@@ -190,6 +190,7 @@ for nf = 1:count-1
                 
                 
                 NoParticles_moved(Number_Avalanches) = sum(particlesthatmoved);
+                Nb_boundary(Number_Avalanches) = Nb_over_boundary;
                 
                 Max_particle_dis(Number_Avalanches) = max(sqrt((PX(diskmove,t2(na))-PX(diskmove,t1(na))).^2+...
                     (PY(diskmove,t2(na))-PY(diskmove,t1(na))).^2));
@@ -237,7 +238,7 @@ correlation_potential = correlation_potential(:,1:Number_Avalanches);
 % spectrum_displacement = spectrum_displacement(:,1:Number_Avalanches);
 % spectrum_energy = spectrum_energy(:,1:Number_Avalanches);
 % spectrum_potential = spectrum_potential(:,1:Number_Avalanches);
-
+Nb_boundary = Nb_boundary(1:Number_Avalanches);
 DELTAR = DELTAR(1:Number_Avalanches);
 Dheight = Dheight(1:Number_Avalanches);
 NoParticles_moved = NoParticles_moved(1:Number_Avalanches);
@@ -256,7 +257,7 @@ save(file_save,'git_version','MaxT','Number_Avalanches','Noavalanches','Avalanch
     'mat_particles','mat_displacement','mat_energy','mat_potential',...
     'correlation_particles', 'correlation_displacement', 'correlation_energy', 'correlation_potential',...
     'DELTAR','Dheight','NoParticles_moved','Max_particle_dis',...
-    'Initial_Angle','Final_Angle','Rotation_step');
+    'Initial_Angle','Final_Angle','Rotation_step','Nb_boundary');
 
 % save(file_save,'git_version','MaxT','Number_Avalanches','Noavalanches','Avalanche_time', ...
 %     'Avalanche_particles','Avalanche_displacement','Avalanche_energy','Avalanche_duration','Avalanche_potential',...
