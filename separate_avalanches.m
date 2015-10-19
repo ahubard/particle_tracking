@@ -11,7 +11,7 @@ NT = size(PX,2);
 %% Left boundary
 ydiff2_max = max((1-yo)^2,(Ly-yo)^2);
 x_boundary_cuttof = xo-sqrt(R^2-ydiff2_max)+D/2;
-Nb_over_boundary = 0;
+Nb_over_boundary = [0 0];
 %% Find drop rim point.
 % displacement_file = sprintf('Displacement_%i.mat',filenb);
 % load(displacement_file,'PX','PY');
@@ -20,7 +20,7 @@ r_near_boundary = (PX(ii_near_boundary,1)-xo).^2 + (PY(ii_near_boundary,1)-yo).^
 ii_near_boundary = ii_near_boundary(r_near_boundary > (R-.75*D)^2);
 
 if (isempty(ii_near_boundary))
-    Nb_over_boundary = 0;
+    Nb_over_boundary(1) = 0;
 else                                                   
     
     [y_top_layer,  ii_top_layer] = min(PY(ii_near_boundary,1));
@@ -35,7 +35,7 @@ else
     ii_near_boundary = ii_near_boundary(PX(ii_near_boundary) < x_boundary+D);
     go_over_boundary = ((R-D/3)^2- ((PX(ii_near_boundary)-xo).^2 + ...
         (PY(ii_near_boundary)-yo).^2) < 0);
-    Nb_over_boundary = sum(go_over_boundary);
+    Nb_over_boundary(1) = sum(go_over_boundary);
 end
 
 %% Right boundary
@@ -51,7 +51,7 @@ r_near_boundary = (PX(ii_near_boundary,1)-xo).^2 + (PY(ii_near_boundary,1)-yo).^
 ii_near_boundary = ii_near_boundary(r_near_boundary < (R-.75*D)^2);
 
 if (isempty(ii_near_boundary))
-    Nb_over_boundary = Nb_over_boundary + 0;
+    Nb_over_boundary(2) = Nb_over_boundary + 0;
 else                                                   
     
     [y_top_layer,  ii_top_layer] = min(PY(ii_near_boundary,1));
@@ -67,7 +67,7 @@ else
     dr_total_near_boundary = (PX(ii_near_boundary,1)-PX(ii_near_boundary,NT)).^2 + ...
         (PY(ii_near_boundary,1)-PY(ii_near_boundary,NT)).^2;
     go_over_boundary = (dr_total_near_boundary > D);
-    Nb_over_boundary = Nb_over_boundary + sum(go_over_boundary);
+    Nb_over_boundary(2) = Nb_over_boundary(2) + sum(go_over_boundary);
 end
 
 
