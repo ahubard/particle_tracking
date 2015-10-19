@@ -42,7 +42,8 @@ end
 ydiff2_max = max((1-yo)^2,(Ly-yo)^2);
 x_boundary_cuttof = xo+sqrt(R^2-ydiff2_max)-D/2;
 
-%% Find drop rim point.
+
+%% Find top point
 % displacement_file = sprintf('Displacement_%i.mat',filenb);
 % load(displacement_file,'PX','PY');
 ii_near_boundary = find(PX(:,1) > x_boundary_cuttof);
