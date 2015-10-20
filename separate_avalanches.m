@@ -58,7 +58,7 @@ else
     x_top_layer = PX(ii_near_boundary(ii_top_layer),1);
     slope_radial = (y_top_layer-yo)/(x_top_layer-xo);
     slope_boundary = (slope_radial+D/R)/(1-slope_radial*D/R); %tan(D/R)=D/R
-    x_boundary = -xo+sqrt(R^2/(1+slope_boundary^2));
+    x_boundary = xo+sqrt(R^2/(1+slope_boundary^2));
     y_boundary = slope_boundary*(x_boundary-xo)+yo;
    
     %% Check for particles close to this point in the first frame that move after. 
