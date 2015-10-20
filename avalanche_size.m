@@ -40,13 +40,13 @@ Normalized_energy = zeros(101,4*count);
 Normalized_particles = zeros(101,4*count);
 Normalized_potential = zeros(101,4*count);
 
-Nb_boundary = zeros(1,count);
+
 
 % spectrum_displacement = zeros(maxT/2,4*count);
 % spectrum_particles = zeros(maxT/2,4*count);
 % spectrum_energy = zeros(maxT/2,4*count);
 % spectrum_potential = zeros(maxT/2,4*count);
-Nb_boundary = zeros(1,count);
+Nb_boundary = zeros(2,count);
 Number_Avalanches = 0;
 Noavalanches = zeros(1,count);
 DELTAR = zeros(1,4*count);
@@ -190,7 +190,7 @@ for nf = 1:count-1
                 
                 
                 NoParticles_moved(Number_Avalanches) = sum(particlesthatmoved);
-                Nb_boundary(Number_Avalanches) = Nb_over_boundary;
+                Nb_boundary(:,Number_Avalanches) = Nb_over_boundary;
                 
                 Max_particle_dis(Number_Avalanches) = max(sqrt((PX(diskmove,t2(na))-PX(diskmove,t1(na))).^2+...
                     (PY(diskmove,t2(na))-PY(diskmove,t1(na))).^2));
@@ -238,7 +238,7 @@ correlation_potential = correlation_potential(:,1:Number_Avalanches);
 % spectrum_displacement = spectrum_displacement(:,1:Number_Avalanches);
 % spectrum_energy = spectrum_energy(:,1:Number_Avalanches);
 % spectrum_potential = spectrum_potential(:,1:Number_Avalanches);
-Nb_boundary = Nb_boundary(1:Number_Avalanches);
+Nb_boundary = Nb_boundary(:,1:Number_Avalanches);
 DELTAR = DELTAR(1:Number_Avalanches);
 Dheight = Dheight(1:Number_Avalanches);
 NoParticles_moved = NoParticles_moved(1:Number_Avalanches);

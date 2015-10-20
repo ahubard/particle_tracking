@@ -17,7 +17,7 @@ Nb_over_boundary = [0 0];
 % load(displacement_file,'PX','PY');
 ii_near_boundary = find(PX(:,1)<x_boundary_cuttof);
 r_near_boundary = (PX(ii_near_boundary,1)-xo).^2 + (PY(ii_near_boundary,1)-yo).^2;
-ii_near_boundary = ii_near_boundary(r_near_boundary > (R-.75*D)^2);
+ii_near_boundary = ii_near_boundary(r_near_boundary > (R-1*D)^2);
 
 if (isempty(ii_near_boundary))
     Nb_over_boundary(1) = 0;
@@ -48,7 +48,7 @@ x_boundary_cuttof = xo+sqrt(R^2-ydiff2_max)-D/2;
 % load(displacement_file,'PX','PY');
 ii_near_boundary = find(PX(:,1) > x_boundary_cuttof);
 r_near_boundary = (PX(ii_near_boundary,1)-xo).^2 + (PY(ii_near_boundary,1)-yo).^2;
-ii_near_boundary = ii_near_boundary(r_near_boundary < (R-.75*D)^2);
+ii_near_boundary = ii_near_boundary(r_near_boundary > (R-1*D)^2);
 
 if (isempty(ii_near_boundary))
     Nb_over_boundary(2) = Nb_over_boundary + 0;
