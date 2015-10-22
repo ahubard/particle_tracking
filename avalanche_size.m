@@ -121,6 +121,7 @@ for nf = 1:count-1
         for na = 1:length(t1)
             if( sum((findavalanche(t1(na):min(t2(na),length(energy_avalanche))))>=1-eps)) %Check if there is indeed avalanches between t1-t2
                 
+                Number_Avalanches = Number_Avalanches+1;
                 %General data of file
                 Displacement_File_nb(Number_Avalanches) = nf;
                 Participation(Number_Avalanches) = participationratio;
@@ -128,7 +129,7 @@ for nf = 1:count-1
                 Fn_imafile(Number_Avalanches) = final;
                 in_trackedfile(Number_Avalanches) = NEn;                
                 
-                Number_Avalanches = Number_Avalanches+1;
+               
                 Rotation_step(:,Number_Avalanches) = avan(2,[initial; final]);
                
 
