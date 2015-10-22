@@ -5,7 +5,7 @@ avanofile = sprintf('/aline%i/rotdrum%i/o%i/Avanonestep%i.mat',folder,folder,En,
 %avanofile = sprintf('Avanonestep%i.mat',En);
 
 if (exist(avanofile,'file'))
-    load (avanofile,'count','avan','alpha','maxT');
+    load (avanofile,'count','avan','alpha','maxT','R','xo','yo');
 else
     save(sprintf('AWarning. The file: %s does not exist.mat',avanofile));
     error('Error, avanofile does not exist');
