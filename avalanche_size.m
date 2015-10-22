@@ -57,6 +57,13 @@ Initial_Angle = zeros(1,4*count);
 Final_Angle = zeros(1,4*count);
 Rotation_step = zeros(2,4*count);
 Avalanche_time = cell(2,count);
+
+%% Pass of the information from displacement files for later analizys
+Participation = zeros(1,count);
+In_imafile = zeros(1,count);
+Fn_imafile = zeros(1,count);
+in_trackedfile = zeros(1,count);
+Displacement_File_nb = zeros(1,count);
 %% Cutoff values
 
 cutoffperparticle = 0.01;    %If drfil (filtered particle displacement) is smaller
@@ -72,10 +79,10 @@ a = 1;
 for nf = 1:count-1
     fnn =sprintf('/aline%i/rotdrum%i/o%02d/Displacement_%i.mat',folder,folder,En,nf);
     
-    clear('diskmove','dh','drraw2','drfil2','PX','PY','initial','final','Nb_over_boundary');
-    
+    clear('windowSize', 'PX','PY','Nb_over_boundary','dh','drraw2','drfil2','diskmove','increment','participationratio','NEn','initial','final');
+  
     if(exist(fnn,'file'))
-        load(fnn,'diskmove','dh','drfil2','drraw2','PX','PY','initial','final','Nb_over_boundary');
+        load(fnn,'windowSize', 'PX','PY','Nb_over_boundary','dh','drraw2','drfil2','diskmove','increment','participationratio','NEn','initial','final');
     else
         save(sprintf('Warning. The file: %s does not exist.mat',fnn));
         error('Error, Displacementfile does not exist');
@@ -114,9 +121,17 @@ for nf = 1:count-1
         for na = 1:length(t1)
             if( sum((findavalanche(t1(na):min(t2(na),length(energy_avalanche))))>=1-eps)) %Check if there is indeed avalanches between t1-t2
                 
+                %General data of file
+                Displacement_File_nb(Number_Avalanches) = nf;
+                Participation(Number_Avalanches) = participationratio;
+                In_imafile(Number_Avalanches) = initial;
+                Fn_imafile(Number_Avalanches) = final;
+                in_trackedfile(Number_Avalanches) = NEn;                
                 
                 Number_Avalanches = Number_Avalanches+1;
                 Rotation_step(:,Number_Avalanches) = avan(2,[initial; final]);
+               
+
                 
                 %get the relevantdata
                 particlesmoving_t = particles(t1(na):t2(na));
@@ -247,6 +262,12 @@ Initial_Angle = Initial_Angle(1:Number_Avalanches);
 Final_Angle = Final_Angle(1:Number_Avalanches);
 Rotation_step=Rotation_step(:,1:Number_Avalanches);
 
+
+Displacement_File_nb = Displacement_File_nb(1:Number_Avalanches);
+Participation = Participation(1:Number_Avalanches);
+In_imafile = In_imafile(1:Number_Avalanches);
+Fn_imafile = Fn_imafile(1:Number_Avalanches);
+in_trackedfile = in_trackedfile(1:Number_Avalanches);
 %% Save results to file
 file_save =sprintf('/aline%i/rotdrum%i/o%02d/Avalanches_%i.mat',folder,folder,En,En);
 
@@ -257,7 +278,8 @@ save(file_save,'git_version','maxT','Number_Avalanches','Noavalanches','Avalanch
     'mat_particles','mat_displacement','mat_energy','mat_potential',...
     'correlation_particles', 'correlation_displacement', 'correlation_energy', 'correlation_potential',...
     'DELTAR','Dheight','NoParticles_moved','Max_particle_dis',...
-    'Initial_Angle','Final_Angle','Rotation_step','Nb_boundary');
+    'Initial_Angle','Final_Angle','Rotation_step','Nb_boundary',...
+    'Displacement_File_nb', 'Participation', 'In_imafile','Fn_imafile','in_trackedfile'); 
 
 % save(file_save,'git_version','MaxT','Number_Avalanches','Noavalanches','Avalanche_time', ...
 %     'Avalanche_particles','Avalanche_displacement','Avalanche_energy','Avalanche_duration','Avalanche_potential',...
