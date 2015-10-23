@@ -40,7 +40,8 @@ Normalized_energy = zeros(101,4*count);
 Normalized_particles = zeros(101,4*count);
 Normalized_potential = zeros(101,4*count);
 
-diff_Center_mass = zeros(ceil(2*R/D),count);
+Nb_bins = ceil(2*R/D);
+diff_Center_mass = zeros(Nb_bins,count);
 
 % spectrum_displacement = zeros(maxT/2,4*count);
 % spectrum_particles = zeros(maxT/2,4*count);
@@ -211,11 +212,15 @@ for nf = 1:count-1
                 Max_particle_dis(Number_Avalanches) = max(sqrt((PX(diskmove,t2(na))-PX(diskmove,t1(na))).^2+...
                     (PY(diskmove,t2(na))-PY(diskmove,t1(na))).^2));
                 
-                [theta, ~, xy_mass, ii_surface, bindex] = estimate_angle(PX(:,t1(na)),PY(:,t1(na)),D,yo,1);
-                Initial_Angle(Number_Avalanches) =  theta;
-                Final_Angle(Number_Avalanches) =  estimate_angle(PX(:,t2(na)),PY(:,t2(na)),D,yo,0);
-                diff_Center_mass(1:length(bindex)-1,Number_Avalanches) = compare_C_Mass(PX(ii_surface,t2(na)),PY(ii_surface,t2(na)),xy_mass);
+                [thetai, ~, xy_massi, ii_surfacei, bindexi] = estimate_angle(PX(:,t1(na)),PY(:,t1(na)),D,yo,Nb_bins, 1);
+                Initial_Angle(Number_Avalanches) =  thetai;
+                [thetaf, ~, xy_massf, ii_surfacef, bindexf] = estimate_angle(PX(:,t2(na)),PY(:,t2(na)),D,yo,Nb_bins,1);
+                Final_Angle(Number_Avalanches) = thetaf;
+                aux_i = compare_C_Mass(PX(ii_surfacei,t2(na)),PY(ii_surfacei,t2(na)),bindexi,xy_massi,Nb_bins);
+                aux_f = compare_C_Mass(PX(ii_surfacef,t2(na)),PY(ii_surfacef,t2(na)),bindexf,xy_massf,Nb_bins);
+                diff_Center_mass(:,Number_Avalanches) = aux_i+aux_f;
             end
+            
             
         end
         Avalanche_time{1,nf} = t1;
@@ -280,7 +285,7 @@ save(file_save,'git_version','maxT','Number_Avalanches','Noavalanches','Avalanch
     'mat_particles','mat_displacement','mat_energy','mat_potential',...
     'correlation_particles', 'correlation_displacement', 'correlation_energy', 'correlation_potential',...
     'DELTAR','Dheight','NoParticles_moved','Max_particle_dis',...
-    'Initial_Angle','Final_Angle','Rotation_step','Nb_boundary','diff_Center_mass'...
+    'Initial_Angle','Final_Angle','Rotation_step','Nb_boundary','diff_Center_mass',...
     'Displacement_File_nb', 'Participation', 'In_imafile','Fn_imafile','in_trackedfile'); 
 
 % save(file_save,'git_version','MaxT','Number_Avalanches','Noavalanches','Avalanche_time', ...

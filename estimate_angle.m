@@ -1,4 +1,4 @@
-function [theta, slope, xy_mass, ii_surface, bindex] = estimate_angle(PX,PY,D,yo,giveCM,NT)
+function [theta, slope, xy_mass, ii_surface, bindex] = estimate_angle(PX,PY,D,yo,Nb_bins,giveCM,NT)
 
 %Finds angle of surface of the pile. giveCM = 0 returns only the angle
 % giveCM = 1; Finds the center of mass on each bin in the surface for t -1;
@@ -45,7 +45,7 @@ for t = 1:NT
     if((giveCM > 0) && (t ==1))
         ii_surface = ii_surface(ix);
         %Center of mass bin
-        xy_mass = zeros(2,length(bindex)-1);
+        xy_mass = zeros(2,Nb_bins);
     end
     
     for bin = 1:length(bindex)-1;

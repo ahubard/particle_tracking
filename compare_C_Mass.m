@@ -1,4 +1,4 @@
-function [ d_mass] = compare_C_Mass(x,y,bindex,xy_mass)
+function [ d_mass] = compare_C_Mass(x,y,bindex,xy_mass,Nb_bins)
 
 %Finds angle of surface of the pile. giveCM = 0 returns only the angle
 % giveCM = 1; Finds the center of mass on each bin in the surface for t -1;
@@ -10,7 +10,7 @@ function [ d_mass] = compare_C_Mass(x,y,bindex,xy_mass)
 
 
 
- d_mass = zeros(2,length(bindex)-1);
+ d_mass = zeros(2,Nb_bins);
     for bin = 1:length(bindex)-1;
       
             total_m = length(bindex(bin)+1:bindex(bin+1));
