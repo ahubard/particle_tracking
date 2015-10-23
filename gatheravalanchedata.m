@@ -35,6 +35,7 @@ shape_Length_path =[];
 shape_Energy = [];
 shape_Potential = [];
 
+Surface_change = [];
 % Power_spectrum_Particles = [];
 % Power_spectrum_Length_path = [];
 % Power_spectrum_Energy = [];
@@ -62,7 +63,8 @@ for nf = 1:Nofiles
         'mat_particles','mat_displacement','mat_energy','mat_potential',...
         'correlation_particles', 'correlation_displacement', 'correlation_energy', 'correlation_potential',...
         'DELTAR','Dheight','NoParticles_moved','Max_particle_dis',...
-        'Initial_Angle','Final_Angle','Rotation_step','Nb_boundary');
+        'Initial_Angle','Final_Angle','Rotation_step','Nb_boundary','diff_Center_mass',...
+    'Displacement_File_nb', 'Participation', 'In_imafile','Fn_imafile','in_trackedfile');
     %'spectrum_particles','spectrum_displacement','spectrum_energy','spectrum_potential',...
     
     
@@ -72,8 +74,11 @@ for nf = 1:Nofiles
         'mat_particles','mat_displacement','mat_energy','mat_potential',...
         'correlation_particles', 'correlation_displacement', 'correlation_energy', 'correlation_potential',...
         'DELTAR','Dheight','NoParticles_moved','Max_particle_dis',...
-        'Initial_Angle','Final_Angle','Rotation_step','Nb_boundary');
+        'Initial_Angle','Final_Angle','Rotation_step','Nb_boundary','diff_Center_mass',...
+    'Displacement_File_nb', 'Participation', 'In_imafile','Fn_imafile','in_trackedfile');
     %'spectrum_particles','spectrum_displacement','spectrum_energy','spectrum_potential',...
+    
+    diff_Center_mass(117:124,:) =0;
     
     ii = 2:Number_Avalanches;
 
@@ -89,7 +94,7 @@ for nf = 1:Nofiles
     Size_Energy = [Size_Energy Avalanche_energy(ii)];
     Size_Potential = [Size_Potential Avalanche_potential(ii)];
     
-    
+    Surface_change = [Surface_change diff_Center_mass(:,ii)];
     
     shape_Particles = [shape_Particles Normalized_particles(:,ii)];
     shape_Length_path = [shape_Length_path Normalized_avalanche(:,ii)];
@@ -127,7 +132,9 @@ end
  ii_internal_left = find(Particles_Over_the_boundary(1,:) <= 0);
  ii_internal_right = find(Particles_Over_the_boundary(2,:) <= 1);
  ii_none_boundary = find(((Particles_Over_the_boundary(1,:) <= 0).*(Particles_Over_the_boundary(2,:) <= 1)));
-Delta_theta = Itheta-Ftheta;
+ ii_whole = find(sum(Surface_change>1)>100);
+ ii_non_spaning = find(sum(Surface_change>1)<100);
+ Delta_theta = Itheta-Ftheta;
 ii = find(dSteps>-1);
 T = T/fps;
 % Size_Length_path = Size_Length_path/D;
