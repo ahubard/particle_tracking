@@ -1,48 +1,61 @@
-function [theta, slope]= estimate_angle(PX,PY,D, NT,R,xo,yo)
+function [theta, slope, xy_mass, ii_surface, bindex] = estimate_angle(PX,PY,D,yo,giveCM,NT)
+
+%Finds angle of surface of the pile. giveCM = 0 returns only the angle
+% giveCM = 1; Finds the center of mass on each bin in the surface for t -1;
+
+
 
 binsize = D;
 
 Ly =400;
 if(~exist('NT','var'))
- NT = size(PX,2);
+    NT = size(PX,2);
 end
 theta = zeros(1,NT); 
 slope = zeros(2,NT);
 
 
 
+        
+
 for t = 1:NT
+    
+    
     x = PX(:,t);
     y = PY(:,t);
     
     %Find y boundaries for surface of the pile
     y_top = min(y);
-    y_bottom = yo + max(2.5*D,yo-y_top);
+    y_bottom = yo + max(4*D,yo-y_top);
     
     ii_surface = find(y < y_bottom);
     x = x(ii_surface);
     y = y(ii_surface);
     
     % put data in bins
-    [x, ix] = sort(ceil(x/binsize));
-    bindex = [0 ;find(diff(x)>0)];
+    [xbin, ix] = sort(ceil(x/binsize));
+    bindex = [0 ;find(diff(xbin)>0)];
     y = y(ix);
-    ii_surface = ii_surface(ix);
+    x = x(ix);
     
     % Angle variable
     yangle = zeros(1,length(bindex)-1);
     xangle = yangle;
     
-    %Center of mass bin
-    x_mass = zeros(1,length(bindex)-1);
-    y_mass = zeros(1,length(bindex)-1);
+    if((giveCM > 0) && (t ==1))
+        ii_surface = ii_surface(ix);
+        %Center of mass bin
+        xy_mass = zeros(2,length(bindex)-1);
+    end
     
     for bin = 1:length(bindex)-1;
         yangle(bin) = min(y(bindex(bin)+1:bindex(bin+1)));
         xangle(bin) = binsize*bin;
-        total_m = length(bindex(bin)+1:bindex(bin+1));
-        x_mass(bin) = sum(x(bindex(bin)+1:bindex(bin+1)))/total_m;
-        y_mass(bin) = sum(y(bindex(bin)+1:bindex(bin+1)))/total_m;    
+        if ((giveCM > 0) && (t ==1))
+            total_m = length(bindex(bin)+1:bindex(bin+1));
+            xy_mass(1,bin) = sum(x(bindex(bin)+1:bindex(bin+1)))/total_m;
+            xy_mass(2,bin) = sum(y(bindex(bin)+1:bindex(bin+1)))/total_m;    
+        end
     end
     
     top_layer = find(yangle>0);
