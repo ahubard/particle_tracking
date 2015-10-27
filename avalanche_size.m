@@ -40,7 +40,7 @@ Normalized_energy = zeros(101,4*count);
 Normalized_particles = zeros(101,4*count);
 Normalized_potential = zeros(101,4*count);
 
-Nb_bins = ceil(2*R/D);
+Nb_bins = ceil(2*R/(D));
 diff_Center_mass = zeros(Nb_bins,count);
 
 % spectrum_displacement = zeros(maxT/2,4*count);
