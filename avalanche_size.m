@@ -15,7 +15,7 @@ end
 
 salpha = sin(alpha*pi/180);
 calpha = cos(alpha*pi/180);
-
+Num_particles_visisible = 2800;
 D =10;
 %% Initialize variables.
 
@@ -53,7 +53,7 @@ Total_Potential_Energy = cell(1,count);
 Nb_boundary = zeros(2,count);
 Number_Avalanches = 0;
 Noavalanches = zeros(1,count);
-Num_Particles = zeros(1,count);
+
 DELTAR = zeros(1,4*count);
 Dheight = zeros(1,4*count);
 NoParticles_moved = zeros(1,4*count);
@@ -121,8 +121,13 @@ for nf = 1:count-1
         if(t2(end)<=t1(end))%In case avalanche finish at the last frame of the file.
             t2 = [t2 length(energy_avalanche)];
         end
+        
         nb_avalanches = length(t1);
         ii_time = zeros(1,nb_avalanches);
+        
+        [~, ii_particles_for_potential] = sort(PY(:,1));
+        ii_particles_for_potential = ii_particles_for_potential(1:Num_particles_visisible);
+            
         
         for na = 1:nb_avalanches
             if( sum((findavalanche(t1(na):min(t2(na),length(energy_avalanche))))>=1-eps)) %Check if there is indeed avalanches between t1-t2
@@ -225,13 +230,14 @@ for nf = 1:count-1
                 Final_Angle(Number_Avalanches) = thetaf;
                 dummy_aux1 = zeros(Nb_bins, deltat+1);
                 dummy_aux2 = zeros(1,deltat+1);
+                
                 for t = t1(na):t2(na)
                     dummy_aux1(:,t-t1(na)+1) = compare_C_Mass(PX(ii_surfacei,t),PY(ii_surfacei,t),bindexi,xy_massi,Nb_bins);    
-                    dummy_aux2(t-t1(na)+1) = sum(PY(:,t)*calpha + PX(:,t)*salpha);
+                    dummy_aux2(t-t1(na)+1) = sum(PY(ii_particles_for_potential ,t)*calpha + PX(ii_particles_for_potential ,t)*salpha);
                 end
+                
                 diff_CMass_t{Number_Avalanches} = dummy_aux1;
                 Total_Potential_Energy{Number_Avalanches} = dummy_aux2;
-                Num_Particles(Number_Avalanches) = size(PY,1);
                 aux_i = dummy_aux1(:,deltat+1);
                 aux_f = compare_C_Mass(PX(ii_surfacef,t2(na)),PY(ii_surfacef,t2(na)),bindexf,xy_massf,Nb_bins);
                 diff_Center_mass(:,Number_Avalanches) = aux_i+aux_f';
@@ -274,7 +280,7 @@ diff_Center_mass = diff_Center_mass(:,1:Number_Avalanches);
 diff_CMass_t = diff_CMass_t(1,1:Number_Avalanches);
 
 Total_Potential_Energy = Total_Potential_Energy(1:Number_Avalanches);
-Num_Particles = Num_Particles(1:Number_Avalanches);
+
 % spectrum_particles = spectrum_particles(:,1:Number_Avalanches);
 % spectrum_displacement = spectrum_displacement(:,1:Number_Avalanches);
 % spectrum_energy = spectrum_energy(:,1:Number_Avalanches);
@@ -318,4 +324,4 @@ save(file_save,'git_version','maxT','Number_Avalanches','Noavalanches','Avalanch
 %     'Initial_Angle','Final_Angle','Rotation_step');
 
 save(file_CM,'git_version','diff_CMass_t','Avalanche_time','Displacement_File_nb');
-save(file_Potential,'git_version','Total_Potential_Energy','Num_Particles','thetai','thetaf','Rotation_step');
+save(file_Potential,'git_version','Total_Potential_Energy','Initial_Angle','Final_Angle','Rotation_step');
