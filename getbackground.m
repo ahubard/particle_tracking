@@ -12,11 +12,16 @@ else
     fn=sprintf('/aline%i/rotdrum%i/o%02d/onestep%02d%05d.mat',folder,folder,En,En,ni);
 end
 
+
+%% Check if it already found the background of file fn
+gotbackground = whos(matfile(fn),'bk1','bk2');
+
+if (~isempty(gotbackground)) % already got bk1 and bk2
+    norm_coef = 0;
+else
+    
 load(fn,'IMA');
 bgfile = sprintf('/aline%i/rotdrum%i/o%i/back%i.mat',folder,folder,En,En);
-
-
-
 
 %% Define variables
 D = 10;
