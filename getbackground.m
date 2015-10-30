@@ -16,8 +16,10 @@ end
 %% Check if it already found the background of file fn
 gotbackground = whos(matfile(fn),'bk1','bk2');
 
-if (~isempty(gotbackground)) % already got bk1 and bk2
-    norm_coef = 0;
+if (length(gotbackground)>=order) % already got bk1 and bk2
+    
+        norm_coef = 0;
+    
 else
     
 load(fn,'IMA');
