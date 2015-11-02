@@ -8,7 +8,7 @@ D = 10;
 alpha = 29;
 g = 9.8;
 d = 12e-3;
-
+Num_particles_visisible = 2800;
 %% Create variables
 Totalavalanches = 0;
 filenumber = [];
@@ -49,7 +49,7 @@ Maximal_particle_displacement = [];
 Total_Height_change = [];
 Particles_Over_the_boundary = [];
 
-
+TRACK_FILE = [];
 
 
 
@@ -82,7 +82,7 @@ for nf = 1:Nofiles
     
     ii = 2:Number_Avalanches;
 
-    
+    TRACK_FILE = [TRACK_FILE in_trackedfile];
     Particles_Over_the_boundary = [Particles_Over_the_boundary Nb_boundary(:,ii)];
     Totalavalanches = Totalavalanches + Number_Avalanches-1;
     filenumber = [filenumber nf*ones(1,Number_Avalanches-1)];
@@ -133,7 +133,7 @@ end
  ii_internal_right = find(Particles_Over_the_boundary(2,:) <= 1);
  ii_none_boundary = find(((Particles_Over_the_boundary(1,:) <= 0).*(Particles_Over_the_boundary(2,:) <= 1)));
  ii_whole = find(sum(Surface_change>1)>100);
- ii_non_spaning = find(sum(Surface_change>1)<100);
+ ii_non_spaning = find(sum(Surface_change>1)<=100);
  Delta_theta = Itheta-Ftheta;
 ii = find(dSteps>-1);
 T = T/fps;
