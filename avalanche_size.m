@@ -56,6 +56,7 @@ Noavalanches = zeros(1,count);
 
 DELTAR = zeros(1,4*count);
 Dheight = zeros(1,4*count);
+DLength = zeros(1,4*count);
 NoParticles_moved = zeros(1,4*count);
 Max_particle_dis = zeros(1,4*count);
 Initial_Angle = zeros(1,4*count);
@@ -216,6 +217,8 @@ for nf = 1:count-1
                 
                 Dheight(Number_Avalanches) = sum(((PY(diskmove,t2(na))*calpha+PX(diskmove,t2(na))*salpha)-...
                     (PY(diskmove,t1(na))*calpha+PX(diskmove,t1(na))*salpha)).*particlesthatmoved);
+                DLength(Number_Avalanches) = sum(((-PY(diskmove,t2(na))*salpha+PX(diskmove,t2(na))*calpha)-...
+                    (-PY(diskmove,t1(na))*salpha+PX(diskmove,t1(na))*calpha)).*particlesthatmoved);
                 
                 
                 NoParticles_moved(Number_Avalanches) = sum(particlesthatmoved);
@@ -288,6 +291,7 @@ Total_Potential_Energy = Total_Potential_Energy(1:Number_Avalanches);
 Nb_boundary = Nb_boundary(:,1:Number_Avalanches);
 DELTAR = DELTAR(1:Number_Avalanches);
 Dheight = Dheight(1:Number_Avalanches);
+DLength = DLength(1:Number_Avalanches);
 NoParticles_moved = NoParticles_moved(1:Number_Avalanches);
 Max_particle_dis = Max_particle_dis(1:Number_Avalanches);
 Initial_Angle = Initial_Angle(1:Number_Avalanches);
@@ -310,7 +314,7 @@ save(file_save,'git_version','maxT','Number_Avalanches','Noavalanches','Avalanch
     'Normalized_particles','Normalized_avalanche','Normalized_energy','Normalized_potential',...
     'mat_particles','mat_displacement','mat_energy','mat_potential',...
     'correlation_particles', 'correlation_displacement', 'correlation_energy', 'correlation_potential',...
-    'DELTAR','Dheight','NoParticles_moved','Max_particle_dis',...
+    'DELTAR','Dheight','DLength','NoParticles_moved','Max_particle_dis',...
     'Initial_Angle','Final_Angle','Rotation_step','Nb_boundary','diff_Center_mass',...
     'Displacement_File_nb', 'Participation', 'In_imafile','Fn_imafile','in_trackedfile'); 
 
@@ -324,4 +328,4 @@ save(file_save,'git_version','maxT','Number_Avalanches','Noavalanches','Avalanch
 %     'Initial_Angle','Final_Angle','Rotation_step');
 
 save(file_CM,'git_version','diff_CMass_t','Avalanche_time','Displacement_File_nb');
-save(file_Potential,'git_version','Total_Potential_Energy','Initial_Angle','Final_Angle','Rotation_step');
+save(file_Potential,'git_version','Total_Potential_Energy','Initial_Angle','Final_Angle','Rotation_step','Dheight','DLength');
