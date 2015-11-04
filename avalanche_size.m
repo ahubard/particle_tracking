@@ -20,7 +20,7 @@ D =10;
 Ly = 400;
 yo = Ly-yo;
 yo_data = yo; 
-save(avanofile,'yo_data','--apend');
+save(avanofile,'yo_data','-append');
 %% Initialize variables.
 
 

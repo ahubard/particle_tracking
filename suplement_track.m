@@ -1,4 +1,4 @@
-%function suplement_track(folder,En)
+function suplement_track(folder,En)
 
 sprintf('If you wanna complete the tracking of  folder %i and experiment series %i again press enter, otherwise cancel',folder,En)
 pause()
@@ -36,8 +36,7 @@ end
 numtrack = find(try_again);
 sprintf('I need to reconect %i files',length(numtrack))
 %% Launch mytrack to conect particle positions.
-%for ij = 1:length(numtrack)
-for ij = 1:10
+for ij = 1:length(numtrack)
     ii = numtrack(ij);
    jj(schedulerindex)=batch(sched,'mytrack',1,{folder,En,ii,initialfileindex(ii),finalfileindex(ii),D,mk},'Filedependencies',{'stickfiles.m','adjacent.m','assignmentoptimal.m'});
    schedulerindex = schedulerindex+1; 
