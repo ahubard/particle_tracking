@@ -7,8 +7,8 @@ function  nfiles = mytrack(folder,En,NEn,initial,final,D,mk)
 
 [git_version, ~] = evalc('system(''git describe --dirty --alway'')');
 [px,py,NPF,initial] = stickfiles(folder,En,initial,final,D);
-% maskfile = sprintf('/aline%i/rotdrum%i/o%i/mask%i.mat',folder,folder,En,En);
-% load(maskfile,'mk');
+ maskfile = sprintf('/aline%i/rotdrum%i/o%i/mask%i.mat',folder,folder,En,En);
+ load(maskfile,'mk');
 nfiles = final-initial+1;
 
 if (nfiles)

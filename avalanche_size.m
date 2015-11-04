@@ -15,8 +15,12 @@ end
 
 salpha = sin(alpha*pi/180);
 calpha = cos(alpha*pi/180);
-Num_particles_visisible = 2800;
+Num_particles_visisible = 2100;
 D =10;
+Ly = 400;
+yo = Ly-yo;
+yo_data = yo; 
+save(avanofile,'yo_data','--apend');
 %% Initialize variables.
 
 
@@ -296,7 +300,7 @@ NoParticles_moved = NoParticles_moved(1:Number_Avalanches);
 Max_particle_dis = Max_particle_dis(1:Number_Avalanches);
 Initial_Angle = Initial_Angle(1:Number_Avalanches);
 Final_Angle = Final_Angle(1:Number_Avalanches);
-Rotation_step=Rotation_step(:,1:Number_Avalanches);
+Rotation_step = Rotation_step(:,1:Number_Avalanches);
 
 
 Displacement_File_nb = Displacement_File_nb(1:Number_Avalanches);

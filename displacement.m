@@ -17,6 +17,7 @@
 function [count]=displacement(folder,En,NEn,count,initial,final, alpha, git_version)
 [git_version, ~] = evalc('system(''git describe --dirty --alway'')');
 D = 10;
+Ly = 400; %height of image. 
 %alpha = 29;  %Angle from the horizontal from experiment.
 salpha = sin(alpha*pi/180);
 calpha = cos(alpha*pi/180);
@@ -40,7 +41,7 @@ if(exist(fnt,'file'))
     ilastframe=(PX(:,numframes)>0);                  %On last frame
     iframe=find((ilastframe.*iframe1)==1);           %Particles that didnt dissapear in the tracking
     PX = PX(iframe,:);
-    PY = PY(iframe,:);
+    PY = Ly - PY(iframe,:); %MIrror the image to get the regular (x,y) axis. 
     %% Get running average position of the particles.
     windowSize = 5;
     b = (1/windowSize)*ones(1,windowSize);

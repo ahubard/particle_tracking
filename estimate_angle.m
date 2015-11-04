@@ -25,10 +25,10 @@ for t = 1:NT
     y = PY(:,t);
     
     %Find y boundaries for surface of the pile
-    y_top = min(y);
-    y_bottom = yo + max(4*D,yo-y_top);
+    y_top = max(y);
+    y_bottom = yo - max(4*D,yo-y_top);
     
-    ii_surface = find(y < y_bottom);
+    ii_surface = find(y > y_bottom);
     x = x(ii_surface);
     y = y(ii_surface);
     
@@ -49,7 +49,7 @@ for t = 1:NT
     end
     
     for bin = 1:length(bindex)-1;
-        yangle(bin) = min(y(bindex(bin)+1:bindex(bin+1)));
+        yangle(bin) = max(y(bindex(bin)+1:bindex(bin+1)));
         xangle(bin) = binsize*bin;
         if ((giveCM > 0) && (t ==1))
             total_m = length(bindex(bin)+1:bindex(bin+1));
@@ -60,7 +60,7 @@ for t = 1:NT
     
     top_layer = find(yangle>0);
     xangle = xangle(top_layer);
-    yangle = Ly - yangle(top_layer);
+    yangle =yangle(top_layer);
     
     slope(:,t) = polyfit(xangle,yangle,1);
     theta(t) = atan(slope(1,t))*180/pi;
