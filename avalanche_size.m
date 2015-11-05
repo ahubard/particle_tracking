@@ -68,7 +68,8 @@ Final_Angle = zeros(1,4*count);
 Rotation_step = zeros(2,4*count);
 Avalanche_time = cell(2,count);
 
-%% Pass of the information from displacement files for later analizys
+%% Pass of the information from displacement files for later analisys
+Nb_Tracked = zeros(1,count);
 Participation = zeros(1,count);
 In_imafile = zeros(1,count);
 Fn_imafile = zeros(1,count);
@@ -141,6 +142,7 @@ for nf = 1:count-1
                 
                 Number_Avalanches = Number_Avalanches+1;
                 %General data of file
+                Nb_Tracked(Number_Avalanches) = size(PX,1);
                 Displacement_File_nb(Number_Avalanches) = nf;
                 Participation(Number_Avalanches) = participationratio;
                 In_imafile(Number_Avalanches) = initial;
@@ -302,7 +304,7 @@ Initial_Angle = Initial_Angle(1:Number_Avalanches);
 Final_Angle = Final_Angle(1:Number_Avalanches);
 Rotation_step = Rotation_step(:,1:Number_Avalanches);
 
-
+Nb_Tracked = Nb_Tracked(1:Number_Avalanches)
 Displacement_File_nb = Displacement_File_nb(1:Number_Avalanches);
 Participation = Participation(1:Number_Avalanches);
 In_imafile = In_imafile(1:Number_Avalanches);
@@ -332,4 +334,4 @@ save(file_save,'git_version','maxT','Number_Avalanches','Noavalanches','Avalanch
 %     'Initial_Angle','Final_Angle','Rotation_step');
 
 save(file_CM,'git_version','diff_CMass_t','Avalanche_time','Displacement_File_nb');
-save(file_Potential,'git_version','Total_Potential_Energy','Initial_Angle','Final_Angle','Rotation_step','Dheight','DLength');
+save(file_Potential,'git_version','Total_Potential_Energy','Initial_Angle','Final_Angle','Rotation_step','Dheight','DLength','Nb_Tracked');

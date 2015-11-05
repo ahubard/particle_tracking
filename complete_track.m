@@ -103,7 +103,7 @@ for ii = (-32:-1)+schedulerindex
 end
 
 sprintf ('Done finding centers')
-% Actualize navfile and separate constinuos files in bunches
+% Actualize navfile and separate continuos files in bunches
 for ii = 1:Nbfiles
    ni = navfile(ii);
    fna = (sprintf('/aline%i/rotdrum%i/o%02d/no_avalanche_in_this_file%02d_%05d.mat',folder,folder,En,En,ni));

@@ -16,7 +16,7 @@ nfiles = final-initial+1;
 
 if (nfiles)
     
-    t0=1;
+    t0 = 1;
     NY = size(mk,1);
     maxy = NY-2*D;
     maxdisptrivial = D/2;  %smaller than particle diameter
