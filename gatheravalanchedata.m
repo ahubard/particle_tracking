@@ -15,6 +15,8 @@ filenumber = [];
 dSteps = [];
 T = [];
 
+Y_CM = [];
+
 Particles_t = [];
 Length_path_t = [];
 Energy_t = [];
@@ -77,6 +79,9 @@ for nf = 1:Nofiles
         'Initial_Angle','Final_Angle','Rotation_step','Nb_boundary','diff_Center_mass',...
     'Displacement_File_nb', 'Participation', 'In_imafile','Fn_imafile','in_trackedfile');
     %'spectrum_particles','spectrum_displacement','spectrum_energy','spectrum_potential',...
+    
+    
+    
     
     diff_Center_mass(117:124,:) =0;
     
