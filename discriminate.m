@@ -1,6 +1,6 @@
 %function [keep] = discriminate(folder,En,ni,D,w,Cutoff,MinSep)
 
-function [keep,maxdifp,participationratio,Num_p, IMA,mk,bk1,bk2,info] = discriminate(folder,En,ni,D,w,Cutoff,MinSep)
+function [keep, IMA,mk,bk1,bk2,info,maxdifp,participationratio,Num_p, standardev] = discriminate(folder,En,ni,D,w,Cutoff,MinSep)
 %% Reads file in folder"aline<folder>/rotdrum<folder>/o<En>/onestep<En>_<ni>...
 %and checks if there is an avalanche in it. Using that D is the diameter of
 %ideal particle,and w the ideal particle width of the brightness. 
@@ -14,7 +14,7 @@ function [keep,maxdifp,participationratio,Num_p, IMA,mk,bk1,bk2,info] = discrimi
 %% Cutoff to decide if there is an avalanche. 
 cutoffpr = 8e-4;
 cutoffdiff = 10;
-
+cutoffstd = 6;
 %% Check if files exist and load them 
 bgfile = sprintf('/aline2/rotdrum2/o105/back105.mat');
 load(bgfile,'bk1','bk2');
@@ -72,9 +72,7 @@ bbg2 =bbg;
 load(fno,'IMA');
 
 
-info.Nx = size(IMA,2);
-info.Ny = size(IMA,1);
-info.Numframe = size(IMA,3);
+info = struct('Nx',size(IMA,2),'Ny',size(IMA,1),'Numframe',size(IMA,3));
 
 %% Find particles positions of first image
 
@@ -163,7 +161,8 @@ end
 
 maxdifp = max(difp);
 participationratio =  sum(difp.^4)/(sum(difp.^2)).^2;
-
-keep = ((maxdifp > cutoffdiff)+(participationratio > cutoffpr)) ;
+standardev = std(reshape(sim-simo,1,[]));
+keep = ((maxdifp > cutoffdiff) + (participationratio > cutoffpr) + ...
+    (standardev < cutoffstd) );
 
 

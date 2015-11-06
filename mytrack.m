@@ -181,7 +181,7 @@ if (nfiles)
     
     
     %% Save
-    save(sprintf('/aline%i/rotdrum%i/o%02d/Tracked_%i.mat',folder,folder,En,NEn),'PX','PY','git_version');
+    save(sprintf('/aline%i/rotdrum%i/o%02d/Tracked_%i.mat',folder,folder,En,NEn),'PX','PY','NPF','git_version');
     
 else
     save(sprintf('/aline%i/rotdrum%i/o%02d/NoAvalanche_%i.mat',folder,folder,En,NEn),'nfiles','git_version');
