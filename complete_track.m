@@ -32,7 +32,7 @@ bgfileexists = whos(matfile(bgfile));
 if (length(bgfileexists) < 1)
     
     for ii = 1:jumps:Nbfiles
-        ni = navfile(ii);
+        ni = files_index(ii);
         jj(schedulerindex) = batch(sched,'getbackground',1,{En,ni,folder,1});
         schedulerindex = schedulerindex+1;
     end
@@ -44,7 +44,7 @@ if (length(bgfileexists) < 1)
     bk = mk*0;
     
     for ii = 1:jumps:Nbfiles
-        ni = navfile(ii);
+        ni = files_index(ii);
         
         if (En > 100)
             fn=sprintf('/aline%i/rotdrum%i/o%02d/onestep%02d_%05d.mat',folder,folder,En,En,ni);
@@ -63,7 +63,7 @@ if (length(bgfileexists) < 1)
     
     if(length(bgfileexists) < 2)
         for ii = 1:jumps:Nbfiles
-            ni = navfile(ii);
+            ni = files_index(ii);
             jj(schedulerindex) = batch(sched,'getbackground',1,{En,ni,folder,2});
             schedulerindex = schedulerindex+1;
         end
@@ -75,7 +75,7 @@ if (length(bgfileexists) < 1)
         bk = mk*0;
         
         for ii = 1:jumps:Nbfiles
-            ni = navfile(ii);
+            ni = files_index(ii);
             if (En > 100)
                 fn=sprintf('/aline%i/rotdrum%i/o%02d/onestep%02d_%05d.mat',folder,folder,En,En,ni);
             else
@@ -135,7 +135,7 @@ for ii = 1:length(initialfileindex)
    jj(schedulerindex)=batch(sched,'mytrack',1,{folder,En,ii,initialfileindex(ii),finalfileindex(ii),D,mk},'Filedependencies',{'stickfiles.m','adjacent.m','assignmentoptimal.m'});
    schedulerindex = schedulerindex+1; 
 end
-schedulerindex
+
 %% Wait for cluster to finish tracking jobs
 for ii = (-32:-1)+schedulerindex
     wait(jj(ii));
