@@ -25,7 +25,7 @@ schedulerindex = 1;
 %% Get background
 Nbfiles = length(files_index);
 bgfile = sprintf('/aline%i/rotdrum%i/o%i/back%i.mat',folder,folder,En,En);
-jumps = 30;
+jumps = ceil(Nb_files/64);
 
 bgfileexists = whos(matfile(bgfile));
 
