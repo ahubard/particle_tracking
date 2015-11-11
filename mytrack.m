@@ -1,17 +1,22 @@
-%Find the trayectories of the particles between files initial and final 
+%Find the trayectories of the particles between files initial and final
 %using Hungaring  optimization algorithm assignmentoptimal
 
 
 function  nfiles = mytrack(folder,En,NEn,initial,final,D,mk)
-
+filedirectory = sprintf('/aline%i/rotdrum%i/o%i/',folder,folder,En);
 
 [git_version, ~] = evalc('system(''git describe --dirty --alway'')');
 [px,py,NPF,initial] = stickfiles(folder,En,initial,final,D);
- maskfile = sprintf('/aline%i/rotdrum%i/o%i/mask%i.mat',folder,folder,En,En);
- if(~exist(maskfile,'file'))
-     maskfile = sprintf('/aline%i/rotdrum%i/o%i/mask%i.mat',1,1,103,103);
- end
- load(maskfile,'mk');
+maskfile = sprintf('%smask%i.mat',filedirectory, En);
+warningfile = sprintf('%sWarning%i.txt',filedirectory,NEn);
+warning_counter = 1;
+dlmwrite(warningfile,NEn);
+
+
+if(~exist(maskfile,'file'))
+    maskfile = sprintf('/aline%i/rotdrum%i/o%i/mask%i.mat',1,1,103,103);
+end
+load(maskfile,'mk');
 nfiles = final-initial+1;
 
 if (nfiles)
@@ -80,12 +85,17 @@ if (nfiles)
             
             if(length(x1n)<length(x2n))
                 %warning('particle appeared')
-                save(sprintf('/aline%i/rotdrum%i/o%02d/Warning1_%i_%i',folder,folder,En,NEn,t1),'x1n','y1n','x2n','y2n');
+                warning_info = fill_array(7,1,x1n,y1n,x2n,y2n,nontrivialt1,nontrivialt2);
+                dlmwrite(warningfile,warning_info,'-append','delimiter','\t','roffset',2)
+                warning_counter = warning_counter+1;
             end
             
             if(length(x1n)>length(x2n))
                 %warning('particle disappeared')
-                save(sprintf('/aline%i/rotdrum%i/o%02d/Warning2_%i_%i',folder,folder,En,NEn,t1),'x1n','y1n','x2n','y2n','PX','PY','idtold');
+                warning_info = fill_array(7,2,x1n,y1n,x2n,y2n,nontrivialt1,nontrivialt2);
+                dlmwrite(warningfile,warning_info,'-append','delimiter','\t','roffset',2)
+                warning_counter = warning_counter+1;
+                
             end
             
             
@@ -116,8 +126,10 @@ if (nfiles)
                     [assignment, ~] = assignmentoptimal(distMatrix); %Call hungarian algorithm to find perfect matching
                     
                     if(nbnewtrackt1~=nbnewtrackt2)
+                        warning_info = fill_array(7,3,x1n,y1n,x2n,y2n,nontrivialt1,nontrivialt2);
+                        dlmwrite(warningfile,warning_info,'-append','delimiter','\t','roffset',2)
+                        warning_counter = warning_counter+1;
                         
-                        save(sprintf('/aline%i/rotdrum%i/o%02d/Warning3_%i_%i.mat',folder,folder,En,NEn,t1),'x1n','x2n','y1n','y2n','nontrivialt1','nontrivialt2');
                         if(nbnewtrackt1<nbnewtrackt2) %particles appeared that have no track
                             %warning('appeared particle stil here')
                             nbnewtrackt2 = nbnewtrackt1;
@@ -137,8 +149,10 @@ if (nfiles)
                     end
                     
                     if (sum(assignment == 0) > 0)
+                        warning_info = fill_array(7,3,x1n,y1n,x2n,y2n,nontrivialt1,nontrivialt2);
+                        dlmwrite(warningfile,warning_info,'-append','delimiter','\t','roffset',2)
+                        warning_counter = warning_counter+1;
                         
-                        save(sprintf('/aline%i/rotdrum%i/o%02d/Warning3_%i_%i.mat',folder,folder,En,NEn,t1),'x1n','x2n','y1n','y2n','nontrivialt1','nontrivialt2');
                         nontrivialt1 = nontrivialt1(assignment>0);
                         assignment = assignment(assignment>0);
                         nbnewtrackt1 =nbnewtrackt2;
@@ -175,8 +189,8 @@ if (nfiles)
         VY = PY(:,t2) - PY(:,t1);
         
         x1 = PX(idt1,t2) + VX(idt1) ;
-        y1 = min(PY(idt1,t2) + VY(idt1),NY) ; % In case velocity make particle out of the boundary. 
-        y1 = max(y1,1);  %in case y1 is negative. 
+        y1 = min(PY(idt1,t2) + VY(idt1),NY) ; % In case velocity make particle out of the boundary.
+        y1 = max(y1,1);  %in case y1 is negative.
     end
     
     
