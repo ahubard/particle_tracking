@@ -15,7 +15,7 @@ nfiles = final-initial+1;
     NPF = zeros(1,nfiles*350);
     
     
-    
+    fn = sprintf('/aline%i/rotdrum%i/o%02d/positions%02d_%05d.mat',folder,folder,En,En,initial);
     for ii = initial:final
         fn = sprintf('/aline%i/rotdrum%i/o%02d/positions%02d_%05d.mat',folder,folder,En,En,ii);
         load(fn,'pxs','pys','Npf');

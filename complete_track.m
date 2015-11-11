@@ -19,13 +19,14 @@ w = 0.8;
 
 %% Experiment file
 avanofile = sprintf('/aline%i/rotdrum%i/o%i/Avanonestep%i.mat',folder,folder,En,En);
-load(avanofile,'avan','mk'); 
+%load(avanofile,'avan','mk'); 
+load(avanofile); 
 schedulerindex = 1;
 
 %% Get background
 Nbfiles = length(files_index);
 bgfile = sprintf('/aline%i/rotdrum%i/o%i/back%i.mat',folder,folder,En,En);
-jumps = ceil(Nb_files/64);
+jumps = ceil(Nbfiles/64);
 
 bgfileexists = whos(matfile(bgfile));
 
@@ -126,7 +127,7 @@ navfile = files_index(avalanchefiles == 0);
 changefileindex = find(diff(avan(1,navfile))>1);
 initialfileindex = navfile([1 changefileindex(1:end-1)+1]);
 finalfileindex = navfile(changefileindex);
-save(avanofile,'navfile','-append');
+ save(avanofile,'navfile','-append');
 
 sprintf('There is %i files that contain avalanches',length(navfile))
 

@@ -41,7 +41,7 @@ if(exist(fnt,'file'))
     ilastframe=(PX(:,numframes)>0);                  %On last frame
     iframe=find((ilastframe.*iframe1)==1);           %Particles that didnt dissapear in the tracking
     PX = PX(iframe,:);
-    PY = Ly - PY(iframe,:); %MIrror the image to get the regular (x,y) axis. 
+    PY = Ly - PY(iframe,:); %Mirror the image to get the regular (x,y) axis. 
     %% Get running average position of the particles.
     windowSize = 5;
     b = (1/windowSize)*ones(1,windowSize);
@@ -59,6 +59,7 @@ if(exist(fnt,'file'))
     dxraw = (PX(diskmove,1+increment:1:numframes)-PX(diskmove,1:1:numframes-increment))/increment;
     dyraw = (PY(diskmove,1+increment:1:numframes)-PY(diskmove,1:1:numframes-increment))/increment;
     dh = (dyraw*calpha+dxraw*salpha);
+    dl = dxraw*calpha-dyraw*salpha;
     drraw2 = dxraw.^2+dyraw.^2;
     dxfil =(x(diskmove,windowSize+increment:1:numframes)-x(diskmove,windowSize:1:numframes-increment))/increment;
     dyfil =(y(diskmove,windowSize+increment:1:numframes)-y(diskmove,windowSize:1:numframes-increment))/increment;
@@ -75,7 +76,7 @@ if(exist(fnt,'file'))
     fnn =sprintf('%sDisplacement_%i.mat',filedirectory,count);
     count = count + 1;
     %fnn =sprintf('Displacement_%i.mat',Count);
-    save(fnn,'git_version','windowSize', 'PX','PY','Nb_over_boundary','dh','drraw2','drfil2','diskmove','increment','participationratio','folder','En','NEn','initial','final');
+    save(fnn,'git_version','windowSize', 'PX','PY','Nb_over_boundary','dh','dl','drraw2','drfil2','diskmove','increment','participationratio','folder','En','NEn','initial','final');
 else
     save(sprintf('%sWarning_The_file_%s_does_not_exist.mat',filedirectory,filekernel),'count');
     

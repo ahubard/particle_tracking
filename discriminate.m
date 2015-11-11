@@ -16,10 +16,16 @@ cutoffpr = 8e-4;
 cutoffdiff = 10;
 cutoffstd = 6;
 %% Check if files exist and load them 
-bgfile = sprintf('/aline2/rotdrum2/o105/back105.mat');
+if (En >100)  
+     bgfile = sprintf('/aline2/rotdrum2/o105/back105.mat');
+else
+     bgfile = sprintf('/aline%i/rotdrum%i/back_%i_to%i.mat',folder,folder,15,19);
+end
 load(bgfile,'bk1','bk2');
-bkk1 =bk1;
+
+bkk1 = bk1;
 bkk2 = bk2;
+
 
 
 avanofile = sprintf('/aline%i/rotdrum%i/o%i/Avanonestep%i.mat',folder,folder,En,En);

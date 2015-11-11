@@ -90,10 +90,10 @@ a = 1;
 for nf = 1:count-1
     fnn =sprintf('%sDisplacement_%i.mat',filedirectory,nf);
     
-    clear('windowSize', 'PX','PY','Nb_over_boundary','dh','drraw2','drfil2','diskmove','increment','participationratio','NEn','initial','final');
+    clear('windowSize', 'PX','PY','Nb_over_boundary','dh','dl','drraw2','drfil2','diskmove','increment','participationratio','NEn','initial','final');
   
     if(exist(fnn,'file'))
-        load(fnn,'windowSize', 'PX','PY','Nb_over_boundary','dh','drraw2','drfil2','diskmove','increment','participationratio','NEn','initial','final');
+        load(fnn,'windowSize', 'PX','PY','Nb_over_boundary','dh','dl','drraw2','drfil2','diskmove','increment','participationratio','NEn','initial','final');
     else
         save(sprintf('Warning. The file: %s does not exist.mat',fnn));
         error('Error, Displacementfile does not exist');
@@ -106,7 +106,7 @@ for nf = 1:count-1
         energy_avalanche = sum(drraw2(:,ceil(windowSize/2):size(drraw2,2)-floor(windowSize/2)).*drmask);
         vel_avalanche = sum(sqrt(drraw2(:,ceil(windowSize/2):size(drraw2,2)-floor(windowSize/2))).*drmask);
         dif_potential = sum(dh(:,ceil(windowSize/2):size(dh,2)-floor(windowSize/2)).*drmask);
-        findavalanche = filter(b,a,(energy_avalanche>cutoffofsum)); %use both numbers tdecide, if they are moving they should move for at least 10 time steps, if they stop the same
+        findavalanche = filter(b,a,(energy_avalanche>cutoffofsum)); %use both numbers to decide, if they are moving they should move for at least 10 time steps, if they stop the same
         % Find how many avalancheso13 per file findavalanche = 0 means no
         % avalanche there.
         
@@ -216,7 +216,7 @@ for nf = 1:count-1
                 
                 %Final-Initial data
                 particlesthatmoved = (((PX(diskmove,t2(na))-PX(diskmove,t1(na))).^2+...
-                    (PY(diskmove,t2(na))-PY(diskmove,t1(na))).^2)>1); % More than one pixel
+                    (PY(diskmove,t2(na))-PY(diskmove,t1(na))).^2) >1); % More than one pixel
                 
                 DELTAR(Number_Avalanches) = sum(sqrt(((PX(diskmove,t2(na))-PX(diskmove,t1(na))).^2+...
                     (PY(diskmove,t2(na))-PY(diskmove,t1(na))).^2).*particlesthatmoved));
