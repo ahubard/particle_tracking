@@ -9,13 +9,15 @@ check = 1;
 [keep, IMA,mk,bk1,bk2,info,maxdifp,participationratio,Num_p, standardev] = discriminate(folder,En,ni,D,w,Cutoff,MinSep);
 
 if (keep == 3)
+    nfo = sprintf('/aline%i/rotdrum%i/o%02d/positions%02d%05d.mat',folder,folder,En,En,ni);
     nfn = sprintf('/aline%i/rotdrum%i/o%02d/positions%02d_%05d.mat',folder,folder,En,En,ni);
     
     if(check)
         positions_exists = whos(matfile(nfn),'pxs','pys','Npf');
         
         if(length(positions_exists) == 3)
-            save(nfn,'maxdifp','participationratio','Num_p', 'standardev','-append');
+            load(nfo);
+            %save(nfn,'maxdifp','participationratio','Num_p', 'standardev','-append');
         else
             %% Particle centers
             pxs = zeros(3500,info.Numframe);
