@@ -98,11 +98,11 @@ if (keep == 3)
                 
             end
             
-            save(nfn,'git_version','pys','pxs','Npf','surfacebestfitline',...
-                'maxdifp','participationratio','Num_p', 'standardev');
+
         end
     end
-    
+                save(nfn,'git_version','pys','pxs','Npf','surfacebestfitline',...
+                'maxdifp','participationratio','Num_p', 'standardev');
 else
     save (sprintf('/aline%i/rotdrum%i/o%02d/no_avalanche_in_this_file%02d_%05d.mat',folder,folder,En,En,ni),...
         'git_version','maxdifp','participationratio','Num_p', 'standardev');

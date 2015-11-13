@@ -1,4 +1,4 @@
-function complete_track(folder,En)
+function [jj schedulerindex] = complete_track(folder,En)
 
 sprintf('If you wanna track folder %i and experiment series %i press enter, otherwise cancel',folder,En)
 pause()
