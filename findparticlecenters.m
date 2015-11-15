@@ -13,7 +13,7 @@ if (keep == 3)
     nfn = sprintf('/aline%i/rotdrum%i/o%02d/positions%02d_%05d.mat',folder,folder,En,En,ni);
     
 
-        positions_exists = whos(matfile(nfn),'pxs','pys','Npf');
+        positions_exists = whos(matfile(nfo),'pxs','pys','Npf');
         
         if(length(positions_exists) == 3)
             load(nfo);
