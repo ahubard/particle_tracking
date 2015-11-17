@@ -97,7 +97,7 @@ if (keep == 3)
         nvector = [-linearfit(1) 1]/(sqrt(linearfit(1)^2+1)); %normalvector to bestfit line
         lo = linearfit(2)*nvector(2); %Distance of bestfitline to origin.
         dpointtoline = px*nvector(1) + py*nvector(2) - lo;
-        insiders = (dpointtoline > -D*4); %Points that are in the region of interest
+        insiders = (dpointtoline > -D*7); %Points that are in the region of interest
         surfacebestfitline(:,nframe) = linearfit;
         
         %Get rid of outliers

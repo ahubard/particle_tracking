@@ -15,7 +15,7 @@ avalanchefiles = zeros(size(files_index));
 Cutoff = 11.5;      % minimum peak intensity
 MinSep = 6.08;      % minimum separation between peaks 5.5
 
-if (En < 100)
+if (En > 100)
     D = 10;
     w = 0.8;
 else

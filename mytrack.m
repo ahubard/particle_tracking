@@ -2,21 +2,14 @@
 %using Hungaring  optimization algorithm assignmentoptimal
 
 
-function  nfiles = mytrack(folder,En,NEn,initial,final,D,mk)
+%function  nfiles = mytrack(folder,En,NEn,initial,final,D,mk)
 filedirectory = sprintf('/aline%i/rotdrum%i/o%i/',folder,folder,En);
 
 [git_version, ~] = evalc('system(''git describe --dirty --alway'')');
 [px,py,NPF,initial] = stickfiles(folder,En,initial,final,D);
-maskfile = sprintf('%smask%i.mat',filedirectory, En);
 warningfile = sprintf('%sWarning%i.txt',filedirectory,NEn);
 warning_counter = 1;
 dlmwrite(warningfile,NEn);
-
-
-if(~exist(maskfile,'file'))
-    maskfile = sprintf('/aline%i/rotdrum%i/o%i/mask%i.mat',1,1,103,103);
-end
-load(maskfile,'mk');
 nfiles = final-initial+1;
 
 if (nfiles)
@@ -85,14 +78,14 @@ if (nfiles)
             
             if(length(x1n)<length(x2n))
                 %warning('particle appeared')
-                warning_info = fill_array(7,1,x1n,y1n,x2n,y2n,nontrivialt1,nontrivialt2);
+                warning_info = fill_array(7,t1,x1n,y1n,x2n,y2n,nontrivialt1,nontrivialt2);
                 dlmwrite(warningfile,warning_info,'-append','delimiter','\t','roffset',2)
                 warning_counter = warning_counter+1;
             end
             
             if(length(x1n)>length(x2n))
                 %warning('particle disappeared')
-                warning_info = fill_array(7,2,x1n,y1n,x2n,y2n,nontrivialt1,nontrivialt2);
+                warning_info = fill_array(7,t1,x1n,y1n,x2n,y2n,nontrivialt1,nontrivialt2);
                 dlmwrite(warningfile,warning_info,'-append','delimiter','\t','roffset',2)
                 warning_counter = warning_counter+1;
                 
@@ -126,7 +119,7 @@ if (nfiles)
                     [assignment, ~] = assignmentoptimal(distMatrix); %Call hungarian algorithm to find perfect matching
                     
                     if(nbnewtrackt1~=nbnewtrackt2)
-                        warning_info = fill_array(7,3,x1n,y1n,x2n,y2n,nontrivialt1,nontrivialt2);
+                        warning_info = fill_array(7,t1,x1n,y1n,x2n,y2n,nontrivialt1,nontrivialt2);
                         dlmwrite(warningfile,warning_info,'-append','delimiter','\t','roffset',2)
                         warning_counter = warning_counter+1;
                         
@@ -140,16 +133,11 @@ if (nfiles)
                             nbnewtrackt1 =nbnewtrackt2;
                         end
                         
-                        
-                        
-                        
-                        
-                        
-                        
+                       
                     end
                     
                     if (sum(assignment == 0) > 0)
-                        warning_info = fill_array(7,3,x1n,y1n,x2n,y2n,nontrivialt1,nontrivialt2);
+                        warning_info = fill_array(7,t1,x1n,y1n,x2n,y2n,nontrivialt1,nontrivialt2);
                         dlmwrite(warningfile,warning_info,'-append','delimiter','\t','roffset',2)
                         warning_counter = warning_counter+1;
                         

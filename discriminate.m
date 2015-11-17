@@ -132,18 +132,18 @@ sim(A) = 0;
 
 
 %Create mask of circles to put around the particles
-intD = ceil(D);
-[xx, yy] = ndgrid(1:intD+1,1:intD+1);
-circle = (((xx-(intD/2+1)).^2+(yy-(intD/2+1)).^2)<(intD/2*1.001)^2); %Circle of particle radius.
+intr = ceil(D/2);
+[xx, yy] = ndgrid(1:2*intr+1,1:2*intr+1);
+circle = (((xx-(intr+1)).^2+(yy-(intr+1)).^2)<(intr*1.001)^2); %Circle of particle radius.
 
 
 
 pr = (px-xo).^2+(py-yo).^2;   %particle distance to center of drum
-pxM = (px>(intD/2)+1);          %Get rid of the edges.
-pxm = (px<(info.Nx-(intD/2)));
-pr = (pr<(R-1)^2);
-pyM = (py>((intD/2)+1));
-pym = (py<(info.Ny-(intD/2)));
+pxM = (px > (intr+1));          %Get rid of the edges.
+pxm = (px < (info.Nx-intr));
+pr = (pr < (R-1)^2);
+pyM = (py > (intr+1));
+pym = (py < (info.Ny-intr));
 ii = find((pxM.*pxm.*pr.*pyM.*pym)>0);
 px = px(ii);
 py = py(ii);
@@ -156,12 +156,12 @@ difp=zeros(1,Np);
 
 for np=1:Np
     
-    itx=px(np)-intD/2:px(np)+intD/2;
-    ity=py(np)-intD/2:py(np)+intD/2;
-    simp=sim(ity,itx);
-    simop=simo(ity,itx);
-    difim=(simp/mean(simp(:))-simop/mean(simop(:))).*circle;
-    difp(np)=sum(abs(difim(:)));
+    itx = px(np)-intr:px(np)+intr;
+    ity = py(np)-intr:py(np)+intr;
+    simp = sim(ity,itx);
+    simop = simo(ity,itx);
+    difim = (simp/mean(simp(:))-simop/mean(simop(:))).*circle;
+    difp(np) = sum(abs(difim(:)));
     
 end
 
