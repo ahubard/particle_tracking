@@ -2,7 +2,7 @@
 %using Hungaring  optimization algorithm assignmentoptimal
 
 
-%function  nfiles = mytrack(folder,En,NEn,initial,final,D,mk)
+function  nfiles = mytrack(folder,En,NEn,initial,final,D,mk)
 filedirectory = sprintf('/aline%i/rotdrum%i/o%i/',folder,folder,En);
 
 [git_version, ~] = evalc('system(''git describe --dirty --alway'')');

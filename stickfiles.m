@@ -13,12 +13,16 @@ nfiles = final-initial+1;
     px = zeros(3500,nfiles*350);
     py = zeros(3500,nfiles*350);
     NPF = zeros(1,nfiles*350);
+    Npf = 3500*ones(1,351);
     
     
-    fn = sprintf('/aline%i/rotdrum%i/o%02d/positions%02d_%05d.mat',folder,folder,En,En,initial);
+    
     for ii = initial:final
         fn = sprintf('/aline%i/rotdrum%i/o%02d/positions%02d_%05d.mat',folder,folder,En,En,ii);
         load(fn,'pxs','pys','Npf');
+        [i0 t0] = find(pxs == 0);
+        [t0 it] = unique(t0,'first');
+        Npf(t0) = i0(it)-1;
         MNpf = max(Npf);
         px(1:MNpf,((ii - initial)*350)+1:(ii-initial+1)*350) = pxs(1:MNpf,1:350);
         py(1:MNpf,((ii - initial)*350)+1:(ii-initial+1)*350) = pys(1:MNpf,1:350);

@@ -27,6 +27,7 @@ end
 avanofile = sprintf('/aline%i/rotdrum%i/o%i/Avanonestep%i.mat',folder,folder,En,En);
 %load(avanofile,'avan','mk'); 
 load(avanofile); 
+
 schedulerindex = 1;
 
 %% Get background
