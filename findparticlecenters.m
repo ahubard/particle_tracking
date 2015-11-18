@@ -16,7 +16,7 @@ if (keep == 3)
         positions_exists = whos(matfile(nfo),'pxs','pys','Npf');
         
         if(length(positions_exists) == 3)
-            load(nfo);
+            load(nfo,'pxs','pys','Npf');
             track = 0;
             %save(nfn,'maxdifp','participationratio','Num_p', 'standardev','-append');
         else
@@ -76,8 +76,8 @@ if (keep == 3)
             
             [~, py, px] = findpeaks(mk./ichi,mk,Cutoff,MinSep);  % find maxima
         else
-            px = pxs(nframe);
-            py = pys(nframe);
+            px = pxs(:,nframe);
+            py = pys(:,nframe);
         end
         
         % Keep only insiders
