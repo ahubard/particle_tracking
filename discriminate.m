@@ -19,7 +19,7 @@ cutoffstd = 6;
 if (En >100)  
      bgfile = sprintf('/aline2/rotdrum2/o105/back105.mat');
 else
-     bgfile = sprintf('/aline%i/rotdrum%i/back_%ito%i.mat',folder,folder,15,19);
+     bgfile = sprintf('/aline%i/rotdrum%i/back_%ito%i.mat',1,1,15,19);
 end
 load(bgfile,'bk1','bk2');
 
