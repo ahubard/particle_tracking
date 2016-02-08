@@ -28,13 +28,16 @@ avanofile = sprintf('/aline%i/rotdrum%i/o%i/Avanonestep%i.mat',folder,folder,En,
 load(avanofile);
     
 schedulerindex = 1;
-    
+
+%% Check files with images
+files_index = review_files(folder,En,start_from_images);
+avalanchefiles = zeros(size(files_index));
+Nbfiles = length(files_index);
+
+%% 
 if(start_from_images) %If false, code starts with the position files. 
-    %% Check files with images
-    files_index = review_files(folder,En);
-    avalanchefiles = zeros(size(files_index));
     %% Get background
-    Nbfiles = length(files_index);
+    
     bgfile = sprintf('/aline%i/rotdrum%i/o%i/back%i.mat',folder,folder,En,En);
     jumps = ceil(Nbfiles/64);
     
@@ -124,6 +127,8 @@ if(start_from_images) %If false, code starts with the position files.
     end
     
     sprintf ('Done finding centers')
+else
+    
 end
 % Actualize navfile and separate continuos files in bunches
 for ii = 1:Nbfiles

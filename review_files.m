@@ -1,4 +1,4 @@
-function files_index = review_files(folder,En)
+function [files_index, exclude_files] = review_files(folder,En,start_from_images)
 
 %% Goes over files and checks if variable IMA exists in it. 
 
@@ -7,15 +7,22 @@ max_num_files = 4001;
 if (En == 109)
 max_num_files = 3576;
 end
-variable = sprintf('IMA');
-
 aux_index = zeros(1,max_num_files);
+
+if (start_from_images)
+    variable = 'IMA';
+    file_name = 'onestep';
+else
+    variable = 'pxs';
+    file_name = 'positions';
+end
+
 
 for nf = 1:max_num_files
     if(En > 100)
-        filekernel =sprintf('onestep%i_%05i',En,nf);
+        filekernel =sprintf('%s%i_%05i',file_name,En,nf);
     else
-        filekernel =sprintf('onestep%i%05i',En,nf);
+        filekernel =sprintf('%s%i%05i',file_name,En,nf);
     end
     fno =sprintf('%s%s.mat',filedirectory,filekernel);
     image_in_file = whos(matfile(fno),variable);
@@ -23,12 +30,11 @@ for nf = 1:max_num_files
 end
 
 files_index = find(aux_index);
-fsave = sprintf('%sfileindex_%i.mat',filedirectory,En);
 avanofile = sprintf('%sAvanonestep%i.mat',filedirectory,En);
 load(avanofile,'navfile');
 
 exclude_files = setdiff(files_index,navfile);
-save(fsave,'files_index','exclude_files');
+
 
 %%
 % D = 10;
