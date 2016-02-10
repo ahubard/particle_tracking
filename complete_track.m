@@ -4,7 +4,7 @@ sprintf('If you wanna track folder %i and experiment series %i press enter, othe
 pause()
 sprintf('OK, here we go, we will start by opening the scheduler.')
 %% Main Sekeleton to track particles
-sched=findResource('scheduler', 'type', 'jobmanager', 'lookupURL','poincare.engr.ccny.cuny.edu');  %Open scheduler
+sched = findResource('scheduler', 'type', 'jobmanager', 'lookupURL','poincare.engr.ccny.cuny.edu');  %Open scheduler
 
 [git_version, ~] = evalc('system(''git describe --dirty --alway'')')
 
