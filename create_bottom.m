@@ -17,7 +17,7 @@ angle_aperture = 2.35;
 rot_angle = 0.0031914; %from minimizing distance btw centers in compare_rotation function.
 i_final = find(diff(Rotation_step(1,:))~=0);
 i_initial = find(diff(Rotation_step(1,:))~=0)+1;
-nb_rotation_steps_btw_avalanches = Rotation_step(1,i_initial)-Rotation_step(1,i_final);
+nb_rotation_steps_btw_avalanches = Rotation_step(1,i_initial)-Rotation_step(1,i_final);%fix this? 
 Dangle_btw_avalanches = nb_rotation_steps_btw_avalanches*rot_angle;
 Tot_angle = cumsum(Dangle_btw_avalanches);
 
@@ -51,36 +51,40 @@ end
 
 %%
 ii = n_rot;
-[~, trivialbondt1,trivialbondt2] = adjacent(pxa(:,ii-1),pya(:,ii-1),pxb(:,ii),pyb(:,ii),1);
-x = (pxa(trivialbondt1,ii-1) + pxb(trivialbondt2,ii))/2;
-y = (pya(trivialbondt1,ii-1) + pyb(trivialbondt2,ii))/2;
-yh = 400-R*Dangle_btw_avalanches(ii);   %Minimal height of column to fill
+%[~, trivialbondt1,trivialbondt2] = adjacent(pxa(:,ii-1),pya(:,ii-1),pxb(:,ii),pyb(:,ii),1);
+%x = (pxa(trivialbondt1,ii-1) + pxb(trivialbondt2,ii))/2;
+%y = (pya(trivialbondt1,ii-1) + pyb(trivialbondt2,ii))/2;
+x = pxa(:,ii);
+y = pya(:,ii);
+yh = 400-R*sin(Dangle_btw_avalanches(ii));   %Minimal height of column to fill
 i_zone = find(x > xo & y > (yh-D));
 alpha = Tot_angle(ii+1);
-tran_pxb = (x(i_zone)-xo)*cos(alpha)-(y(i_zone)-yo).*sin(alpha)+xo;
-tran_pyb = (x(i_zone)-xo).*sin(alpha)+(y(i_zone)-yo).*cos(alpha)+yo;
-izone = find(tran_pyb > (400-3*D));
-x_old = tran_pxb(izone);
-y_old = tran_pyb(izone);
+rot_x = (x(i_zone)-xo)*cos(alpha)-(y(i_zone)-yo).*sin(alpha)+xo;
+rot_y = (x(i_zone)-xo).*sin(alpha)+(y(i_zone)-yo).*cos(alpha)+yo;
+izone = find(rot_y > (400-3*D));
+x_old = rot_x(izone);
+y_old = rot_y(izone);
 plot(pxo,pyo,'.',x_old,y_old,'.');axis('equal');axis('ij');
 drawnow;
 for ii = n_rot-1:-1:2
 
 %Get positions from the ii rotation
-[~, trivialbondt1,trivialbondt2] = adjacent(pxa(:,ii-1),pya(:,ii-1),pxb(:,ii),pyb(:,ii),1);
-x = (pxa(trivialbondt1,ii-1) + pxb(trivialbondt2,ii))/2;
-y = (pya(trivialbondt1,ii-1) + pyb(trivialbondt2,ii))/2;
-yh = 400-R*Dangle_btw_avalanches(ii);   %Minimal height of column to fill
+% [~, trivialbondt1,trivialbondt2] = adjacent(pxa(:,ii-1),pya(:,ii-1),pxb(:,ii),pyb(:,ii),1);
+% x = (pxa(trivialbondt1,ii-1) + pxb(trivialbondt2,ii))/2;
+% y = (pya(trivialbondt1,ii-1) + pyb(trivialbondt2,ii))/2;
+x = pxa(:,ii);
+y = pya(:,ii);
+yh = 400-R*sin(Dangle_btw_avalanches(ii));   %Minimal height of column to fill
+
 i_zone = find(x > xo & y > (yh-2*D)); % Keep only the one unafected by the avalanche.
 alpha = Tot_angle(ii+1);
 %rotate
-tran_pxb = (x(i_zone)-xo)*cos(alpha)-(y(i_zone)-yo).*sin(alpha)+xo;
-tran_pyb = (x(i_zone)-xo).*sin(alpha)+(y(i_zone)-yo).*cos(alpha)+yo;
-plot(tran_pxb,tran_pyb,'.');
-drawnow;
-izone = find(tran_pyb > (400-D)); %Keep only the one outside the original picture.
-tran_pxb = tran_pxb(izone);
-tran_pyb = tran_pyb(izone);
+rot_x = (x(i_zone)-xo)*cos(alpha)-(y(i_zone)-yo).*sin(alpha)+xo;
+rot_y = (x(i_zone)-xo).*sin(alpha)+(y(i_zone)-yo).*cos(alpha)+yo;
+
+izone = find(rot_y > (400-2*D)); %Keep only the one outside the original picture.
+rot_x = rot_x(izone);
+rot_y = rot_y(izone);
 
 % Find the ones that overlap or come from both rotations
 [~, trivialbondt1,trivialbondt2] = adjacent(x_old,y_old,tran_pxb,tran_pyb,2);
