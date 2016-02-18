@@ -25,13 +25,13 @@ Tot_angle = cumsum(Dangle_btw_avalanches);
 ntheta = length(Tot_angle);
 
 %% Get first image or initial state before any rotations. 
-before_fn = sprintf('/aline%i/rotdrum%i/o%02d/onestep%02d_%05d.mat',...
+before_fn = sprintf('/aline%i/rotdrum%i/o%02d/onestep%02d%05d.mat',...
         folder,folder,En,En,Fn_imafile(i_final(1)));
 load(before_fn,'IMA');
 rot_images = zeros(size(IMA,1),size(IMA,2),ntheta);
 rot_images(:,:,1) = sum(IMA,3)/sum(IMA(:));
 for ii = 1:ntheta
-after_fn = sprintf('/aline%i/rotdrum%i/o%02d/onestep%02d_%05d.mat',...
+after_fn = sprintf('/aline%i/rotdrum%i/o%02d/onestep%02d%05d.mat',...
 folder,folder,En,En,In_imafile(i_initial(ii)));
 load(after_fn,'IMA')
 rot_images(:,:,ii+1) = sum(IMA,3)/sum(IMA(:));
