@@ -10,10 +10,10 @@ function [im, HEAD, TAIL]=readrot(fn,nx,ny,N,nhead,ntail)
 %     fprint('corrupted image, start form the second')
 % end
 
-fid=fopen(fn);     % Handle to file/
+fid = fopen(fn);     % Handle to file/
 %% Set position and size to read to read; 
 framesize=nhead+ntail+nx*ny;       % Frame size with head and tail
-offset=(N-1)*(nhead+ntail+nx*ny);  %From whic byte start reading
+offset=(N-1)*(nhead+ntail+nx*ny);  %From which byte start reading
 fseek(fid,offset,'bof');            %Move to position offset in bytes in the bin file with handle fid
 raw=fread(fid,framesize);           %Read one frame
 im=(reshape(raw(nhead+1:end-ntail),nx,ny))';   %Reshape to a nx ny matrix

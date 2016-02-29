@@ -2,7 +2,7 @@
 tic;
 % Data keeping files
 folder = 1;
-En = 103;
+En = 104;
 D = 10;
 
 filedirectory = sprintf('/aline%i/rotdrum%i/o%i/',folder,folder,En);
