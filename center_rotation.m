@@ -59,4 +59,4 @@ end
 frequency = fit_x.w;
 
 file_for_center = sprintf('%sCenter_%i.mat',filedirectory,En);
-save(file_for_center,'xot','yot','Rt','fit_x','fit_y','phi_x','phi_y','A_x','A_y','frequency');
+save(file_for_center,'nb_rotation_steps','xot','yot','Rt','fit_x','fit_y','phi_x','phi_y','A_x','A_y','frequency');
