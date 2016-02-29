@@ -1,11 +1,12 @@
-function   [xo, yo, R] = get_circle_center(folder,En,file_number)
+function   [xo, yo, R] = get_circle_center(folder,En,file_number,xo_ini,yo_ini,R_ini)
 %% Fit circle from particle positions
 
-%% Initial range of xo, yo and Radius
-xo_range = 641:649;
-yo_range = 154:163;
+%% Get Initial range of xo, yo and Radius from firstpositions;
+
+xo_range = fix(xo_ini)+(-10:10);
+yo_range = fix(yo_ini)+(-10:10);
 range_size = length(yo_range);
-R_range = 612:614;
+R_range = fix(R_ini)+(-2:2);
 
 
 %% Load file with x,y particle positions

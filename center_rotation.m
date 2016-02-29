@@ -12,11 +12,29 @@ n_files = length(nb_rotation_steps);
 xot = zeros(1,n_files);
 yot = zeros(1,n_files);
 Rt = zeros(1,n_files);
+%% Get initial range of xo, yo and R from first file
+file_for_edge = sprintf('/aline%i/rotdrum%i/o%02d/positions%02d_%05d.mat',...
+        folder,folder,En,En,Fn_imafile(i_rot(1)));
+load(file_for_edge);
+%get positions of one image
+px = pxs(pxs(:,1) > 0);
+py = pys(pys(:,1) > 0);
+xx = repmat(px,1,length(px));
+yy = repmat(py,1,length(py));
+dx = xx - xx';
+dy = yy - yy';
+R2 = dx.^2+dy.^2;
+[mR2, I] = max(R2(:));
+[a, b] = ind2sub(size(R2),I);
+xo_ini = min(px([a b])) + abs(dx(a,b))/2;
+yo_ini = min(py([a b])) + abs(dy(a,b))/2;
+R_ini = sqrt(mR2)/2;
+
 
 %% Main loop over positions after each rotation to get center each time
 for ii = 1:n_files
     file_number = Fn_imafile(i_rot(ii));
-    [xot(ii), yot(ii), Rt(ii)] = get_circle_center(folder,En,file_number);
+    [xot(ii), yot(ii), Rt(ii)] = get_circle_center(folder,En,file_number,xo_ini,yo_ini,R_ini);
 end
 
 %% Fit xot yot data to sin cos.
