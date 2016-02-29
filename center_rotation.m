@@ -1,4 +1,8 @@
 function  frequency = center_rotation(folder,En)
+%% Version control
+[git_version, ~] = evalc('system(''git describe --dirty --alway'')');
+
+
 %% Use images and angle of rotation to find how the center of rotation moves
 filedirectory = sprintf('/aline%i/rotdrum%i/o%i/',folder,folder,En);
 file_avalanches =sprintf('%sAvalanches_%i.mat',filedirectory,En);
@@ -59,4 +63,4 @@ end
 frequency = fit_x.w;
 
 file_for_center = sprintf('%sCenter_%i.mat',filedirectory,En);
-save(file_for_center,'nb_rotation_steps','xot','yot','Rt','fit_x','fit_y','phi_x','phi_y','A_x','A_y','frequency');
+save(file_for_center,'git_version','nb_rotation_steps','xot','yot','Rt','fit_x','fit_y','phi_x','phi_y','A_x','A_y','frequency');
