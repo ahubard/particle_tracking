@@ -1,5 +1,6 @@
+function   [xo, yo, R] = get_circle_center(folder,En,file_number)
 %% Fit circle from particle positions
-tic
+
 %% Initial range of xo, yo and Radius
 xo_range = 641:649;
 yo_range = 154:163;
@@ -8,7 +9,8 @@ R_range = 612:614;
 
 
 %% Load file with x,y particle positions
-file_for_edge = sprintf('/Users/Aline/Documents/Research/MATLAB/Avalanches/positions103_03200.mat');
+file_for_edge = sprintf('/aline%i/rotdrum%i/o%02d/positions%02d_%05d.mat',...
+        folder,folder,En,En,file_number);
 load(file_for_edge);
 px = pxs(pxs(:) > 0);
 py = pys(pxs(:) > 0);
@@ -35,8 +37,8 @@ end
 %Circle hugh transformation
 H = (hugh_circle(BW_ime,xo_range,yo_range,R_range)); %Circle hugh transformation
 %Find peaks of the transformation.
-[mH, I] = max(H(:)); 
-[a, b,c] = ind2sub(size(H),I);
+[~, I] = max(H(:)); 
+[a, ~,~] = ind2sub(size(H),I);
 xo = xo_range(a(1)); % Choose main peak for xo. 
 rx2 = (px-xo).^2; %Distance of all points to xo
 
@@ -53,8 +55,6 @@ end
 %yo is given by the yo_range with more particles at distance 613 from
 %origin
 [~, iy] = max(di(:,length(hist_range)-1));
-yo = yo_range(iy);
-
 %% Keep only external points using (xo, yo) as center and find best fit circle. 
 px = px(Ri(:,iy) > R_range(1)-1);
 py = py(Ri(:,iy) > R_range(1)-1);
@@ -63,6 +63,6 @@ circle_parameters = CircleFitByPratt([px py]);
 xo = circle_parameters(1);
 yo = circle_parameters(2);
 R = circle_parameters(3);
-toc
+
 
 
