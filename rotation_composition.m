@@ -1,21 +1,17 @@
-function [x_rot, y_rot] = rotation_composition(x,y,original_image,rotation_image)
+function [x_rot, y_rot] = rotation_composition(x,y,o_t,r_t,A_x,A_y,phi_x,frequency,a0_x,a0_y)
 % rotation_composition rotates coordinates x,y from rotation_image to the
 % reference of the original image. Adds a correction over the fact that the
 % rotation center of the image moves as the drum rotates.
+%o_t is the rotaton step of the image to compose, r_t the one of the image
+%to rotate, A_x, A_y, phi_x, phi_y, frequency,a0_x and a0_y are the
+%function parameters of how the center move.
 
-%% Load center Info
-filedirectory = sprintf('/aline%i/rotdrum%i/o%i/',folder,folder,En);
-file_for_center = sprintf('%sCenter_%i.mat',filedirectory,En);
-load(file_for_center);
-%Rotationstep of image to construct
-o_t = nb_rotation_steps(original_image);
-%Rotationstep of image that will be used to find the positions at o_t
-r_t = nb_rotation_steps(rotation_image); 
-n_rot = r_t-o_t;
+%% Get the number of rotation steps and recreate the center in each step.
+n_rot = r_t - o_t;
 t = o_t:sign(n_rot)*1:r_t;  %List of rotation steps between o_t and r_t
 %Positions of the center btw o_t and r_t
-xo = A_x*sin(frequency*t+phi_x)+fit_x.a0;   
-yo = A_y*cos(frequency*t+phi_x-.2)+fit_y.a0;
+xo = A_x*sin(frequency*t+phi_x)+a0_x;   
+yo = A_y*cos(frequency*t+phi_x-.2)+a0_y;
 %Get difference btw xo and yo to apply the rotation matrices
 dxo = diff(xo);
 dyo = diff(yo);
