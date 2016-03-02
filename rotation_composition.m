@@ -6,22 +6,18 @@ function [x_rot, y_rot] = rotation_composition(x,y,o_t,r_t,A_x,A_y,phi_x,phi_y, 
 %to rotate, A_x, A_y, phi_x, phi_y, frequency,a0_x and a0_y are the
 %function parameters of how the center move.
 
+
 %% Get the number of rotation steps and recreate the center in each step.
 n_rot = r_t - o_t;
-t = o_t:sign(n_rot)*1:r_t;  %List of rotation steps between o_t and r_t
+t = [o_t r_t];  %List of rotation steps between o_t and r_t
 %Positions of the center btw o_t and r_t
 xo = A_x*sin(frequency*t+phi_x)+a0_x;   
 yo = A_y*cos(frequency*t+phi_y)+a0_y;
 %Get difference btw xo and yo to apply the rotation matrices
-dxo = diff(xo);
-dyo = diff(yo);
-theta = (t(end-1:-1:1)-o_t)*frequency; %Angle that will be rotated
-[rot_correction_x, rot_correction_y] = rot_me(theta,-dxo,-dyo);
-rot_correction_x = sum(rot_correction_x);
-rot_correction_y = sum(rot_correction_y);
-[x_rot, y_rot]= rot_me(n_rot*frequency,x,y);
-x_rot = x_rot + rot_correction_x;
-y_rot = y_rot + rot_correction_y;
+theta = n_rot*frequency; %Angle that will be rotated
+[x_rot, y_rot] = rot_me(theta,x-xo(1),y-yo(1));
+x_rot = x_rot + xo(2);
+y_rot = y_rot + yo(2);
 
 
 
