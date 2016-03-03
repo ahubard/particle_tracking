@@ -1,8 +1,9 @@
+function nb_files = create_bottom(folder,En)
 %% Find the positions of the particles that dont appear in the picture.
-tic;
+%tic;
 % Data keeping files
-folder = 1;
-En = 104;
+% folder = 1;
+% En = 104;
 D = 10;
 angle_aperture = 2.35; %Around how much is missing of angle.
 %% Get info about the file numbers and rotation steps
@@ -30,6 +31,10 @@ f_files_to_rotate = finalfileindex(i_rotate);
 N_particles = zeros(1,nb_files);
 x_cm = zeros(1,nb_files);
 y_cm = zeros(1,nb_files);
+
+ N_rot_particles(ii) = zeros(1,nb_files);
+ x_from_rot_cm(ii) = zeros(1,nb_files);
+ y_from_rot_cm(ii) = zeros(1,nb_files);
 %% Get info about how the center of rotation moves and rotation step size
 center_file = sprintf('%sCenter_%i.mat',filedirectory,En);
 load(center_file);
@@ -40,7 +45,11 @@ steps_to_fill = ceil(angle_aperture/th_step);
 %% Main loop to complete bottom of the circle of all initialfileindexfiles 
 % and get the potential energy before rotation.
 for ii = 1:nb_files
+    %Extras per image
+    x_from_rot = [];
+    y_from_rot = [];
 
+    
     file_n = initialfileindex(ii);
     image_fn = sprintf('%s/positions%02d_%05d.mat',filedirectory,En,file_n);
     load(image_fn,'pxs','pys','Npf');
@@ -93,6 +102,8 @@ for ii = 1:nb_files
         i_non_overlap = setdiff((1:length(x_rot)),overlap);
         x_ima = [x_ima ; x_rot(i_non_overlap)];
         y_ima = [y_ima ; y_rot(i_non_overlap)];
+        x_from_rot = [x_from_rot ; x_rot(i_non_overlap)];
+        y_from_rot = [y_from_rot ; y_rot(i_non_overlap)];
         
     end
     
@@ -121,18 +132,26 @@ for ii = 1:nb_files
         i_non_overlap = setdiff((1:length(x_rot)),overlap);
         x_ima = [x_ima ; x_rot(i_non_overlap)];
         y_ima = [y_ima ; y_rot(i_non_overlap)];
+        x_from_rot = [x_from_rot ; x_rot(i_non_overlap)];
+        y_from_rot = [y_from_rot ; y_rot(i_non_overlap)];
+        
     end
    N_particles(ii) = length(x_ima);
    x_cm(ii) = mean(x_ima);
    y_cm(ii) = mean(y_ima);
+   
+   N_rot_particles(ii) = length(x_from_rot);
+   x_from_rot_cm(ii) = mean(x_from_rot);
+   y_from_rot_cm(ii) = mean(y_from_rot);
     
     file_save_i = sprintf('%sComplete_positions_%i.mat',filedirectory,file_n);
-    save(file_save,'x_ima','y_ima');
+    save(file_save,'x_ima','y_ima','x_from_rot','y_from_rot');
     
 end
-    
+[git_version, ~] = evalc('system(''git describe --dirty --alway'')');  
 file_save_CM = sprintf('%sCenter_of_Mass_%i.mat',filedirectory, En);
-save(file_save_CM,'N_particles','x_cm','y_cm');
+save(file_save_CM,'N_particles','x_cm','y_cm','N_rot_particles',...
+    'x_from_rot_cm','y_from_rot_cm','git_version');
             
             
-   toc
+   %toc
