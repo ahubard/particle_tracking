@@ -145,7 +145,7 @@ for ii = 1:nb_files
    y_from_rot_cm(ii) = mean(y_from_rot);
     
     file_save_i = sprintf('%sComplete_positions_%i.mat',filedirectory,file_n);
-    save(file_save,'x_ima','y_ima','x_from_rot','y_from_rot');
+    save(file_save_i,'x_ima','y_ima','x_from_rot','y_from_rot');
     
 end
 [git_version, ~] = evalc('system(''git describe --dirty --alway'')');  
