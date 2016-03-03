@@ -32,9 +32,9 @@ N_particles = zeros(1,nb_files);
 x_cm = zeros(1,nb_files);
 y_cm = zeros(1,nb_files);
 
- N_rot_particles(ii) = zeros(1,nb_files);
- x_from_rot_cm(ii) = zeros(1,nb_files);
- y_from_rot_cm(ii) = zeros(1,nb_files);
+ N_rot_particles = zeros(1,nb_files);
+ x_from_rot_cm = zeros(1,nb_files);
+ y_from_rot_cm = zeros(1,nb_files);
 %% Get info about how the center of rotation moves and rotation step size
 center_file = sprintf('%sCenter_%i.mat',filedirectory,En);
 load(center_file);
