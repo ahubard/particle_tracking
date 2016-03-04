@@ -36,7 +36,7 @@ y_cm = zeros(1,nb_files);
  x_from_rot_cm = zeros(1,nb_files);
  y_from_rot_cm = zeros(1,nb_files);
 %% Get info about how the center of rotation moves and rotation step
-[A, a0_x, a0_y, phi_x] = modify_center_function(folder,En);
+[A, a0_x, a0_y, phi_x] = modify_center_func(folder,En);
 phi_y = phi_x + 0.1;
 % a0_x = fit_x.a0;
 % a0_y = fit_y.a0;
