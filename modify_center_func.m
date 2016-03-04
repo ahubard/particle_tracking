@@ -1,4 +1,4 @@
-function phi_x = modify_center_function(folder,En)
+function [Amp a0_x a0_y phi_x] = modify_center_function(folder,En)
 %% Get rid of outliers and use that the frequency is already given for the fit. 
 [git_version, ~] = evalc('system(''git describe --dirty --alway'')');
 

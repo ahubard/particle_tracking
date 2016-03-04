@@ -35,12 +35,12 @@ y_cm = zeros(1,nb_files);
  N_rot_particles = zeros(1,nb_files);
  x_from_rot_cm = zeros(1,nb_files);
  y_from_rot_cm = zeros(1,nb_files);
-%% Get info about how the center of rotation moves and rotation step size
-center_file = sprintf('%sCenter_%i.mat',filedirectory,En);
-load(center_file);
-a0_x = fit_x.a0;
-a0_y = fit_y.a0;
-th_step = fit_x.w; %angle per rotation
+%% Get info about how the center of rotation moves and rotation step
+[A, a0_x, a0_y, phi_x] = modify_center_function(folder,En);
+phi_y = phi_x + 0.1;
+% a0_x = fit_x.a0;
+% a0_y = fit_y.a0;
+ th_step = 0.0032; %angle per rotation
 steps_to_fill = ceil(angle_aperture/th_step);
 %% Main loop to complete bottom of the circle of all initialfileindexfiles 
 % and get the potential energy before rotation.
@@ -87,11 +87,11 @@ for ii = 1:nb_files
         y = pys(1:Npf(1),351);
         %rotate by last rotation angle to check wich positions to keep
         [~, y_rot] = rotation_composition(x,y,r_i_unique(jj+1),r_i_unique(jj),...
-            A_x,A_y,phi_x,phi_y,-th_step,a0_x,a0_y);
+            A,A,phi_x,phi_y,-th_step,a0_x,a0_y);
         x = x(y_rot >= (max(y) - 2*D));
         y = y(y_rot >= (max(y) - 2*D));
         [x_rot, y_rot] = rotation_composition(x,y,r_i(ii),r_i_unique(jj),...
-            A_x,A_y,phi_x,phi_y,-th_step,a0_x,a0_y);
+            A,A,phi_x,phi_y,-th_step,a0_x,a0_y);
         x_rot = x_rot(y_rot >= (max(y)-D));
         y_rot = y_rot(y_rot >= (max(y)-D));
         %plot(x_ima,y_ima,'.',x_rot,y_rot,'.');axis('equal');
@@ -117,11 +117,11 @@ for ii = 1:nb_files
         y = pys(1:Npf(1),1);
          %rotate by last rotation angle to check wich positions to keep
         [~, y_rot] = rotation_composition(x,y,r_i_unique(jj-1),r_i_unique(jj),...
-            A_x,A_y,phi_x,phi_y,-th_step,a0_x,a0_y);
+            A,A,phi_x,phi_y,-th_step,a0_x,a0_y);
         x = x(y_rot >= (max(y) - 2*D));
         y = y(y_rot >= (max(y) - 2*D));
         [x_rot, y_rot] = rotation_composition(x,y,r_i(ii),r_i_unique(jj),...
-            A_x,A_y,phi_x,phi_y,-th_step,a0_x,a0_y);
+            A,A,phi_x,phi_y,-th_step,a0_x,a0_y);
         x_rot = x_rot(y_rot >= (max(y)-D));
         y_rot = y_rot(y_rot >= (max(y)-D));
          %plot(x_ima,y_ima,'.',x_rot,y_rot,'.');axis('equal');
