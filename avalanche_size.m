@@ -19,7 +19,11 @@ avanofile = sprintf('%sAvanonestep%i.mat',filedirectory,En);
 %avanofile = sprintf('Avanonestep%i.mat',En);
 
 if (exist(avanofile,'file'))
-    load (avanofile,'count','avan','alpha','maxT');
+    load (avanofile,'count','avan','alpha','maxT','initialfileindex', 'finalfileindex');
+    if (kind < 2)
+        maxT = max(finalfileindex - initialfileindex)*351;
+    end
+    
 else
     save(sprintf('AWarning. The file: %s does not exist.mat',avanofile));
     error('Error, avanofile does not exist');
