@@ -1,4 +1,4 @@
-%function Number_Avalanches = avalanche_size(folder,En,kind)
+function Number_Avalanches = avalanche_size(folder,En,kind)
 %% Measure size and shape of avalanches
 
 %% Separate the avalanches according to kind criterium. 
