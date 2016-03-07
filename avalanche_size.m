@@ -1,4 +1,4 @@
-function Number_Avalanches = avalanche_size(folder,En)
+function Number_Avalanches = avalanche_size(folder,En,kind)
 %% Measure size and shape of avalanches
 
 %% Separate the avalanches according to kind criterium. 
@@ -25,21 +25,17 @@ else
     error('Error, avanofile does not exist');
 end
 
-if (exist(initial_cm_file,'file'))
-    load (initial_cm_file,'N_particles','x_cm','y_cm','N_rot_particles',...
-        'x_from_rot_cm', 'y_from_rot_cm');
-else
-    save(sprintf('AWarning. The file: %s does not exist.mat',initial_cm_file));
-    error('Error, initial_cm_file does not exist');
-end
 alpha = alpha*pi/180;
+if (En < 100)
+    yo = 203;
+else
+    yo = 159.6;
+end
 
-
+R = 617;
 D = 10;
 Ly = 400;
-yo = Ly-yo;
-yo_data = yo; 
-save(avanofile,'yo_data','-append');
+yo = Ly-yo; 
 %% Initialize variables.
 mat_displacement = zeros(maxT,4*count);
 mat_particles = zeros(maxT,4*count);
@@ -241,8 +237,8 @@ for nf = 1:count-1
                 
                 DELTAR(Number_Avalanches) = sum(sqrt(((PX(diskmove,t2(na))-PX(diskmove,t1(na))).^2+...
                     (PY(diskmove,t2(na))-PY(diskmove,t1(na))).^2).*particlesthatmoved));
-                [x_before_aval, y_before_aval] = rot_me(alpha,PX(diskmove,t1(na)),Py(diskmove,t1(na)));
-                [x_after_aval, y_after_aval] = rot_me(alpha,PX(diskmove,t2(na)),Py(diskmove,t2(na)));
+                [x_before_aval, y_before_aval] = rot_me(alpha,PX(diskmove,t1(na)),PY(diskmove,t1(na)));
+                [x_after_aval, y_after_aval] = rot_me(alpha,PX(diskmove,t2(na)),PY(diskmove,t2(na)));
                 Dheight(Number_Avalanches) = sum((y_after_aval - y_before_aval).*particlesthatmoved);
                 DLength(Number_Avalanches) = sum((x_after_aval - x_before_aval).*particlesthatmoved);
                 
@@ -260,8 +256,9 @@ for nf = 1:count-1
                 dummy_aux2 = zeros(1,deltat+1);
                 
                 for t = t1(na):t2(na)
-                    dummy_aux1(:,t-t1(na)+1) = compare_C_Mass(PX(ii_surfacei,t),PY(ii_surfacei,t),bindexi,xy_massi,Nb_bins);    
-                    dummy_aux2(t-t1(na)+1) = sum(PY(ii_particles_for_potential ,t)*calpha + PX(ii_particles_for_potential ,t)*salpha);
+                    dummy_aux1(:,t-t1(na)+1) = compare_C_Mass(PX(ii_surfacei,t),PY(ii_surfacei,t),bindexi,xy_massi,Nb_bins);
+                    [~, ay] = rot_me(alpha,PX(ii_particles_for_potential ,t), PY(ii_particles_for_potential ,t));
+                    dummy_aux2(t-t1(na)+1) = sum(ay);
                 end
                 
                 diff_CMass_t{Number_Avalanches} = dummy_aux1;
