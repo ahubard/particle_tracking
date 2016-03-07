@@ -1,29 +1,46 @@
 function Number_Avalanches = avalanche_size(folder,En)
+%% Measure size and shape of avalanches
+
+%% Separate the avalanches according to kind criterium. 
+% If kind = 0 the separation is the same as in displacement. Meaning all
+% the movement that correspond to the same continuos movie are part of the
+% same avalanche.
+% If kind = 1, an avalanche comprises everything that happens after one
+% rotation. In general less avalanches than in kind =0;
+% If kind = 2, an avalanche starts when particles move and ends when they
+% stop for more than minstepsbtwav. In general more avalanches than in kind=0
+
+%% Version Control
+[git_version, ~] = evalc('system(''git describe --dirty --alway'')');
+
 %% Gather the basic info
 filedirectory = sprintf('/aline%i/rotdrum%i/o%02d/',folder,folder,En);
 avanofile = sprintf('%sAvanonestep%i.mat',filedirectory,En);
 %avanofile = sprintf('Avanonestep%i.mat',En);
 
 if (exist(avanofile,'file'))
-    load (avanofile,'count','avan','alpha','maxT','R','xo','yo');
+    load (avanofile,'count','avan','alpha','maxT');
 else
     save(sprintf('AWarning. The file: %s does not exist.mat',avanofile));
     error('Error, avanofile does not exist');
 end
 
-[git_version, ~] = evalc('system(''git describe --dirty --alway'')');
+if (exist(initial_cm_file,'file'))
+    load (initial_cm_file,'N_particles','x_cm','y_cm','N_rot_particles',...
+        'x_from_rot_cm', 'y_from_rot_cm');
+else
+    save(sprintf('AWarning. The file: %s does not exist.mat',initial_cm_file));
+    error('Error, initial_cm_file does not exist');
+end
+alpha = alpha*pi/180;
 
-salpha = sin(alpha*pi/180);
-calpha = cos(alpha*pi/180);
-Num_particles_visisible = 2100;
-D =10;
+
+D = 10;
 Ly = 400;
 yo = Ly-yo;
 yo_data = yo; 
 save(avanofile,'yo_data','-append');
 %% Initialize variables.
-
-
 mat_displacement = zeros(maxT,4*count);
 mat_particles = zeros(maxT,4*count);
 mat_energy = zeros(maxT,4*count);
@@ -128,12 +145,16 @@ for nf = 1:count-1
             t2 = [t2 length(energy_avalanche)];
         end
         
+        % Only one avalanche per file in kind =0,1
+        if( kind < 2)
+            t1 = t1(1);
+            t2 = t2(end);
+        end
+        
         nb_avalanches = length(t1);
         ii_time = zeros(1,nb_avalanches);
         
         [~, ii_particles_for_potential] = sort(PY(:,1));
-        ii_particles_for_potential = ii_particles_for_potential(1:Num_particles_visisible);
-            
         
         for na = 1:nb_avalanches
             if( sum((findavalanche(t1(na):min(t2(na),length(energy_avalanche))))>=1-eps)) %Check if there is indeed avalanches between t1-t2
@@ -220,12 +241,10 @@ for nf = 1:count-1
                 
                 DELTAR(Number_Avalanches) = sum(sqrt(((PX(diskmove,t2(na))-PX(diskmove,t1(na))).^2+...
                     (PY(diskmove,t2(na))-PY(diskmove,t1(na))).^2).*particlesthatmoved));
-                
-                Dheight(Number_Avalanches) = sum(((PY(diskmove,t2(na))*calpha+PX(diskmove,t2(na))*salpha)-...
-                    (PY(diskmove,t1(na))*calpha+PX(diskmove,t1(na))*salpha)).*particlesthatmoved);
-                DLength(Number_Avalanches) = sum(((-PY(diskmove,t2(na))*salpha+PX(diskmove,t2(na))*calpha)-...
-                    (-PY(diskmove,t1(na))*salpha+PX(diskmove,t1(na))*calpha)).*particlesthatmoved);
-                
+                [x_before_aval, y_before_aval] = rot_me(alpha,PX(diskmove,t1(na)),Py(diskmove,t1(na)));
+                [x_after_aval, y_after_aval] = rot_me(alpha,PX(diskmove,t2(na)),Py(diskmove,t2(na)));
+                Dheight(Number_Avalanches) = sum((y_after_aval - y_before_aval).*particlesthatmoved);
+                DLength(Number_Avalanches) = sum((x_after_aval - x_before_aval).*particlesthatmoved);
                 
                 NoParticles_moved(Number_Avalanches) = sum(particlesthatmoved);
                 Nb_boundary(:,Number_Avalanches) = Nb_over_boundary;
@@ -262,6 +281,7 @@ for nf = 1:count-1
     
 end
 
+    
 %% Resize matrices
 Avalanche_duration = Avalanche_duration(1:Number_Avalanches);
 
@@ -311,9 +331,9 @@ In_imafile = In_imafile(1:Number_Avalanches);
 Fn_imafile = Fn_imafile(1:Number_Avalanches);
 in_trackedfile = in_trackedfile(1:Number_Avalanches);
 %% Save results to file
-file_save =sprintf('%sAvalanches_%i.mat',filedirectory,En);
-file_CM = sprintf('%sSurface_CM_%i.mat',filedirectory,En);
-file_Potential = sprintf('%sPotential_Energy_%i.mat',filedirectory,En);
+file_save = sprintf('%sAvalanches_%i_%i.mat',filedirectory,En,kind);
+file_CM = sprintf('%sSurface_CM_%i_%i.mat',filedirectory,En,kind);
+file_Potential = sprintf('%sPotential_Energy_%i_%i.mat',filedirectory,En,kind);
 
 save(file_save,'git_version','maxT','Number_Avalanches','Noavalanches','Avalanche_time', ...
     'Avalanche_particles','Avalanche_displacement','Avalanche_energy','Avalanche_duration','Avalanche_potential',...
