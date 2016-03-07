@@ -1,4 +1,4 @@
-function Number_Avalanches = avalanche_size(folder,En,kind)
+%function Number_Avalanches = avalanche_size(folder,En,kind)
 %% Measure size and shape of avalanches
 
 %% Separate the avalanches according to kind criterium. 
@@ -21,7 +21,7 @@ avanofile = sprintf('%sAvanonestep%i.mat',filedirectory,En);
 if (exist(avanofile,'file'))
     load (avanofile,'count','avan','alpha','maxT','initialfileindex', 'finalfileindex');
     if (kind < 2)
-        maxT = max(finalfileindex - initialfileindex)*351;
+        maxT = max(1+finalfileindex - initialfileindex)*350;
     end
     
 else
