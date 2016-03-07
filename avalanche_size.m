@@ -19,8 +19,11 @@ avanofile = sprintf('%sAvanonestep%i.mat',filedirectory,En);
 %avanofile = sprintf('Avanonestep%i.mat',En);
 
 if (exist(avanofile,'file'))
-    load (avanofile,'count','avan','alpha','maxT','initialfileindex', 'finalfileindex');
+    load (avanofile,'count','avan','alpha','maxT','navfile');
     if (kind < 2)
+        changefileindex = find(diff(avan(1,navfile))>1);
+        initialfileindex = navfile([1 changefileindex(1:end-1)+1]);%first file of set
+        finalfileindex = navfile(changefileindex);%last file of set.
         maxT = max(1+finalfileindex - initialfileindex)*350;
     end
     
