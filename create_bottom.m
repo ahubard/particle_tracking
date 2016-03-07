@@ -88,16 +88,16 @@ for ii = 1:nb_files
         %rotate by last rotation angle to check wich positions to keep
         [~, y_rot] = rotation_composition(x,y,r_i_unique(jj+1),r_i_unique(jj),...
             A,A,phi_x,phi_y,-th_step,a0_x,a0_y);
-        x = x(y_rot >= (max(y) - 2*D));
-        y = y(y_rot >= (max(y) - 2*D));
+        x = x(y_rot >= (max(y) - 3*D));
+        y = y(y_rot >= (max(y) - 3*D));
         [x_rot, y_rot] = rotation_composition(x,y,r_i(ii),r_i_unique(jj),...
             A,A,phi_x,phi_y,-th_step,a0_x,a0_y);
         x_rot = x_rot(y_rot >= (max(y)-D));
         y_rot = y_rot(y_rot >= (max(y)-D));
-        %plot(x_ima,y_ima,'.',x_rot,y_rot,'.');axis('equal');
-        %drawnow;
+        plot(x_ima,y_ima,'.',x_rot,y_rot,'.');axis('equal');
+        drawnow;
         % Find the ones that are closer than a minimal separation
-        adjacentmatrix = adjacent(x_ima, y_ima, x_rot, y_rot, 2/3*D);
+        adjacentmatrix = adjacent(x_ima, y_ima, x_rot, y_rot, 6.5);
         overlap = find(sum(adjacentmatrix));
         i_non_overlap = setdiff((1:length(x_rot)),overlap);
         x_ima = [x_ima ; x_rot(i_non_overlap)];
@@ -118,16 +118,16 @@ for ii = 1:nb_files
          %rotate by last rotation angle to check wich positions to keep
         [~, y_rot] = rotation_composition(x,y,r_i_unique(jj-1),r_i_unique(jj),...
             A,A,phi_x,phi_y,-th_step,a0_x,a0_y);
-        x = x(y_rot >= (max(y) - 2*D));
-        y = y(y_rot >= (max(y) - 2*D));
+        x = x(y_rot >= (max(y) - 3*D));
+        y = y(y_rot >= (max(y) - 3*D));
         [x_rot, y_rot] = rotation_composition(x,y,r_i(ii),r_i_unique(jj),...
             A,A,phi_x,phi_y,-th_step,a0_x,a0_y);
         x_rot = x_rot(y_rot >= (max(y)-D));
         y_rot = y_rot(y_rot >= (max(y)-D));
-         %plot(x_ima,y_ima,'.',x_rot,y_rot,'.');axis('equal');
-        %drawnow;
+         plot(x_ima,y_ima,'.',x_rot,y_rot,'.');axis('equal');
+        drawnow;
         % Find the ones that are closer than a minimal separation
-        adjacentmatrix = adjacent(x_ima, y_ima, x_rot, y_rot, 2/3*D);
+        adjacentmatrix = adjacent(x_ima, y_ima, x_rot, y_rot, 6.5);
         overlap = find(sum(adjacentmatrix));
         i_non_overlap = setdiff((1:length(x_rot)),overlap);
         x_ima = [x_ima ; x_rot(i_non_overlap)];
