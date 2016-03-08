@@ -61,4 +61,4 @@ dphi = 0.1;
 % b_y = n_fit.b;
 % d_phi = atan(-n_fit.b/n_fit.c);
 %% Save to file
-save(file_for_center,'Amp','a0_x','a0_y','phi_x','w','dphi','-append');
+save(file_for_center,'git_version','Amp','a0_x','a0_y','phi_x','w','dphi','-append');
