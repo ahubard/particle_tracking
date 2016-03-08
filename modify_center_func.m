@@ -54,9 +54,11 @@ n_fit = fit(th(include_x)',n_xot(include_x)',ft);
 b = n_fit.b; %for correction of phase if amplitude is positive
 phi_x = atan(n_fit.c/n_fit.b) + pi*(sign(b)-1)/2;
 phi_x = mod(phi_x,2*pi);
+dphi = 0.1;
 % n_yot = (yot - a0_y)/Amp;
 % n_th = th + phi_x;
 % n_fit = fit(th(include_y)',n_yot(include_y)',ft);
 % b_y = n_fit.b;
 % d_phi = atan(-n_fit.b/n_fit.c);
-
+%% Save to file
+save(file_for_center,'Amp','a0_x','a0_y','phi_x','w','dphi','-append');
