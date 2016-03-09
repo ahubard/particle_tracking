@@ -6,6 +6,7 @@ function nb_files = create_bottom(folder,En)
 % En = 104;
 D = 10;
 angle_aperture = 2.35; %Around how much is missing of angle.
+m = 0.1;
 %% Get info about the file numbers and rotation steps
 filedirectory = sprintf('/aline%i/rotdrum%i/o%i/',folder,folder,En);
 avanofile = sprintf('%sAvanonestep%i.mat',filedirectory,En);
@@ -51,6 +52,14 @@ for ii = 1:nb_files
 
     
     file_n = initialfileindex(ii);
+    Track_file = sprintf('%sDisplacement_%i.mat',filedirectory, ii);
+    load(Track_file,'initial','final','diskmove','PX','PY');
+
+    if(file_n ~= initial)
+        save(sprintf('%sError_%i.mat',filedirectory,ii),'file_n','initial');
+        error('Somethings not right');
+    end
+
     image_fn = sprintf('%s/positions%02d_%05d.mat',filedirectory,En,file_n);
     load(image_fn,'pxs','pys','Npf');
     x_ima = pxs(1:Npf(1),1);
@@ -78,64 +87,85 @@ for ii = 1:nb_files
     
     
     % Use previous images
-    
+    tic
     for jj = ii_new-1:-1:i_first_ima
         file_r = f_files_to_rotate(jj);
+        Track_file = sprintf('%sDisplacement_%i.mat',filedirectory, i_rotate(jj));
+        load(Track_file,'initial','final','diskmove','PX','PY');
+
+    if(file_r ~= final)
+        save(sprintf('%sError_%i.mat',filedirectory,ii),'file_n','initial','final','jj');
+        error('Somethings not right');
+    end
+        PY = 400 - PY;
+        position_change = sqrt((PX(:,end)-PX(:,1)).^2+(PY(:,end)-PY(:,1)).^2);
+        particles_move = find(position_change >= 4.5);
+        
         image_r = sprintf('%s/positions%02d_%05d.mat',filedirectory,En,file_r);
         load(image_r,'pxs','pys','Npf');
-        x = pxs(1:Npf(1),351);
-        y = pys(1:Npf(1),351);
-        %rotate by last rotation angle to check wich positions to keep
-        [~, y_rot] = rotation_composition(x,y,r_i_unique(jj+1),r_i_unique(jj),...
-            A,A,phi_x,phi_y,-th_step,a0_x,a0_y);
-        x = x(y_rot >= (max(y) - 3*D));
-        y = y(y_rot >= (max(y) - 3*D));
+        [~, t] = max(Npf);
+        x = pxs(1:Npf(t),t);
+        y = pys(1:Npf(t),t);
+        % Keep particles that didnt move much in previous frames
+        adjacentmatrix = adjacent(x, y, PX(particles_move,end), PY(particles_move,end), D/2);
+        particles_move = find(sum(adjacentmatrix,2));
+        p_to_rotate = setdiff(1:length(x),particles_move);
+        x_aux = x(p_to_rotate);
+        y_aux = y(p_to_rotate);
+        
+        x = x_aux(x_aux < a0_x-2*D  & y_aux > max(y)-2*D+m*(x_aux-a0_x));
+        y = y_aux(x_aux < a0_x-2*D  & y_aux > max(y)-2*D+m*(x_aux-a0_x));
+        
+        %rotate positions to meet ima positions
         [x_rot, y_rot] = rotation_composition(x,y,r_i(ii),r_i_unique(jj),...
-            A,A,phi_x,phi_y,-th_step,a0_x,a0_y);
-        x_rot = x_rot(y_rot >= (max(y)-D));
-        y_rot = y_rot(y_rot >= (max(y)-D));
+            A,A,phi_x,phi_y,th_step,a0_x,a0_y);
+        x_rot = x_rot(y_rot >= (max(y)-8*D));
+        y_rot = y_rot(y_rot >= (max(y)-8*D));
         plot(x_ima,y_ima,'.',x_rot,y_rot,'.');axis('equal');
         drawnow;
-        % Find the ones that are closer than a minimal separation
-        adjacentmatrix = adjacent(x_ima, y_ima, x_rot, y_rot, 6.5);
-        overlap = find(sum(adjacentmatrix));
-        i_non_overlap = setdiff((1:length(x_rot)),overlap);
-        x_ima = [x_ima ; x_rot(i_non_overlap)];
-        y_ima = [y_ima ; y_rot(i_non_overlap)];
-        x_from_rot = [x_from_rot ; x_rot(i_non_overlap)];
-        y_from_rot = [y_from_rot ; y_rot(i_non_overlap)];
+        [x_ima y_ima] = merge_positions(x_ima,y_ima,x_rot,y_rot);
         
     end
-    
-    
+
     %Use posterior image
     for jj = ii_new+1:i_last_ima
         file_r = i_files_to_rotate(jj);
+        Track_file = sprintf('%sDisplacement_%i.mat',filedirectory, i_rotate(jj));
+        load(Track_file,'initial','final','diskmove','PX','PY');
+
+    if(file_r ~= initial)
+        save(sprintf('%sError_%i.mat',filedirectory,ii),'file_n','initial','final','jj');
+        error('Somethings not right');
+    end
+        PY = 400 - PY;
+        position_change = sqrt((PX(:,end)-PX(:,1)).^2+(PY(:,end)-PY(:,1)).^2);
+        particles_move = find(position_change >= 4.5);
+        
         image_r = sprintf('%s/positions%02d_%05d.mat',filedirectory,En,file_r);
         load(image_r,'pxs','pys','Npf');
-        x = pxs(1:Npf(1),1);
-        y = pys(1:Npf(1),1);
-         %rotate by last rotation angle to check wich positions to keep
-        [~, y_rot] = rotation_composition(x,y,r_i_unique(jj-1),r_i_unique(jj),...
-            A,A,phi_x,phi_y,-th_step,a0_x,a0_y);
-        x = x(y_rot >= (max(y) - 3*D));
-        y = y(y_rot >= (max(y) - 3*D));
-        [x_rot, y_rot] = rotation_composition(x,y,r_i(ii),r_i_unique(jj),...
-            A,A,phi_x,phi_y,-th_step,a0_x,a0_y);
-        x_rot = x_rot(y_rot >= (max(y)-D));
-        y_rot = y_rot(y_rot >= (max(y)-D));
-         plot(x_ima,y_ima,'.',x_rot,y_rot,'.');axis('equal');
-        drawnow;
-        % Find the ones that are closer than a minimal separation
-        adjacentmatrix = adjacent(x_ima, y_ima, x_rot, y_rot, 6.5);
-        overlap = find(sum(adjacentmatrix));
-        i_non_overlap = setdiff((1:length(x_rot)),overlap);
-        x_ima = [x_ima ; x_rot(i_non_overlap)];
-        y_ima = [y_ima ; y_rot(i_non_overlap)];
-        x_from_rot = [x_from_rot ; x_rot(i_non_overlap)];
-        y_from_rot = [y_from_rot ; y_rot(i_non_overlap)];
+        [~, t] = max(Npf);
+        x = pxs(1:Npf(t),t);
+        y = pys(1:Npf(t),t);
         
+        % Keep particles that didnt move much in previous frames
+        adjacentmatrix = adjacent(x, y, PX(particles_move,end), PY(particles_move,end), D/2);
+        particles_move = find(sum(adjacentmatrix,2));
+        p_to_rotate = setdiff(1:length(x),particles_move);
+        x_aux = x(p_to_rotate);
+        y_aux = y(p_to_rotate);
+        x = x_aux(x_aux > (a0_x+2*D)  & y_aux > max(y)-2*D-m*(x_aux-a0_x));
+        y = y_aux(x_aux > (a0_x+2*D)  & y_aux > max(y)-2*D-m*(x_aux-a0_x));
+        
+         %rotate positions to meet ima positions        
+        [x_rot, y_rot] = rotation_composition(x,y,r_i(ii),r_i_unique(jj),...
+            A,A,phi_x,phi_y,th_step,a0_x,a0_y);
+        x_rot = x_rot(y_rot >= (max(y)-8*D));
+        y_rot = y_rot(y_rot >= (max(y)-8*D));
+        plot(x_ima,y_ima,'.',x_rot,y_rot,'.');axis('equal');
+        drawnow;
+        [x_ima y_ima] = merge_positions(x_ima,y_ima,x_rot,y_rot);
     end
+    toc
    N_particles(ii) = length(x_ima);
    x_cm(ii) = mean(x_ima);
    y_cm(ii) = mean(y_ima);
