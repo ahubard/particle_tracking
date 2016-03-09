@@ -126,12 +126,15 @@ for ii = 1:nb_files
         y_rot = y_rot(y_rot >= (max(y)-3*D));
 %          plot(x_ima,y_ima,'.',x_rot,y_rot,'.');axis('equal');
 %          drawnow;
-        [x_ima y_ima x_non_ima y_non_ima] = merge_positions(x_ima,y_ima,x_rot,y_rot);
+        [x_ima, y_ima, x_non_ima, y_non_ima, o_s] = merge_positions(x_ima,y_ima,x_rot,y_rot);
+        if (o_s(1) == 0 || o_s(2) == 0)
+            save(sprintf('%sCheck_bottom_%i.mat',filedirectory, file_n),'file_r')
+        end
         x_from_rot = [x_from_rot(:); x_non_ima(:)];
         y_from_rot = [y_from_rot(:); y_non_ima(:)];
         
     end
-    [xo ixo] = max([a0_x; x_rot]);
+    [xo, ixo] = max([a0_x; x_rot]);
     yo = [a0_y; y_rot];
     yo = yo(ixo);
     %Use posterior image
@@ -170,7 +173,10 @@ for ii = 1:nb_files
         y_rot = y_aux(y_aux >= mtheta*(x_aux-xo)+yo-5*D);
 %         plot(x_ima,y_ima,'.',x_rot,y_rot,'.');axis('equal');
 %         drawnow;
-        [x_ima y_ima x_non_ima y_non_ima] = merge_positions(x_ima,y_ima,x_rot,y_rot);
+        [x_ima, y_ima, x_non_ima, y_non_ima, o_s] = merge_positions(x_ima,y_ima,x_rot,y_rot);
+        if (o_s(1) == 0 || o_s(2) == 0)
+            save(sprintf('%sCheck_bottom_%i.mat',filedirectory, file_n),'file_r')
+        end
         x_from_rot = [x_from_rot(:); x_non_ima(:)];
         y_from_rot = [y_from_rot(:); y_non_ima(:)];
     end
