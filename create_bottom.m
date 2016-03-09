@@ -6,7 +6,7 @@ function nb_files = create_bottom(folder,En)
 % En = 104;
 D = 10;
 angle_aperture = 2.35; %Around how much is missing of angle.
-m = 0.1;
+m = 0.3;
 %% Get info about the file numbers and rotation steps
 filedirectory = sprintf('/aline%i/rotdrum%i/o%i/',folder,folder,En);
 avanofile = sprintf('%sAvanonestep%i.mat',filedirectory,En);
@@ -64,6 +64,7 @@ for ii = 1:nb_files
     load(image_fn,'pxs','pys','Npf');
     x_ima = pxs(1:Npf(1),1);
     y_ima = pys(1:Npf(1),1);
+
     max_before = r_i(ii) - r_i(1); % Max rotation steps before ii
     max_after = r_i(end) - r_i(ii); % Max rotationsteps after ii
     
@@ -84,6 +85,7 @@ for ii = 1:nb_files
     % Get the first and last image to be used
     i_first_ima = find(d_r >= t_r_before,1,'last');
     i_last_ima = find(-d_r >= t_r_after,1,'first');
+    mtheta = -tan(t_r_before*th_step);
     
     
     % Use previous images
@@ -113,20 +115,24 @@ for ii = 1:nb_files
         x_aux = x(p_to_rotate);
         y_aux = y(p_to_rotate);
         
-        x = x_aux(x_aux < a0_x-2*D  & y_aux > max(y)-2*D+m*(x_aux-a0_x));
-        y = y_aux(x_aux < a0_x-2*D  & y_aux > max(y)-2*D+m*(x_aux-a0_x));
+        x = x_aux(x_aux < a0_x-D  & y_aux > max(y)-1.5*D+m*(x_aux-a0_x));
+        y = y_aux(x_aux < a0_x-D  & y_aux > max(y)-1.5*D+m*(x_aux-a0_x));
         
         %rotate positions to meet ima positions
         [x_rot, y_rot] = rotation_composition(x,y,r_i(ii),r_i_unique(jj),...
             A,A,phi_x,phi_y,th_step,a0_x,a0_y);
-        x_rot = x_rot(y_rot >= (max(y)-8*D));
-        y_rot = y_rot(y_rot >= (max(y)-8*D));
-        plot(x_ima,y_ima,'.',x_rot,y_rot,'.');axis('equal');
-        drawnow;
-        [x_ima y_ima] = merge_positions(x_ima,y_ima,x_rot,y_rot);
+        x_rot = x_rot(y_rot >= (max(y)-3*D));
+        y_rot = y_rot(y_rot >= (max(y)-3*D));
+%          plot(x_ima,y_ima,'.',x_rot,y_rot,'.');axis('equal');
+%          drawnow;
+        [x_ima y_ima x_non_ima y_non_ima] = merge_positions(x_ima,y_ima,x_rot,y_rot);
+        x_from_rot = [x_from_rot(:); x_non_ima(:)];
+        y_from_rot = [y_from_rot(:); y_non_ima(:)];
         
     end
-
+    [xo ixo] = max([a0_x; x_rot]);
+    yo = [a0_y; y_rot];
+    yo = yo(ixo);
     %Use posterior image
     for jj = ii_new+1:i_last_ima
         file_r = i_files_to_rotate(jj);
@@ -153,17 +159,19 @@ for ii = 1:nb_files
         p_to_rotate = setdiff(1:length(x),particles_move);
         x_aux = x(p_to_rotate);
         y_aux = y(p_to_rotate);
-        x = x_aux(x_aux > (a0_x+2*D)  & y_aux > max(y)-2*D-m*(x_aux-a0_x));
-        y = y_aux(x_aux > (a0_x+2*D)  & y_aux > max(y)-2*D-m*(x_aux-a0_x));
+        x = x_aux(x_aux > (a0_x+D)  & y_aux > max(y)-1.5*D-m*(x_aux-xo));
+        y = y_aux(x_aux > (a0_x+D)  & y_aux > max(y)-1.5*D-m*(x_aux-xo));
         
          %rotate positions to meet ima positions        
-        [x_rot, y_rot] = rotation_composition(x,y,r_i(ii),r_i_unique(jj),...
+        [x_aux, y_aux] = rotation_composition(x,y,r_i(ii),r_i_unique(jj),...
             A,A,phi_x,phi_y,th_step,a0_x,a0_y);
-        x_rot = x_rot(y_rot >= (max(y)-8*D));
-        y_rot = y_rot(y_rot >= (max(y)-8*D));
-        plot(x_ima,y_ima,'.',x_rot,y_rot,'.');axis('equal');
-        drawnow;
-        [x_ima y_ima] = merge_positions(x_ima,y_ima,x_rot,y_rot);
+        x_rot = x_aux(y_aux >= mtheta*(x_aux-xo)+yo-5*D);
+        y_rot = y_aux(y_aux >= mtheta*(x_aux-xo)+yo-5*D);
+%         plot(x_ima,y_ima,'.',x_rot,y_rot,'.');axis('equal');
+%         drawnow;
+        [x_ima y_ima x_non_ima y_non_ima] = merge_positions(x_ima,y_ima,x_rot,y_rot);
+        x_from_rot = [x_from_rot(:); x_non_ima(:)];
+        y_from_rot = [y_from_rot(:); y_non_ima(:)];
     end
     toc
    N_particles(ii) = length(x_ima);
