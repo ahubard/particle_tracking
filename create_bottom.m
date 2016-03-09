@@ -86,7 +86,8 @@ for ii = 1:nb_files
     i_first_ima = find(d_r >= t_r_before,1,'last');
     i_last_ima = find(-d_r >= t_r_after,1,'first');
     mtheta = -tan(t_r_before*th_step);
-    
+    x_rot = [];
+    y_rot = [];
     
     % Use previous images
     tic
