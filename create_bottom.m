@@ -5,7 +5,7 @@ function nb_files = create_bottom(folder,En)
 % folder = 1;
 % En = 104;
 D = 10;
-angle_aperture = 2.35; %Around how much is missing of angle.
+angle_aperture = 2.5; %Around how much is missing of angle.
 m = 0.3;
 %% Get info about the file numbers and rotation steps
 filedirectory = sprintf('/aline%i/rotdrum%i/o%i/',folder,folder,En);
@@ -46,6 +46,7 @@ steps_to_fill = ceil(angle_aperture/th_step);
 %% Main loop to complete bottom of the circle of all initialfileindexfiles 
 % and get the potential energy before rotation.
 for ii = 1:nb_files
+
     %Extras per image
     x_from_rot = [];
     y_from_rot = [];
@@ -124,8 +125,8 @@ for ii = 1:nb_files
             A,A,phi_x,phi_y,th_step,a0_x,a0_y);
         x_rot = x_rot(y_rot >= (max(y)-3*D));
         y_rot = y_rot(y_rot >= (max(y)-3*D));
-%          plot(x_ima,y_ima,'.',x_rot,y_rot,'.');axis('equal');
-%          drawnow;
+         plot(x_ima,y_ima,'.',x_rot,y_rot,'.');axis('equal');
+         drawnow;
         [x_ima, y_ima, x_non_ima, y_non_ima, o_s] = merge_positions(x_ima,y_ima,x_rot,y_rot);
         if (o_s(1) == 0 || o_s(2) == 0)
             save(sprintf('%sCheck_bottom_%i.mat',filedirectory, file_n),'file_r')
@@ -134,8 +135,9 @@ for ii = 1:nb_files
         y_from_rot = [y_from_rot(:); y_non_ima(:)];
         
     end
-    [xo, ixo] = max([a0_x; x_rot]);
-    yo = [a0_y; y_rot];
+    [xo, ixo] = max([a0_x; x_rot(y_rot < 400)]);
+    
+    yo = [a0_y; y_rot(y_rot < 400)];
     yo = yo(ixo);
     %Use posterior image
     for jj = ii_new+1:i_last_ima
@@ -163,16 +165,16 @@ for ii = 1:nb_files
         p_to_rotate = setdiff(1:length(x),particles_move);
         x_aux = x(p_to_rotate);
         y_aux = y(p_to_rotate);
-        x = x_aux(x_aux > (a0_x+D)  & y_aux > max(y)-1.5*D-m*(x_aux-xo));
-        y = y_aux(x_aux > (a0_x+D)  & y_aux > max(y)-1.5*D-m*(x_aux-xo));
+        x = x_aux(x_aux > (a0_x+D)  & y_aux > max(y)-1.5*D-m*(x_aux-a0_x));
+        y = y_aux(x_aux > (a0_x+D)  & y_aux > max(y)-1.5*D-m*(x_aux-a0_x));
         
          %rotate positions to meet ima positions        
         [x_aux, y_aux] = rotation_composition(x,y,r_i(ii),r_i_unique(jj),...
             A,A,phi_x,phi_y,th_step,a0_x,a0_y);
-        x_rot = x_aux(y_aux >= mtheta*(x_aux-xo)+yo-5*D);
-        y_rot = y_aux(y_aux >= mtheta*(x_aux-xo)+yo-5*D);
-%         plot(x_ima,y_ima,'.',x_rot,y_rot,'.');axis('equal');
-%         drawnow;
+        x_rot = x_aux(x_aux >= 1/mtheta*(y_aux-yo)+xo-5*D  & y_aux >(max(y)-3*D));
+        y_rot = y_aux(x_aux >= 1/mtheta*(y_aux-yo)+xo-5*D  & y_aux >(max(y)-3*D));
+        plot(x_ima,y_ima,'.',x_rot,y_rot,'.');axis('equal');
+        drawnow;
         [x_ima, y_ima, x_non_ima, y_non_ima, o_s] = merge_positions(x_ima,y_ima,x_rot,y_rot);
         if (o_s(1) == 0 || o_s(2) == 0)
             save(sprintf('%sCheck_bottom_%i.mat',filedirectory, file_n),'file_r')

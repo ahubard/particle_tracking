@@ -9,6 +9,12 @@ i_non_overlap_i = setdiff(1:length(x_ima),overlap_i);
 overlap_size(1) = length(overlap_i);
 overlap_size(2) = length(overlap_r);
 
+% define overlaping positions
+x_over_i = x_ima(overlap_i);
+y_over_i = y_ima(overlap_i);
+x_over_r = x_rot(overlap_r);
+y_over_r =  y_rot(overlap_r);
+
 % update image by non overlaping of original plus rotation
 x_ima = [x_ima(i_non_overlap_i); x_rot(i_non_overlap_r)];
 y_ima = [y_ima(i_non_overlap_i); y_rot(i_non_overlap_r)];
@@ -17,11 +23,7 @@ x_non_ima = x_rot(i_non_overlap_r);
 y_non_ima = y_rot(i_non_overlap_r);
 
 if(~isempty(overlap_i))
-    % define overlaping positions
-    x_over_i = x_ima(overlap_i);
-    y_over_i = y_ima(overlap_i);
-    x_over_r = x_rot(overlap_r);
-    y_over_r =  y_rot(overlap_r);
+    
     % Assign closest trivial neighbours of overlaping region;
     [adjacentmatrix, tb1, tb2,~] = ...
         adjacent(x_over_i,y_over_i,x_over_r ,y_over_r,5);
@@ -86,7 +88,7 @@ if(~isempty(overlap_i))
         y_ima = [y_ima; y_extra];
     end
 end
-    
+
 
 %             plot(x_ima,y_ima,'.');axis('equal');
 %             drawnow;
