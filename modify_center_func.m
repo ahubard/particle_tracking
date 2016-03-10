@@ -38,27 +38,37 @@ include_x = find(abs(xot-a0_x) < 6);
 
 %% Use info from previuos fit for files En < 100
 if(En <100)
-    Amp = 1.16;
-    a0_x = 633.6;
+    Amp = 1.15;
+    a0_x = 633.5;
     a0_y = 203;
+    R = 579.9;
 else
-    Amp = 1.7;
-    a0_x = 643.45;
-    a0_y = 159.6;
+    Amp = 1.76;
+    a0_x = 643.5;
+    a0_y = 159.5;
+    R = 617.7;
+    
 end
     
 %% Rescale data for new fit and find the phase change
 n_xot = (xot - a0_x)/Amp;
+n_yot = (yot - a0_y)/Amp;
 ft = fittype({'sin(x)','cos(x)'},'coefficients',{'b','c'});
 n_fit = fit(th(include_x)',n_xot(include_x)',ft);
 b = n_fit.b; %for correction of phase if amplitude is positive
 phi_x = atan(n_fit.c/n_fit.b) + pi*(sign(b)-1)/2;
 phi_x = mod(phi_x,2*pi);
 dphi = 0.1;
+figure(1);
+plot(th(include_x),n_xot(include_x),'.',th,sin(th+phi_x));
+drawnow;
+figure(2);
+plot(th(include_x),n_yot(include_x),'.',th,cos(th+phi_x+dphi));
+drawnow;
 % n_yot = (yot - a0_y)/Amp;
 % n_th = th + phi_x;
 % n_fit = fit(th(include_y)',n_yot(include_y)',ft);
 % b_y = n_fit.b;
 % d_phi = atan(-n_fit.b/n_fit.c);
 %% Save to file
-save(file_for_center,'git_version','Amp','a0_x','a0_y','phi_x','w','dphi','-append');
+%save(file_for_center,'git_version','Amp','a0_x','a0_y','phi_x','w','dphi','-append');

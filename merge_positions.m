@@ -26,7 +26,7 @@ if(~isempty(overlap_i))
     
     % Assign closest trivial neighbours of overlaping region;
     [adjacentmatrix, tb1, tb2,~] = ...
-        adjacent(x_over_i,y_over_i,x_over_r ,y_over_r,5);
+        adjacent(x_over_i,y_over_i,x_over_r ,y_over_r,4.5);
     
     % Check overlaps
     overlap_r = find(sum(adjacentmatrix))';
