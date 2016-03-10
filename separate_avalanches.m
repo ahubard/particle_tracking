@@ -16,7 +16,7 @@ Nb_over_boundary = [0 0];
 %% Find drop rim point.
 % displacement_file = sprintf('Displacement_%i.mat',filenb);
 % load(displacement_file,'PX','PY');
-ii_near_boundary = find(PX(:,1)<x_boundary_cuttof);
+ii_near_boundary = find(PX(:,1) < x_boundary_cuttof);
 r_near_boundary = (PX(ii_near_boundary,1)-xo).^2 + (PY(ii_near_boundary,1)-yo).^2;
 ii_near_boundary = ii_near_boundary(r_near_boundary > (R-1*D)^2);
 
