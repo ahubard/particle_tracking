@@ -54,7 +54,7 @@ if(exist(fnt,'file'))
     diskmove = find(totaldelta >0.9);
     %Nummoved = length(diskmove);
     %% Find displacements of such particles btw nframes
-    increment=10;
+    increment = 10;
     %dt = increment/2;
     dxraw = (PX(diskmove,1+increment:1:numframes)-PX(diskmove,1:1:numframes-increment))/increment;
     dyraw = (PY(diskmove,1+increment:1:numframes)-PY(diskmove,1:1:numframes-increment))/increment;

@@ -1,16 +1,17 @@
 %% Gather data from series of experiments to do the statistics.
 
 filenumbers = [15 16 17 18 19 20 21 22 23 103 104 105 106 107 108  ]; %Files that contain the info
-FOLDER =      [1  1  1  1  1  1  2  2 2   1   1   2   2   2   2 ];
+FOLDER =      [1  1  1  1  1  1  2  2 2   1   1   2   2   2  2  ];
 Nofiles = length(filenumbers);
-kind = 0; 
+kind = 2; 
 
 %% Parameters from the experiment
 fps = 694.4444;
 D = 10;
 alpha = 29;
 g = 9.8;
-d = 12e-3;
+d = 1.19e-3;
+m = 6.9e-9;
 Num_particles_visisible = 3500;
 %% Create variables
 Totalavalanches = 0;
@@ -53,6 +54,7 @@ Ftheta = [];
 Maximal_particle_displacement = [];
 Total_Height_change = [];
 Particles_Over_the_boundary = [];
+Participation_Ratio = [];
 
 TRACK_FILE = [];
 
@@ -62,7 +64,8 @@ TRACK_FILE = [];
 for nf = 1:Nofiles
     folder = FOLDER(nf);
     En = filenumbers(nf);
-    filedirectory = sprintf('/aline%i/rotdrum%i/o%i/',folder,folder,En);
+    %filedirectory = sprintf('/aline%i/rotdrum%i/o%i/',folder,folder,En);
+    filedirectory = sprintf('/Users/Aline/Documents/Research/MATLAB/particle_tracking/');
     filename = sprintf('%sAvalanches_%i_%i.mat',filedirectory,En,kind);
     file_CM = sprintf('%sSurface_CM_%i_%i.mat',filedirectory,En,kind);
     file_Potential = sprintf('%sPotential_Energy_%i_%i.mat',filedirectory,En,kind);
@@ -102,7 +105,8 @@ for nf = 1:Nofiles
     diff_Center_mass(117:124,:) = 0;
     
     ii = 2:Number_Avalanches;
-
+    
+    Participation_Ratio = [Participation_Ratio Participation];
     TRACK_FILE = [TRACK_FILE in_trackedfile];
     Particles_Over_the_boundary = [Particles_Over_the_boundary Nb_boundary(:,ii)];
     Totalavalanches = Totalavalanches + Number_Avalanches-1;
@@ -156,8 +160,8 @@ end
  ii_internal_right = find(Particles_Over_the_boundary(2,:) <= 1);
  ii_none_boundary = find(((Particles_Over_the_boundary(1,:) <= 0).*...
      (Particles_Over_the_boundary(2,:) <= 1)));
- ii_whole = find(sum(Surface_change>1)>100);
- ii_non_spaning = find(sum(Surface_change>1)<=100);
+ ii_whole = find(sum(Surface_change>1)> 105);
+ ii_non_spaning = find(sum(Surface_change>1)<= 105);
  Delta_theta = Itheta-Ftheta;
 ii = find(dSteps>-1);
 T = T/fps;
@@ -165,7 +169,7 @@ T = T/fps;
 % Maxd = Maxd/D;
 % TSd = TSd/D;
 % H = H/D;
-% U = H*g*d;
+ U = Size_Potential*g*d*m/D;
 % Energy = Energy/(D^2);
 % Energyu = Energy*((d/D)^2)*(fps^2) ;
 Itheta = Itheta+alpha;
