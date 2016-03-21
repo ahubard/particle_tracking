@@ -193,7 +193,7 @@ for nf = 1:count-1
                 Avalanche_potential(Number_Avalanches) = sum(potential_t);
                 
                 deltat = t2(na)-t1(na);
-                Avalanche_duration(Number_Avalanches) = deltat+3; %Adding the frame before and the frame after for completion.
+                Avalanche_duration(Number_Avalanches) = deltat+2; %Adding the frame before and the frame after for completion.
                 
                 %Find normalized avalanches
                 particlesnormalized = interp1(([ 0 windowSize+(0:deltat) deltat+2*windowSize])/(deltat+2*windowSize),[0 particlesmoving_t 0],(0:.01:1),'pchip');

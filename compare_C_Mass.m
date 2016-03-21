@@ -5,11 +5,6 @@ function [ d_mass] = compare_C_Mass(x,y,bindex,xy_mass,Nb_bins)
 
 
 
-
-
-
-
-
  d_mass = zeros(2,Nb_bins);
     for bin = 1:length(bindex)-1;
       

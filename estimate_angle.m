@@ -7,7 +7,7 @@ function [theta, slope, xy_mass, ii_surface, bindex] = estimate_angle(PX,PY,D,yo
 
 binsize = D;
 
-Ly =400;
+
 if(~exist('NT','var'))
     NT = size(PX,2);
 end
