@@ -1,6 +1,6 @@
 %% Gather data from series of experiments to do the statistics.
 
-filenumbers = [15 16 17 18 19 20 21 22 23 103 104 105 106 107 108  ]; %Files that contain the info
+filenumbers = [15 16 17 18 19 20 21 22 23 103 104 105 106 107   ]; %Files that contain the info
 FOLDER =      [1  1  1  1  1  1  2  2 2   1   1   2   2   2  2  ];
 Nofiles = length(filenumbers);
 kind = 2; 
@@ -19,7 +19,10 @@ filenumber = [];
 dSteps = [];
 T = [];
 
+
+avalanche = []; %% diferent size
 Y_CM = [];
+X_CM = [];
 
 Particles_t = [];
 Length_path_t = [];
@@ -69,8 +72,11 @@ for nf = 1:Nofiles
     filename = sprintf('%sAvalanches_%i_%i.mat',filedirectory,En,kind);
     file_CM = sprintf('%sSurface_CM_%i_%i.mat',filedirectory,En,kind);
     file_Potential = sprintf('%sPotential_Energy_%i_%i.mat',filedirectory,En,kind);
-
     %filename = sprintf('Avalanches_%i.mat',filenumbers(nf));
+    avanofile = sprintf('%sAvanonestep%i.mat',filedirectory,En);
+    load(avanofile);
+    load(sprintf('Center_of_Mass_%i.mat',En));
+    
     
     clear('git_version','Number_Avalanches','Noavalanches','Avalanche_time', ...
         'Avalanche_particles','Avalanche_displacement','Avalanche_energy',...
@@ -99,8 +105,12 @@ for nf = 1:Nofiles
         'In_imafile','Fn_imafile','in_trackedfile');
     %'spectrum_particles','spectrum_displacement','spectrum_energy','spectrum_potential',...
     
-    
-    
+    changefileindex = find(diff(avan(1,navfile))>1);  
+    initialfileindex = navfile([1 changefileindex(1:end-1)+1]);
+    [~,icm,ia] = intersect(initialfileindex(1:end-1),In_imafile);
+    avalanche = [avalanche -Avalanche_potential(ia)];
+    X_CM = [X_CM x_cm(icm)];
+    Y_CM = [Y_CM y_cm(icm)];
     
     diff_Center_mass(117:124,:) = 0;
     
@@ -180,3 +190,36 @@ inr = find(dSteps<0);
 ir(inr) = 0;
 ir(inr+1)= 0;
 ir = find(ir);
+
+
+
+%% For average shape
+T_n = T(ii_non_spaning);
+avan_shape = -shape_Potential(:,ii_non_spaning)*g*d*m/D;
+
+
+it = find(T_n(:)< 1.5 & T_n(:) > 0.05);
+it = it(mean(avan_shape(85:101,it))> 0.005);
+it = it(mean(avan_shape(1:15,it))> 0.005);
+[~, b] = find(avan_shape(:,it) < -0.5);
+it = setdiff(it,it(unique(b)));
+
+tot_average = mean(avan_shape(:,it).*(repmat(T_n(it),101,1).^-1.06),2);
+
+normcoeff = max(tot_average);
+
+xmin = log10(.08);
+xmax = log10(1);
+x = logspace(xmin,xmax,21);
+
+for ii = 2:21
+it = find(abs(T_n - x(ii)) < x(ii-1)/(ii));
+it = it(mean(avan_shape(85:101,it))> 0);
+it = it(mean(avan_shape(1:15,it))> 0);
+average_shape(:,ii-1) = mean(avan_shape(:,it),2);
+n_a(ii-1) = length(it);
+dt(ii-1) = x(ii-1)/(ii*10);
+end
+
+
+
