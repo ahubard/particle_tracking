@@ -1,16 +1,17 @@
 %% Gather data from series of experiments to do the statistics.
 
-filenumbers = [15 16 17 18 19 20 21 22 23 103 104 105 106 107 108  ]; %Files that contain the info
-FOLDER =      [1  1  1  1  1  1  2  2 2   1   1   2   2   2   2 ];
+filenumbers = [15 16 17 18 19 20 21 22 23 103 104 105 106 107   ]; %Files that contain the info
+FOLDER =      [1  1  1  1  1  1  2  2 2   1   1   2   2   2  2  ];
 Nofiles = length(filenumbers);
-kind = 0; 
+kind = 2; 
 
 %% Parameters from the experiment
 fps = 694.4444;
 D = 10;
 alpha = 29;
 g = 9.8;
-d = 12e-3;
+d = 1.19e-3;
+m = 6.9e-9;
 Num_particles_visisible = 3500;
 %% Create variables
 Totalavalanches = 0;
@@ -18,7 +19,10 @@ filenumber = [];
 dSteps = [];
 T = [];
 
+
+avalanche = []; %% diferent size
 Y_CM = [];
+X_CM = [];
 
 Particles_t = [];
 Length_path_t = [];
@@ -53,6 +57,7 @@ Ftheta = [];
 Maximal_particle_displacement = [];
 Total_Height_change = [];
 Particles_Over_the_boundary = [];
+Participation_Ratio = [];
 
 TRACK_FILE = [];
 
@@ -62,12 +67,16 @@ TRACK_FILE = [];
 for nf = 1:Nofiles
     folder = FOLDER(nf);
     En = filenumbers(nf);
-    filedirectory = sprintf('/aline%i/rotdrum%i/o%i/',folder,folder,En);
+    %filedirectory = sprintf('/aline%i/rotdrum%i/o%i/',folder,folder,En);
+    filedirectory = sprintf('/Users/Aline/Documents/Research/MATLAB/particle_tracking/');
     filename = sprintf('%sAvalanches_%i_%i.mat',filedirectory,En,kind);
     file_CM = sprintf('%sSurface_CM_%i_%i.mat',filedirectory,En,kind);
     file_Potential = sprintf('%sPotential_Energy_%i_%i.mat',filedirectory,En,kind);
-
     %filename = sprintf('Avalanches_%i.mat',filenumbers(nf));
+    avanofile = sprintf('%sAvanonestep%i.mat',filedirectory,En);
+    load(avanofile);
+    load(sprintf('Center_of_Mass_%i.mat',En));
+    
     
     clear('git_version','Number_Avalanches','Noavalanches','Avalanche_time', ...
         'Avalanche_particles','Avalanche_displacement','Avalanche_energy',...
@@ -96,13 +105,18 @@ for nf = 1:Nofiles
         'In_imafile','Fn_imafile','in_trackedfile');
     %'spectrum_particles','spectrum_displacement','spectrum_energy','spectrum_potential',...
     
-    
-    
+    changefileindex = find(diff(avan(1,navfile))>1);  
+    initialfileindex = navfile([1 changefileindex(1:end-1)+1]);
+    [~,icm,ia] = intersect(initialfileindex(1:end-1),In_imafile);
+    avalanche = [avalanche -Avalanche_potential(ia)];
+    X_CM = [X_CM x_cm(icm)];
+    Y_CM = [Y_CM y_cm(icm)];
     
     diff_Center_mass(117:124,:) = 0;
     
     ii = 2:Number_Avalanches;
-
+    
+    Participation_Ratio = [Participation_Ratio Participation];
     TRACK_FILE = [TRACK_FILE in_trackedfile];
     Particles_Over_the_boundary = [Particles_Over_the_boundary Nb_boundary(:,ii)];
     Totalavalanches = Totalavalanches + Number_Avalanches-1;
@@ -156,8 +170,8 @@ end
  ii_internal_right = find(Particles_Over_the_boundary(2,:) <= 1);
  ii_none_boundary = find(((Particles_Over_the_boundary(1,:) <= 0).*...
      (Particles_Over_the_boundary(2,:) <= 1)));
- ii_whole = find(sum(Surface_change>1)>100);
- ii_non_spaning = find(sum(Surface_change>1)<=100);
+ ii_whole = find(sum(Surface_change>1)> 105);
+ ii_non_spaning = find(sum(Surface_change>1)<= 105);
  Delta_theta = Itheta-Ftheta;
 ii = find(dSteps>-1);
 T = T/fps;
@@ -165,7 +179,7 @@ T = T/fps;
 % Maxd = Maxd/D;
 % TSd = TSd/D;
 % H = H/D;
-% U = H*g*d;
+ U = Size_Potential*g*d*m/D;
 % Energy = Energy/(D^2);
 % Energyu = Energy*((d/D)^2)*(fps^2) ;
 Itheta = Itheta+alpha;
@@ -176,3 +190,36 @@ inr = find(dSteps<0);
 ir(inr) = 0;
 ir(inr+1)= 0;
 ir = find(ir);
+
+
+
+%% For average shape
+T_n = T(ii_non_spaning);
+avan_shape = -shape_Potential(:,ii_non_spaning)*g*d*m/D;
+
+
+it = find(T_n(:)< 1.5 & T_n(:) > 0.05);
+it = it(mean(avan_shape(85:101,it))> 0.005);
+it = it(mean(avan_shape(1:15,it))> 0.005);
+[~, b] = find(avan_shape(:,it) < -0.5);
+it = setdiff(it,it(unique(b)));
+
+tot_average = mean(avan_shape(:,it).*(repmat(T_n(it),101,1).^-1.06),2);
+
+normcoeff = max(tot_average);
+
+xmin = log10(.08);
+xmax = log10(1);
+x = logspace(xmin,xmax,21);
+
+for ii = 2:21
+it = find(abs(T_n - x(ii)) < x(ii-1)/(ii));
+it = it(mean(avan_shape(85:101,it))> 0);
+it = it(mean(avan_shape(1:15,it))> 0);
+average_shape(:,ii-1) = mean(avan_shape(:,it),2);
+n_a(ii-1) = length(it);
+dt(ii-1) = x(ii-1)/(ii*10);
+end
+
+
+
