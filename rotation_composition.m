@@ -15,9 +15,9 @@ xo = A_x*sin(frequency*t+phi_x)+a0_x;
 yo = A_y*cos(frequency*t+phi_y)+a0_y;
 %Get difference btw xo and yo to apply the rotation matrices
 theta = n_rot*frequency; %Angle that will be rotated
-[x_rot, y_rot] = rot_me(theta,x-xo(1),y-yo(1));
-x_rot = x_rot + xo(2);
-y_rot = y_rot + yo(2);
+[x_rot, y_rot] = rot_me(theta,x-xo(2),y-yo(2));
+x_rot = x_rot + xo(1);
+y_rot = y_rot + yo(1);
 
 
 

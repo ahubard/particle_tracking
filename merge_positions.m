@@ -1,8 +1,10 @@
 function [x_ima, y_ima, x_non_ima, y_non_ima,overlap_size] = merge_positions(x_ima,y_ima,x_rot,y_rot)
 % Find the overlaping regions of ima and rot
-
-adjacentmatrix = adjacent(x_ima, y_ima, x_rot, y_rot, 7);
-overlap_r = find(sum(adjacentmatrix));
+ct1 = 8;
+ct2 = 4.5;
+ct3 = 6.4;
+adjacentmatrix = adjacent(x_ima, y_ima, x_rot, y_rot, ct1);
+overlap_r = find(sum(adjacentmatrix,1));
 i_non_overlap_r = setdiff((1:length(x_rot)),overlap_r);
 overlap_i = find(sum(adjacentmatrix,2));
 i_non_overlap_i = setdiff(1:length(x_ima),overlap_i);
@@ -26,10 +28,10 @@ if(~isempty(overlap_i))
     
     % Assign closest trivial neighbours of overlaping region;
     [adjacentmatrix, tb1, tb2,~] = ...
-        adjacent(x_over_i,y_over_i,x_over_r ,y_over_r,4.5);
+        adjacent(x_over_i,y_over_i,x_over_r ,y_over_r,ct2);
     
     % Check overlaps
-    overlap_r = find(sum(adjacentmatrix))';
+    overlap_r = find(sum(adjacentmatrix,1))';
     overlap_i = find(sum(adjacentmatrix,2));
     
     % Get the non trivial overlaps and keep one set;
@@ -43,6 +45,7 @@ if(~isempty(overlap_i))
     x_ima = [x_ima; 1*x_over_i(tb1)+0*x_over_r(tb2)];
     y_ima = [y_ima; 1*y_over_i(tb1)+0*y_over_r(tb2)];
     
+    %Particles farther away than ct1 but closer than ct2
     i_non_r = setdiff((1:length(x_over_r)),overlap_r);
     i_non_i = setdiff(1:length(x_over_i),overlap_i);
     
@@ -58,22 +61,37 @@ if(~isempty(overlap_i))
         
         if(~isempty(i1))
             if(~isempty(i2))
-                adjacentmatrix = adjacent(x1,y1,x2 ,y2,6);
+                [adjacentmatrix, tb1,tb2, distancematrix] = adjacent(x1,y1,x2 ,y2,ct3);
+                non_ove_r = find(sum(adjacentmatrix,1) == 0);
+                %non_ove_i = find(sum(adjacentmatrix,2) == 0);
+                i2 = setdiff(setdiff((1:length(x2)),tb2),non_ove_r);
+                adjacentmatrix(sub2ind(size(distancematrix),tb1,tb2)) = 0;
+                distancematrix(adjacentmatrix == 0) = inf; 
+                [assignment, ~] = assignmentoptimal(distancematrix);
                 
-                if(length(i1) >= length(i2))
-                    non_ove = find(sum(adjacentmatrix) == 0);
-                    x_extra = [x1; x2(non_ove)];
-                    y_extra = [y1; y2(non_ove)];
-                    x_non_ima = [x_non_ima; x2(non_ove)];
-                    y_non_ima = [y_non_ima; y2(non_ove)];
-                    
-                else
-                    non_ove = find(sum(adjacentmatrix,2) == 0);
-                    x_extra = [x1(non_ove); x2];
-                    y_extra = [y1(non_ove); y2];
-                    x_non_ima = [x_non_ima; x2];
-                    y_non_ima = [y_non_ima; y2];
-                end
+                i2 = setdiff(i2,assignment(assignment > 0));
+                x_extra = [x1; x2(non_ove_r) ;x2(i2)];
+                y_extra = [y1; y2(non_ove_r); y2(i2)];
+             
+                x_non_ima = [x_non_ima; x2(non_ove_r); x2(i2)];
+                y_non_ima = [y_non_ima; y2(non_ove_r); x2(i2)];
+                
+                
+                
+%                 if(length(i1) >= length(i2))
+%                     non_ove = find(sum(adjacentmatrix,1) == 0);
+%                     x_extra = [x1; x2(non_ove)];
+%                     y_extra = [y1; y2(non_ove)];
+%                     x_non_ima = [x_non_ima; x2(non_ove)];
+%                     y_non_ima = [y_non_ima; y2(non_ove)];
+%                     
+%                 else
+%                     non_ove = find(sum(adjacentmatrix,2) == 0);
+%                     x_extra = [x1(non_ove); x2];
+%                     y_extra = [y1(non_ove); y2];
+%                     x_non_ima = [x_non_ima; x2];
+%                     y_non_ima = [y_non_ima; y2];
+%                 end
             else
                 x_extra = x1;
                 y_extra = y1;

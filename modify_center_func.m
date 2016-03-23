@@ -4,8 +4,8 @@ function [Amp a0_x a0_y phi_x] = modify_center_func(folder,En)
 
 
 %% Use images and angle of rotation to find how the center of rotation moves
-%filedirectory = sprintf('/aline%i/rotdrum%i/o%i/',folder,folder,En);
-    filedirectory = sprintf('/Users/Aline/Documents/Research/MATLAB/particle_tracking/');
+filedirectory = sprintf('/aline%i/rotdrum%i/o%i/',folder,folder,En);
+    %filedirectory = sprintf('/Users/Aline/Documents/Research/MATLAB/particle_tracking/');
 
 file_for_center = sprintf('%sCenter_%i.mat',filedirectory,En);
 
