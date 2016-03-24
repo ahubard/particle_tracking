@@ -7,6 +7,7 @@ function nb_files = create_bottom(folder,En)
 D = 10;
 angle_aperture = 2.5; %Around how much is missing of angle.
 m = 0.3;
+move_cutoff = 5;
 %% Get info about the file numbers and rotation steps
 filedirectory = sprintf('/aline%i/rotdrum%i/o%i/',folder,folder,En);
 avanofile = sprintf('%sAvanonestep%i.mat',filedirectory,En);
@@ -103,7 +104,7 @@ for ii = 1:nb_files
         end
         PY = 400 - PY;
         position_change = sqrt((PX(:,end)-PX(:,1)).^2+(PY(:,end)-PY(:,1)).^2);
-        particles_move = find(position_change >= 2);
+        particles_move = find(position_change >= move_cutoff);
         
         image_r = sprintf('%s/positions%02d_%05d.mat',filedirectory,En,file_r);
         load(image_r,'pxs','pys','Npf');
@@ -117,8 +118,8 @@ for ii = 1:nb_files
         x_aux = x(p_to_rotate);
         y_aux = y(p_to_rotate);
         
-        x = x_aux(x_aux < a0_x-D  & y_aux > max(y)-1.5*D+m*(x_aux-a0_x) & y_aux > max(y)-12*D);
-        y = y_aux(x_aux < a0_x-D  & y_aux > max(y)-1.5*D+m*(x_aux-a0_x) & y_aux > max(y)-12*D);
+        x = x_aux(x_aux < a0_x-D  & y_aux > max(y)-1.5*D+m*(x_aux-a0_x) & y_aux > max(y)-15*D);
+        y = y_aux(x_aux < a0_x-D  & y_aux > max(y)-1.5*D+m*(x_aux-a0_x) & y_aux > max(y)-15*D);
         
         %rotate positions to meet ima positions
         [x_rot, y_rot] = rotation_composition(x,y,r_i(ii),r_i_unique(jj),...
@@ -151,7 +152,7 @@ for ii = 1:nb_files
         end
         PY = 400 - PY;
         position_change = sqrt((PX(:,end)-PX(:,1)).^2+(PY(:,end)-PY(:,1)).^2);
-        particles_move = find(position_change >= 2);
+        particles_move = find(position_change >= move_cutoff);
         
         image_r = sprintf('%s/positions%02d_%05d.mat',filedirectory,En,file_r);
         load(image_r,'pxs','pys','Npf');
@@ -165,8 +166,8 @@ for ii = 1:nb_files
         p_to_rotate = setdiff(1:length(x),particles_move);
         x_aux = x(p_to_rotate);
         y_aux = y(p_to_rotate);
-        x = x_aux(x_aux > (a0_x+D)  & y_aux > max(y)-1.5*D-m*(x_aux-a0_x) & y_aux > max(y)-12*D);
-        y = y_aux(x_aux > (a0_x+D)  & y_aux > max(y)-1.5*D-m*(x_aux-a0_x) & y_aux > max(y)-12*D);
+        x = x_aux(x_aux > (a0_x+D)  & y_aux > max(y)-1.5*D-m*(x_aux-a0_x) & y_aux > max(y)-15*D);
+        y = y_aux(x_aux > (a0_x+D)  & y_aux > max(y)-1.5*D-m*(x_aux-a0_x) & y_aux > max(y)-15*D);
         
         %rotate positions to meet ima positions
         [x_aux, y_aux] = rotation_composition(x,y,r_i(ii),r_i_unique(jj),...
