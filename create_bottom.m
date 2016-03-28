@@ -6,8 +6,8 @@ function nb_files = create_bottom(folder,En)
 % En = 104;
 D = 10;
 angle_aperture = 2.5; %Around how much is missing of angle.
-m = 0.3;
-move_cutoff = 5;
+m = 0.2;
+move_cutoff = 4;
 %% Get info about the file numbers and rotation steps
 filedirectory = sprintf('/aline%i/rotdrum%i/o%i/',folder,folder,En);
 avanofile = sprintf('%sAvanonestep%i.mat',filedirectory,En);
@@ -106,28 +106,44 @@ for ii = 1:nb_files
         position_change = sqrt((PX(:,end)-PX(:,1)).^2+(PY(:,end)-PY(:,1)).^2);
         particles_move = find(position_change >= move_cutoff);
         
+        
         image_r = sprintf('%s/positions%02d_%05d.mat',filedirectory,En,file_r);
         load(image_r,'pxs','pys','Npf');
         [~, t] = max(Npf);
         x = pxs(1:Npf(t),t);
         y = pys(1:Npf(t),t);
+        r = sqrt((x-a0_x).^2+(y-a0_y).^2);
+        
+        %Get the angle between two rotations and make sure to include at
+        %least the particles between. 
+        alpha_btw_rot = (r_i_unique(jj+1) - r_i_unique(jj))*th_step;
+        needed = find((x < a0_x)  &  (y > 400 - r*sin(alpha_btw_rot -D)));
+        
         % Keep particles that didnt move much in previous frames
         adjacentmatrix = adjacent(x, y, PX(particles_move,end), PY(particles_move,end), D/2+1);
         particles_move = find(sum(adjacentmatrix,2));
         p_to_rotate = setdiff(1:length(x),particles_move);
+        p_to_rotate = union(p_to_rotate,needed);
+        
         x_aux = x(p_to_rotate);
         y_aux = y(p_to_rotate);
+        r_aux = r(p_to_rotate);
         
-        x = x_aux(x_aux < a0_x-D  & y_aux > max(y)-1.5*D+m*(x_aux-a0_x) & y_aux > max(y)-15*D);
-        y = y_aux(x_aux < a0_x-D  & y_aux > max(y)-1.5*D+m*(x_aux-a0_x) & y_aux > max(y)-15*D);
+        y_cutoff = max(y)-D+m*(x_aux-a0_x);
+        y_cutoff(y_cutoff < max(y) - 10*D) = max(y)-12*D;
+        y_cutoff = min(y_cutoff, 400-r_aux*sin(alpha_btw_rot)-D);
+        
+        
+        x = x_aux(x_aux < a0_x-D  & y_aux > y_cutoff);
+        y = y_aux(x_aux < a0_x-D  & y_aux > y_cutoff);
         
         %rotate positions to meet ima positions
         [x_rot, y_rot] = rotation_composition(x,y,r_i(ii),r_i_unique(jj),...
             A,A,phi_x,phi_y,th_step,a0_x,a0_y);
         x_rot = x_rot(y_rot >= (max(y)-3*D));
         y_rot = y_rot(y_rot >= (max(y)-3*D));
-%         plot(x_ima,y_ima,'.',x_rot,y_rot,'.');axis('equal');
-%         drawnow;
+%          plot(x_ima,y_ima,'.',x_rot,y_rot,'.');axis('equal');
+%          drawnow;
         [x_ima, y_ima, x_non_ima, y_non_ima, o_s] = merge_positions(x_ima,y_ima,x_rot,y_rot);
         if (o_s(1) == 0 || o_s(2) == 0)
             save(sprintf('%sCheck_bottom_%i.mat',filedirectory, file_n),'file_r')
@@ -159,23 +175,41 @@ for ii = 1:nb_files
         [~, t] = max(Npf);
         x = pxs(1:Npf(t),t);
         y = pys(1:Npf(t),t);
+        r = sqrt((x-a0_x).^2+(y-a0_y).^2);
+        
+        %Get the angle between two rotations and make sure to include at
+        %least the particles between. 
+        alpha_btw_rot = (r_i_unique(jj) - r_i_unique(jj-1))*th_step;
+        needed = find((x > a0_x)  &  (y > 400 - r*sin(alpha_btw_rot - D)));
+        
         
         % Keep particles that didnt move much in previous frames
         adjacentmatrix = adjacent(x, y, PX(particles_move,1), PY(particles_move,1), D/2 + 1);
         particles_move = find(sum(adjacentmatrix,2));
         p_to_rotate = setdiff(1:length(x),particles_move);
+        p_to_rotate = union(p_to_rotate, needed);
+        
         x_aux = x(p_to_rotate);
         y_aux = y(p_to_rotate);
-        x = x_aux(x_aux > (a0_x+D)  & y_aux > max(y)-1.5*D-m*(x_aux-a0_x) & y_aux > max(y)-15*D);
-        y = y_aux(x_aux > (a0_x+D)  & y_aux > max(y)-1.5*D-m*(x_aux-a0_x) & y_aux > max(y)-15*D);
+        r_aux = r(p_to_rotate);
+        
+        y_cutoff = max(y)-D-m*(x_aux-a0_x);
+        %y_cutoff(y_cutoff < max(y) - 10*D) = max(y)-12*D;
+        y_cutoff = min(y_cutoff, 400-r_aux*sin(alpha_btw_rot)-D);
+        
+        
+        x = x_aux(x_aux > (a0_x+D)  & y_aux > y_cutoff);
+        y = y_aux(x_aux > (a0_x+D)  & y_aux > y_cutoff);
+        
+        % x = x_aux(x_aux < a0_x-D  & y_aux > max(y)-1.5*D+m*(x_aux-a0_x) & y_aux > max(y)-15*D);
         
         %rotate positions to meet ima positions
         [x_aux, y_aux] = rotation_composition(x,y,r_i(ii),r_i_unique(jj),...
             A,A,phi_x,phi_y,th_step,a0_x,a0_y);
         x_rot = x_aux(x_aux >= 1/mtheta*(y_aux-yo)+xo-5*D  & y_aux >(max(y)-3*D));
         y_rot = y_aux(x_aux >= 1/mtheta*(y_aux-yo)+xo-5*D  & y_aux >(max(y)-3*D));
-%         plot(x_ima,y_ima,'.',x_rot,y_rot,'.');axis('equal');
-%         drawnow;
+%          plot(x_ima,y_ima,'.',x_rot,y_rot,'.');axis('equal');
+%          drawnow;
         [x_ima, y_ima, x_non_ima, y_non_ima, o_s] = merge_positions(x_ima,y_ima,x_rot,y_rot);
         if (o_s(1) == 0 || o_s(2) == 0)
             save(sprintf('%sCheck_bottom_%i.mat',filedirectory, file_n),'file_r')

@@ -42,15 +42,15 @@ if(~isempty(overlap_i))
     %         x_ima = [x_ima; x_over_i(tb1)];
     %         y_ima = [y_ima; y_over_i(tb1)];
     
-    x_ima = [x_ima; 1*x_over_i(tb1)+0*x_over_r(tb2)];
-    y_ima = [y_ima; 1*y_over_i(tb1)+0*y_over_r(tb2)];
+%     x_ima = [x_ima; 1*x_over_i(tb1)+0*x_over_r(tb2)];
+%     y_ima = [y_ima; 1*y_over_i(tb1)+0*y_over_r(tb2)];
     
     %Particles farther away than ct1 but closer than ct2
     i_non_r = setdiff((1:length(x_over_r)),overlap_r);
     i_non_i = setdiff(1:length(x_over_i),overlap_i);
     
     
-    i1 = [ntb1; i_non_i'];
+    i1 = [tb1; ntb1; i_non_i'];
     i2 = [ntb2; i_non_r'];
     
     if(~isempty(i1) || ~isempty(i2))
