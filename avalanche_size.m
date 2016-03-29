@@ -78,6 +78,10 @@ Nb_boundary = zeros(2,count);
 Number_Avalanches = 0;
 Noavalanches = zeros(1,count);
 
+%Total x and y changein camera coordinate system
+Delta_x = zeros(1,4*count);
+Delta_y = zeros(1,4*count);
+
 DELTAR = zeros(1,4*count);
 Dheight = zeros(1,4*count);
 DLength = zeros(1,4*count);
@@ -244,6 +248,10 @@ for nf = 1:count-1
                 
                 DELTAR(Number_Avalanches) = sum(sqrt(((PX(diskmove,t2(na))-PX(diskmove,t1(na))).^2+...
                     (PY(diskmove,t2(na))-PY(diskmove,t1(na))).^2).*particlesthatmoved));
+                
+                Delta_x(Number_Avalanches) = sum((PX(diskmove,t2(na)) - PX(diskmove,t1(na))).*particlesthatmoved);
+                Delta_y(Number_Avalanches) = sum((PY(diskmove,t2(na)) - PY(diskmove,t1(na))).*particlesthatmoved);
+                
                 [x_before_aval, y_before_aval] = rot_me(alpha,PX(diskmove,t1(na)),PY(diskmove,t1(na)));
                 [x_after_aval, y_after_aval] = rot_me(alpha,PX(diskmove,t2(na)),PY(diskmove,t2(na)));
                 Dheight(Number_Avalanches) = sum((y_after_aval - y_before_aval).*particlesthatmoved);
@@ -278,7 +286,7 @@ for nf = 1:count-1
             
         end
         Avalanche_time{1,nf} = t1(ii_time > 0);
-        Avalanche_time{2,nf} = t2(ii_time>0);
+        Avalanche_time{2,nf} = t2(ii_time > 0);
         Noavalanches(nf) = Number_Avalanches;
     end
     %fprintf('In file %i the number of avalanches is %i\n',nf,Number_Avalanches);
@@ -286,54 +294,60 @@ for nf = 1:count-1
 end
 
     
-%% Resize matrices
-Avalanche_duration = Avalanche_duration(1:Number_Avalanches);
+%% Resize matrices keeping only the data the has a "big" participation ratio
+ikeep = find(Participation > 0.0025);
 
-Avalanche_particles = Avalanche_particles(1:Number_Avalanches);
-Avalanche_displacement = Avalanche_displacement(1:Number_Avalanches);
-Avalanche_energy = Avalanche_energy(1:Number_Avalanches);
-Avalanche_potential = Avalanche_potential(1:Number_Avalanches);
+Number_Avalanches = length(ikeep);
+Avalanche_duration = Avalanche_duration(ikeep);
 
-Normalized_particles = Normalized_particles(:,1:Number_Avalanches);
-Normalized_avalanche = Normalized_avalanche(:,1:Number_Avalanches);
-Normalized_energy = Normalized_energy(:,1:Number_Avalanches);
-Normalized_potential = Normalized_potential(:,1:Number_Avalanches);
+Avalanche_particles = Avalanche_particles(ikeep);
+Avalanche_displacement = Avalanche_displacement(ikeep);
+Avalanche_energy = Avalanche_energy(ikeep);
+Avalanche_potential = Avalanche_potential(ikeep);
 
-mat_particles = mat_particles(:,1:Number_Avalanches);
-mat_displacement = mat_displacement(:,1:Number_Avalanches);
-mat_energy = mat_energy(:,1:Number_Avalanches);
-mat_potential = mat_potential(:,1:Number_Avalanches);
+Normalized_particles = Normalized_particles(:,ikeep);
+Normalized_avalanche = Normalized_avalanche(:,ikeep);
+Normalized_energy = Normalized_energy(:,ikeep);
+Normalized_potential = Normalized_potential(:,ikeep);
+
+mat_particles = mat_particles(:,ikeep);
+mat_displacement = mat_displacement(:,ikeep);
+mat_energy = mat_energy(:,ikeep);
+mat_potential = mat_potential(:,ikeep);
 
 %correlations
-correlation_particles = correlation_particles(:,1:Number_Avalanches);
-correlation_displacement = correlation_displacement(:,1:Number_Avalanches);
-correlation_energy = correlation_energy(:,1:Number_Avalanches);
-correlation_potential = correlation_potential(:,1:Number_Avalanches);
-diff_Center_mass = diff_Center_mass(:,1:Number_Avalanches);
-diff_CMass_t = diff_CMass_t(1,1:Number_Avalanches);
+correlation_particles = correlation_particles(:,ikeep);
+correlation_displacement = correlation_displacement(:,ikeep);
+correlation_energy = correlation_energy(:,ikeep);
+correlation_potential = correlation_potential(:,ikeep);
+diff_Center_mass = diff_Center_mass(:,ikeep);
+diff_CMass_t = diff_CMass_t(1,ikeep);
 
-Total_Potential_Energy = Total_Potential_Energy(1:Number_Avalanches);
+Total_Potential_Energy = Total_Potential_Energy(ikeep);
 
-% spectrum_particles = spectrum_particles(:,1:Number_Avalanches);
-% spectrum_displacement = spectrum_displacement(:,1:Number_Avalanches);
-% spectrum_energy = spectrum_energy(:,1:Number_Avalanches);
-% spectrum_potential = spectrum_potential(:,1:Number_Avalanches);
-Nb_boundary = Nb_boundary(:,1:Number_Avalanches);
-DELTAR = DELTAR(1:Number_Avalanches);
-Dheight = Dheight(1:Number_Avalanches);
-DLength = DLength(1:Number_Avalanches);
-NoParticles_moved = NoParticles_moved(1:Number_Avalanches);
-Max_particle_dis = Max_particle_dis(1:Number_Avalanches);
-Initial_Angle = Initial_Angle(1:Number_Avalanches);
-Final_Angle = Final_Angle(1:Number_Avalanches);
-Rotation_step = Rotation_step(:,1:Number_Avalanches);
+% spectrum_particles = spectrum_particles(:,ikeep);
+% spectrum_displacement = spectrum_displacement(:,ikeep);
+% spectrum_energy = spectrum_energy(:,ikeep);
+% spectrum_potential = spectrum_potential(:,ikeep);
+Nb_boundary = Nb_boundary(:,ikeep);
+DELTAR = DELTAR(ikeep);
+Delta_x = Delta_x(ikeep);
+Delta_y = Delta_y(ikeep);
 
-Nb_Tracked = Nb_Tracked(1:Number_Avalanches)
-Displacement_File_nb = Displacement_File_nb(1:Number_Avalanches);
-Participation = Participation(1:Number_Avalanches);
-In_imafile = In_imafile(1:Number_Avalanches);
-Fn_imafile = Fn_imafile(1:Number_Avalanches);
-in_trackedfile = in_trackedfile(1:Number_Avalanches);
+Dheight = Dheight(ikeep);
+DLength = DLength(ikeep);
+NoParticles_moved = NoParticles_moved(ikeep);
+Max_particle_dis = Max_particle_dis(ikeep);
+Initial_Angle = Initial_Angle(ikeep);
+Final_Angle = Final_Angle(ikeep);
+Rotation_step = Rotation_step(:,ikeep);
+
+Nb_Tracked = Nb_Tracked(ikeep)
+Displacement_File_nb = Displacement_File_nb(ikeep);
+Participation = Participation(ikeep);
+In_imafile = In_imafile(ikeep);
+Fn_imafile = Fn_imafile(ikeep);
+in_trackedfile = in_trackedfile(ikeep);
 %% Save results to file
 file_save = sprintf('%sAvalanches_%i_%i.mat',filedirectory,En,kind);
 file_CM = sprintf('%sSurface_CM_%i_%i.mat',filedirectory,En,kind);
@@ -346,7 +360,8 @@ save(file_save,'git_version','maxT','Number_Avalanches','Noavalanches','Avalanch
     'correlation_particles', 'correlation_displacement', 'correlation_energy', 'correlation_potential',...
     'DELTAR','Dheight','DLength','NoParticles_moved','Max_particle_dis',...
     'Initial_Angle','Final_Angle','Rotation_step','Nb_boundary','diff_Center_mass',...
-    'Displacement_File_nb', 'Participation', 'In_imafile','Fn_imafile','in_trackedfile'); 
+    'Displacement_File_nb', 'Participation', 'In_imafile','Fn_imafile','in_trackedfile',...
+    'Delta_x','Delta_y'); 
 
 % save(file_save,'git_version','MaxT','Number_Avalanches','Noavalanches','Avalanche_time', ...
 %     'Avalanche_particles','Avalanche_displacement','Avalanche_energy','Avalanche_duration','Avalanche_potential',...
@@ -357,5 +372,6 @@ save(file_save,'git_version','maxT','Number_Avalanches','Noavalanches','Avalanch
 %     'DELTAR','Dheight','NoParticles_moved','Max_particle_dis',...
 %     'Initial_Angle','Final_Angle','Rotation_step');
 
-save(file_CM,'git_version','diff_CMass_t','Avalanche_time','Displacement_File_nb');
-save(file_Potential,'git_version','Total_Potential_Energy','Initial_Angle','Final_Angle','Rotation_step','Dheight','DLength','Nb_Tracked');
+save(file_CM,'git_version','diff_CMass_t','Avalanche_time','Displacement_File_nb','Delta_x','Delta_y');
+save(file_Potential,'git_version','Total_Potential_Energy','Initial_Angle',...
+    'Final_Angle','Rotation_step','Dheight','DLength','Nb_Tracked','Delta_x','Delta_y');
