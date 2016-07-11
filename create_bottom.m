@@ -1,15 +1,20 @@
-function nb_files = create_bottom(folder,En)
-%% Find the positions of the particles that dont appear in the picture.
-%tic;
-% Data keeping files
-% folder = 1;
-% En = 104;
+function [x_whole, y_whole] = create_bottom(folder,En,file_n,ti)
+%% Find the positions of the particles that dont appear in the picture ti of file_n.
+%x_whole,y_whole gives the positions of each particle in frame ti of file_n
+%the results shows the merge of the positions found from images before and
+%after the current image.
+
 D = 10;
 angle_aperture = 2.5; %Around how much is missing of angle.
 m = 0.2;
 move_cutoff = 4;
+%% Get positions of from the image to complete
+    filedirectory = sprintf('/aline%i/rotdrum%i/o%i/',folder,folder,En);
+    image_fn = sprintf('%s/positions%02d_%05d.mat',filedirectory,En,file_n);
+    load(image_fn,'pxs','pys','Npf');
+    x_ima = pxs(1:Npf(ti),ti);
+    y_ima = pys(1:Npf(ti),ti);
 %% Get info about the file numbers and rotation steps
-filedirectory = sprintf('/aline%i/rotdrum%i/o%i/',folder,folder,En);
 avanofile = sprintf('%sAvanonestep%i.mat',filedirectory,En);
 load(avanofile);
 % navfile has the numbers of files that contain avalanches. avan(1,:)
@@ -18,54 +23,43 @@ load(avanofile);
 changefileindex = find(diff(avan(1,navfile))>1);
 initialfileindex = navfile([1 changefileindex(1:end-1)+1]);%first file of set
 finalfileindex = navfile(changefileindex);%last file of set.
-% Task is to recreate the bottom of the first image of files
-% initialfileindex.
-nb_files = length(initialfileindex);
-% Between finalfileindex(n) and initialfileindex(n+1) a rotation ocurred.
-% The rotation steps t of the files intialfileindex and finalfile index are
-% given by:
-r_i = avan(2,initialfileindex);
-% Get files where there were rotation btw them
-[r_i_unique, i_rotate,~] = unique(r_i);
-i_files_to_rotate = initialfileindex(i_rotate);
-f_files_to_rotate = finalfileindex(i_rotate);
-%% Saving parameters
-N_particles = zeros(1,nb_files);
-x_cm = zeros(1,nb_files);
-y_cm = zeros(1,nb_files);
-
-N_rot_particles = zeros(1,nb_files);
-x_from_rot_cm = zeros(1,nb_files);
-y_from_rot_cm = zeros(1,nb_files);
-%% Get info about how the center of rotation moves and rotation step
-[A, a0_x, a0_y, phi_x] = modify_center_func(folder,En);
-phi_y = phi_x + 0.1;
-% a0_x = fit_x.a0;
-% a0_y = fit_y.a0;
-th_step = 0.0032; %angle per rotation
-steps_to_fill = ceil(angle_aperture/th_step);
-%% Main loop to complete bottom of the circle of all initialfileindexfiles
-% and get the potential energy before rotation.
-for ii = 1:nb_files
+%initialfileindex(ii) is  the first file after the last rotation
+ii = find((file_n - initialfileindex) >= 0,1,'last');
+%file where the info of the positions out of the frame is storaged.
+file_position = sprintf('%swhole_image_%i.mat',initialfileindex(ii));
+if(exist(file_position,'file'))
+    load(file_position,'x_whole','y_whole');
+    x_rot = x_whole(y_whole > (400-20));
+    y_rot = y_whole(y_whole > (400-20));
+    [x_whole, y_whole] = merge_positions(x_ima,y_ima,x_rot,y_rot);
+    
+else
+    % Task is to recreate the bottom of the first image of files
+    % initialfileindex.
+    nb_files = length(initialfileindex);
+    % Between finalfileindex(n) and initialfileindex(n+1) a rotation ocurred.
+    % The rotation steps t of the files intialfileindex and finalfile index are
+    % given by:
+    r_i = avan(2,initialfileindex);
+    % Get files where there were rotation btw them
+    [r_i_unique, i_rotate,~] = unique(r_i);
+    i_files_to_rotate = initialfileindex(i_rotate);
+    f_files_to_rotate = finalfileindex(i_rotate);
+    
+    %% Get info about how the center of rotation moves and rotation step
+    [A, a0_x, a0_y, phi_x] = modify_center_func(folder,En);
+    phi_y = phi_x + 0.1;
+    th_step = 0.0032; %angle per rotation
+    steps_to_fill = ceil(angle_aperture/th_step);
+    %% Main loop to complete bottom of the circle of all initialfileindexfiles
+    % and get the potential energy before rotation.
+    
     
     %Extras per image
     x_from_rot = [];
     y_from_rot = [];
-    
-    
-    file_n = initialfileindex(ii);
     Track_file = sprintf('%sDisplacement_%i.mat',filedirectory, ii);
     load(Track_file,'initial','final','diskmove','PX','PY');
-    
-    if(file_n ~= initial)
-        save(sprintf('%sError_%i.mat',filedirectory,ii),'file_n','initial');
-        error('Somethings not right');
-    end
-    
-    image_fn = sprintf('%s/positions%02d_%05d.mat',filedirectory,En,file_n);
-    load(image_fn,'pxs','pys','Npf');
-    x_ima = pxs(1:Npf(1),1);
-    y_ima = pys(1:Npf(1),1);
     
     max_before = r_i(ii) - r_i(1); % Max rotation steps before ii
     max_after = r_i(end) - r_i(ii); % Max rotationsteps after ii
@@ -115,7 +109,7 @@ for ii = 1:nb_files
         r = sqrt((x-a0_x).^2+(y-a0_y).^2);
         
         %Get the angle between two rotations and make sure to include at
-        %least the particles between. 
+        %least the particles between.
         alpha_btw_rot = (r_i_unique(jj+1) - r_i_unique(jj))*th_step;
         needed = find((x < a0_x)  &  (y > 400 - r*sin(alpha_btw_rot -D)));
         
@@ -142,8 +136,8 @@ for ii = 1:nb_files
             A,A,phi_x,phi_y,th_step,a0_x,a0_y);
         x_rot = x_rot(y_rot >= (max(y)-3*D));
         y_rot = y_rot(y_rot >= (max(y)-3*D));
-%          plot(x_ima,y_ima,'.',x_rot,y_rot,'.');axis('equal');
-%          drawnow;
+        %           plot(x_ima,y_ima,'.',x_rot,y_rot,'.');axis('equal');
+        %           drawnow;
         [x_ima, y_ima, x_non_ima, y_non_ima, o_s] = merge_positions(x_ima,y_ima,x_rot,y_rot);
         if (o_s(1) == 0 || o_s(2) == 0)
             save(sprintf('%sCheck_bottom_%i.mat',filedirectory, file_n),'file_r')
@@ -178,7 +172,7 @@ for ii = 1:nb_files
         r = sqrt((x-a0_x).^2+(y-a0_y).^2);
         
         %Get the angle between two rotations and make sure to include at
-        %least the particles between. 
+        %least the particles between.
         alpha_btw_rot = (r_i_unique(jj) - r_i_unique(jj-1))*th_step;
         needed = find((x > a0_x)  &  (y > 400 - r*sin(alpha_btw_rot - D)));
         
@@ -208,8 +202,8 @@ for ii = 1:nb_files
             A,A,phi_x,phi_y,th_step,a0_x,a0_y);
         x_rot = x_aux(x_aux >= 1/mtheta*(y_aux-yo)+xo-5*D  & y_aux >(max(y)-3*D));
         y_rot = y_aux(x_aux >= 1/mtheta*(y_aux-yo)+xo-5*D  & y_aux >(max(y)-3*D));
-%          plot(x_ima,y_ima,'.',x_rot,y_rot,'.');axis('equal');
-%          drawnow;
+        %          plot(x_ima,y_ima,'.',x_rot,y_rot,'.');axis('equal');
+        %          drawnow;
         [x_ima, y_ima, x_non_ima, y_non_ima, o_s] = merge_positions(x_ima,y_ima,x_rot,y_rot);
         if (o_s(1) == 0 || o_s(2) == 0)
             save(sprintf('%sCheck_bottom_%i.mat',filedirectory, file_n),'file_r')
@@ -217,23 +211,10 @@ for ii = 1:nb_files
         x_from_rot = [x_from_rot(:); x_non_ima(:)];
         y_from_rot = [y_from_rot(:); y_non_ima(:)];
     end
-    toc
-    N_particles(ii) = length(x_ima);
-    x_cm(ii) = mean(x_ima);
-    y_cm(ii) = mean(y_ima);
-    
-    N_rot_particles(ii) = length(x_from_rot);
-    x_from_rot_cm(ii) = mean(x_from_rot);
-    y_from_rot_cm(ii) = mean(y_from_rot);
-    
-    file_save_i = sprintf('%sComplete_positions_%i.mat',filedirectory,file_n);
-    save(file_save_i,'x_ima','y_ima','x_from_rot','y_from_rot');
-    
+    x_whole = x_ima;
+    y_whole = y_ima;
+    save('file_position','x_whole','y_whole');
 end
-[git_version, ~] = evalc('system(''git describe --dirty --alway'')');
-file_save_CM = sprintf('%sCenter_of_Mass_%i.mat',filedirectory, En);
-save(file_save_CM,'N_particles','x_cm','y_cm','N_rot_particles',...
-    'x_from_rot_cm','y_from_rot_cm','git_version');
 
 
-%toc
+

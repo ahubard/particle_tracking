@@ -17,7 +17,7 @@ function Number_Avalanches = avalanche_size(folder,En,kind)
 filedirectory = sprintf('/aline%i/rotdrum%i/o%02d/',folder,folder,En);
 avanofile = sprintf('%sAvanonestep%i.mat',filedirectory,En);
 %avanofile = sprintf('Avanonestep%i.mat',En);
-
+image_file_length = 350;
 if (exist(avanofile,'file'))
     load (avanofile,'count','avan','alpha','maxT','navfile');
     if (kind < 2)
@@ -33,13 +33,21 @@ else
 end
 
 alpha = alpha*pi/180;
-if (En < 100)
-    yo = 203;
+
+if(En < 100)
+
+    R = 579.9;
 else
-    yo = 159.6;
+ 
+    R = 617.7;
+    
 end
 
-R = 617;
+[Amp, xo, yo, phi_x] = modify_center_func(1,En);
+phi_y = phi_x +0.1;
+
+
+
 D = 10;
 Ly = 400;
 yo = Ly-yo; 
@@ -87,6 +95,10 @@ Dheight = zeros(1,4*count);
 DLength = zeros(1,4*count);
 NoParticles_moved = zeros(1,4*count);
 Max_particle_dis = zeros(1,4*count);
+Initial_CM = zeros(2,4*count);
+Final_CM = zeros(1,4*count);
+Num_part_ini = zeros(1,4*count);
+Num_part_end = zeros(1,4*count);
 Initial_Angle = zeros(1,4*count);
 Final_Angle = zeros(1,4*count);
 Rotation_step = zeros(2,4*count);
@@ -167,12 +179,13 @@ for nf = 1:count-1
             if( sum((findavalanche(t1(na):min(t2(na),length(energy_avalanche))))>=1-eps)) %Check if there is indeed avalanches between t1-t2
                 
                 ii_time(na) = 1;
+
                 
                 Number_Avalanches = Number_Avalanches+1;
                 %General data of file
                 Nb_Tracked(Number_Avalanches) = size(PX,1);
                 Displacement_File_nb(Number_Avalanches) = nf;
-                Participation(Number_Avalanches) = participationratio;
+                vParticipation(Number_Avalanches) = participationratio;
                 In_imafile(Number_Avalanches) = initial;
                 Fn_imafile(Number_Avalanches) = final;
                 in_trackedfile(Number_Avalanches) = NEn;                
@@ -188,6 +201,18 @@ for nf = 1:count-1
                 energy_t = energy_avalanche(t1(na):t2(na));
                 potential_t = dif_potential(t1(na):t2(na));
                 
+                %center of mass
+                file_ava_begins = floor(t1(na)/image_file_length)+initial;
+                time_in_file_1 = mod(t1(na),image_file_length);
+                [x_whole, y_whole] = create_bottom(folder,En,file_ava_begins,time_in_file_1);
+                Initial_CM(:,Number_Avalanches) = [mean(x_whole) mean(y_whole)];
+                Num_part_ini(Number_Avalanches) = length(x_whole);
+                
+                file_ava_end = floor(t2(na)/image_file_length)+initial;
+                time_in_file_2 = mod(t2(na),image_file_length);
+                [x_whole, y_whole] = create_bottom(folder,En,file_ava_end,time_in_file_2);
+                Final_CM(:,Number_Avalanches) = [mean(x_whole) mean(y_whole)];
+                Num_part_end(Number_Avalanches) = length(x_whole);
                 
                 
                 %Sizes and duration
@@ -338,6 +363,11 @@ Dheight = Dheight(ikeep);
 DLength = DLength(ikeep);
 NoParticles_moved = NoParticles_moved(ikeep);
 Max_particle_dis = Max_particle_dis(ikeep);
+
+Initial_CM = Initial_CM(:,ikeep);
+Final_CM = Initial_CM(:,ikeep);
+Num_part_ini = Num_part_ini(ikeep);
+Num_part_end = Num_part_end(ikeep);
 Initial_Angle = Initial_Angle(ikeep);
 Final_Angle = Final_Angle(ikeep);
 Rotation_step = Rotation_step(:,ikeep);
@@ -361,7 +391,7 @@ save(file_save,'git_version','maxT','Number_Avalanches','Noavalanches','Avalanch
     'DELTAR','Dheight','DLength','NoParticles_moved','Max_particle_dis',...
     'Initial_Angle','Final_Angle','Rotation_step','Nb_boundary','diff_Center_mass',...
     'Displacement_File_nb', 'Participation', 'In_imafile','Fn_imafile','in_trackedfile',...
-    'Delta_x','Delta_y'); 
+    'Delta_x','Delta_y','Initial_CM','Final_CM','Num_part_ini','Num_part_end'); 
 
 % save(file_save,'git_version','MaxT','Number_Avalanches','Noavalanches','Avalanche_time', ...
 %     'Avalanche_particles','Avalanche_displacement','Avalanche_energy','Avalanche_duration','Avalanche_potential',...
@@ -374,4 +404,5 @@ save(file_save,'git_version','maxT','Number_Avalanches','Noavalanches','Avalanch
 
 save(file_CM,'git_version','diff_CMass_t','Avalanche_time','Displacement_File_nb','Delta_x','Delta_y');
 save(file_Potential,'git_version','Total_Potential_Energy','Initial_Angle',...
-    'Final_Angle','Rotation_step','Dheight','DLength','Nb_Tracked','Delta_x','Delta_y');
+    'Final_Angle','Rotation_step','Dheight','DLength','Nb_Tracked',...
+    'Delta_x','Delta_y','Initial_CM','Final_CM','Num_part_ini','Num_part_end');
