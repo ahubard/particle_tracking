@@ -95,7 +95,8 @@ else
         
         if(file_r ~= final)
             save(sprintf('%sError_%i.mat',filedirectory,ii),'file_n','initial','final','jj');
-            %error('Somethings not right');
+            
+            error('Somethings not right in experiment %i and file %i',En,file_n);
         end
         PY = 400 - PY;
         position_change = sqrt((PX(:,end)-PX(:,1)).^2+(PY(:,end)-PY(:,1)).^2);
@@ -159,7 +160,7 @@ else
         
         if(file_r ~= initial)
             save(sprintf('%sError_%i.mat',filedirectory,ii),'file_n','initial','final','jj');
-            error('Somethings not right');
+            error('Somethings not right in experiment %i and file %i at file_r %i',En,file_n,file_r);
         end
         PY = 400 - PY;
         position_change = sqrt((PX(:,end)-PX(:,1)).^2+(PY(:,end)-PY(:,1)).^2);
