@@ -95,7 +95,7 @@ else
         
         if(file_r ~= final)
             save(sprintf('%sError_%i.mat',filedirectory,ii),'file_n','initial','final','jj');
-            error('Somethings not right');
+            %error('Somethings not right');
         end
         PY = 400 - PY;
         position_change = sqrt((PX(:,end)-PX(:,1)).^2+(PY(:,end)-PY(:,1)).^2);
