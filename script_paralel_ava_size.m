@@ -14,5 +14,5 @@ for kind = 0:2
     end
     sprintf('Done with kind = %i',kind);
 end
-
+matlabpool close
     
