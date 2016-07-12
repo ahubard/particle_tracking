@@ -2,8 +2,8 @@
 %uses a parallel loop to use the cluster and try to reduce the time. 
 
 %% Create the array of different initial positions.
-Experiment = [ 15 16 17 18 19 20 21 22 23 103 104 105 106 107 108 109 ];
-FOLDER = [1 1 1 1 1 1 2 2 2 1 1 2 2 2 2 2];
+Experiment = [ 15 16 17 18 19 20 21 22 23 103 104  106 107 108 109 ];
+FOLDER = [1 1 1 1 1 1 2 2 2 1 1  2 2 2 2];
 LE = length(Experiment);
 %% Open matlab in parlel mode
 matlabpool open
