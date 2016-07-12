@@ -19,7 +19,8 @@ load(filename,'git_version','Number_Avalanches','Noavalanches','Avalanche_time',
         'correlation_particles', 'correlation_displacement', 'correlation_energy', 'correlation_potential',...
         'DELTAR','Dheight','DLength','NoParticles_moved','Max_particle_dis',...
         'Initial_Angle','Final_Angle','Rotation_step','Nb_boundary','diff_Center_mass',...
-    'Displacement_File_nb', 'Participation', 'In_imafile','Fn_imafile','in_trackedfile');
+        'Displacement_File_nb', 'Participation', 'In_imafile','Fn_imafile','in_trackedfile'...
+        ,'Delta_x','Delta_y');
 %load(file_Potential);
 load(file_CM);
 if(En <100)
@@ -36,17 +37,24 @@ load(avanofile);
 %% Get parameter of the rotation
 [Amp, a0_x, a0_y, phi_x] = modify_center_func(1,En);
 phi_y = phi_x +0.1;
+
 %% Initial conditions
-Nb = N_particles(1);
+%Nb = mean(N_particles);
+Nb = 7393;
 CM = zeros(2,2*(Number_Avalanches-initial)-1);
+aux_cm = zeros(2,2*(Number_Avalanches-initial)-1);
 CM_from_angles = zeros(2,2*(Number_Avalanches-initial)-1);
 
 rot_angle = .0032;
 initialangle = 29*pi/180;
 ini_CM = [x_cm(1) y_cm(1)];
+aux_cm(:,1) = ini_CM;
 t1 = Avalanche_time{1,initial};
-[CM(1,1), CM(2,1)] = rot_me(-initialangle, ini_CM(1), ini_CM(2)); %FROM IMAGE
- %This is the center of mass of the half circle with the origin at a0
+[CM(1,1), CM(2,1)] = rot_me(-initialangle, aux_cm(1,1), aux_cm(2,1)); %Center of mass FROM IMAGE
+% leave on camera reference frame. 
+
+
+%This is the center of mass of the half circle with the origin at a0
 half_circle_cm = [0; 4*R/(3*pi)] +[a0_x; a0_y];
 
 rcm2 = sum(half_circle_cm.^2);
@@ -70,15 +78,26 @@ rotationangle(1) = 0;
 jj = 2;
 for ii = 1:Number_Avalanches-initial-1
     
-     CM(2,jj) = CM(2,jj-1)-(Dheight(ii)/Nb);
-     CM(1,jj) = CM(1,jj-1)+(DLength(ii)/Nb); 
+    %in camera reference frame
+     aux_cm(1,jj) = aux_cm(1,jj-1) - Delta_x(ii)/Nb;
+     aux_cm(2,jj) = aux_cm(2,jj-1) - Delta_y(ii)/Nb;
+     
+     %In gravity direction reference frame
+     [CM(1,jj), CM(2,jj)] = rot_me(-initialangle, aux_cm(1,jj), aux_cm(2,jj)); 
+
 %      rotationangle(ii+1) = rot_angle*Nb_rot(ii);
 %      rotation_matrix = [cos(rotationangle(ii+1)) -sin(rotationangle(ii+1)); ...
 %      sin(rotationangle(ii+1)) cos(rotationangle(ii+1))];
 %      CM(:,jj+1) = rotation_matrix*CM(:,jj);
-    [CM(1,jj+1),CM(2,jj+1)] = ...
-        rotation_composition(CM(1,jj),CM(2,jj),rot_i(ii),rot_i(ii+1),...
-        Amp,Amp,phi_x,phi_y,-rot_angle,a0_x,a0_y);
+
+
+% fix to rotate around a center already transformed by the angle of the
+% camera. 
+    [aux_cm(1,jj+1),aux_cm(2,jj+1)] = ...
+        rotation_composition(aux_cm(1,jj),aux_cm(2,jj),rot_i(ii),rot_i(ii+1),...
+        Amp,Amp,phi_x,phi_y,rot_angle,a0_x,a0_y);
+    [CM(1,jj+1), CM(2,jj+1)] = rot_me(-initialangle, aux_cm(1,jj+1), aux_cm(2,jj+1)); 
+
 
      [CM_from_angles(1,jj),CM_from_angles(2,jj)] =...
          rot_me(-th_fin(ii),half_circle_cm(1),half_circle_cm(2));
