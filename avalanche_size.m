@@ -96,7 +96,7 @@ DLength = zeros(1,4*count);
 NoParticles_moved = zeros(1,4*count);
 Max_particle_dis = zeros(1,4*count);
 Initial_CM = zeros(2,4*count);
-Final_CM = zeros(1,4*count);
+Final_CM = zeros(2,4*count);
 Num_part_ini = zeros(1,4*count);
 Num_part_end = zeros(1,4*count);
 Initial_Angle = zeros(1,4*count);
@@ -123,6 +123,7 @@ a = 1;
 
 
 %% Main loop
+
 for nf = 1:count-1
     fnn =sprintf('%sDisplacement_%i.mat',filedirectory,nf);
     
@@ -176,7 +177,7 @@ for nf = 1:count-1
         [~, ii_particles_for_potential] = sort(PY(:,1));
         
         for na = 1:nb_avalanches
-            if( sum((findavalanche(t1(na):min(t2(na),length(energy_avalanche))))>=1-eps)) %Check if there is indeed avalanches between t1-t2
+            if(sum((findavalanche(t1(na):min(t2(na),length(energy_avalanche))))>=1-eps)) %Check if there is indeed avalanches between t1-t2
                 
                 ii_time(na) = 1;
 
@@ -185,7 +186,7 @@ for nf = 1:count-1
                 %General data of file
                 Nb_Tracked(Number_Avalanches) = size(PX,1);
                 Displacement_File_nb(Number_Avalanches) = nf;
-                vParticipation(Number_Avalanches) = participationratio;
+                Participation(Number_Avalanches) = participationratio;
                 In_imafile(Number_Avalanches) = initial;
                 Fn_imafile(Number_Avalanches) = final;
                 in_trackedfile(Number_Avalanches) = NEn;                
@@ -211,7 +212,7 @@ for nf = 1:count-1
                 file_ava_end = floor(t2(na)/image_file_length)+initial;
                 time_in_file_2 = mod(t2(na),image_file_length);
                 [x_whole, y_whole] = create_bottom(folder,En,file_ava_end,time_in_file_2);
-                Final_CM(:,Number_Avalanches) = [mean(x_whole) mean(y_whole)];
+                Final_CM(:,Number_Avalanches) = [mean(x_whole); mean(y_whole)];
                 Num_part_end(Number_Avalanches) = length(x_whole);
                 
                 
@@ -365,21 +366,21 @@ NoParticles_moved = NoParticles_moved(ikeep);
 Max_particle_dis = Max_particle_dis(ikeep);
 
 Initial_CM = Initial_CM(:,ikeep);
-Final_CM = Initial_CM(:,ikeep);
+Final_CM =Final_CM(:,ikeep);
 Num_part_ini = Num_part_ini(ikeep);
 Num_part_end = Num_part_end(ikeep);
 Initial_Angle = Initial_Angle(ikeep);
 Final_Angle = Final_Angle(ikeep);
 Rotation_step = Rotation_step(:,ikeep);
 
-Nb_Tracked = Nb_Tracked(ikeep)
+Nb_Tracked = Nb_Tracked(ikeep);
 Displacement_File_nb = Displacement_File_nb(ikeep);
 Participation = Participation(ikeep);
 In_imafile = In_imafile(ikeep);
 Fn_imafile = Fn_imafile(ikeep);
 in_trackedfile = in_trackedfile(ikeep);
 %% Save results to file
-file_save = sprintf('%sAvalanches_%i_%i.mat',filedirectory,En,kind);
+file_save = sprintf('%sAvalanche_size_%i_%i.mat',filedirectory,En,kind);
 file_CM = sprintf('%sSurface_CM_%i_%i.mat',filedirectory,En,kind);
 file_Potential = sprintf('%sPotential_Energy_%i_%i.mat',filedirectory,En,kind);
 

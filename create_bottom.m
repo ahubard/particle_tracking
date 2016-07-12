@@ -26,7 +26,8 @@ finalfileindex = navfile(changefileindex);%last file of set.
 %initialfileindex(ii) is  the first file after the last rotation
 ii = find((file_n - initialfileindex) >= 0,1,'last');
 %file where the info of the positions out of the frame is storaged.
-file_position = sprintf('%swhole_image_%i.mat',initialfileindex(ii));
+file_position = sprintf('%swhole_image_%i.mat',filedirectory,initialfileindex(ii));
+
 if(exist(file_position,'file'))
     load(file_position,'x_whole','y_whole');
     x_rot = x_whole(y_whole > (400-20));
@@ -213,7 +214,7 @@ else
     end
     x_whole = x_ima;
     y_whole = y_ima;
-    save('file_position','x_whole','y_whole');
+    save(file_position,'x_whole','y_whole');
 end
 
 
