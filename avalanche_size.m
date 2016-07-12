@@ -6,7 +6,7 @@ function Number_Avalanches = avalanche_size(folder,En,kind)
 % the movement that correspond to the same continuos movie are part of the
 % same avalanche.
 % If kind = 1, an avalanche comprises everything that happens after one
-% rotation. In general less avalanches than in kind =0;
+% rotation. In general less avalanches than in kind = 0;
 % If kind = 2, an avalanche starts when particles move and ends when they
 % stop for more than minstepsbtwav. In general more avalanches than in kind=0
 
@@ -43,7 +43,7 @@ else
     
 end
 
-[Amp, xo, yo, phi_x] = modify_center_func(1,En);
+[Amp, xo, yo, phi_x] = modify_center_func(folder,En);
 phi_y = phi_x +0.1;
 
 
@@ -86,7 +86,7 @@ Nb_boundary = zeros(2,count);
 Number_Avalanches = 0;
 Noavalanches = zeros(1,count);
 
-%Total x and y changein camera coordinate system
+%Total x and y change in camera coordinate system
 Delta_x = zeros(1,4*count);
 Delta_y = zeros(1,4*count);
 
@@ -196,7 +196,7 @@ for nf = 1:count-1
                
 
                 
-                %get the relevantdata
+                %get the relevant data
                 particlesmoving_t = particles(t1(na):t2(na));
                 displacement_t = vel_avalanche(t1(na):t2(na));
                 energy_t = energy_avalanche(t1(na):t2(na));
