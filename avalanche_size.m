@@ -204,13 +204,13 @@ for nf = 1:count-1
                 
                 %center of mass
                 file_ava_begins = floor(t1(na)/image_file_length)+initial;
-                time_in_file_1 = mod(t1(na),image_file_length);
+                time_in_file_1 = mod(t1(na) - 1,image_file_length) + 1;
                 [x_whole, y_whole] = create_bottom(folder,En,file_ava_begins,time_in_file_1);
                 Initial_CM(:,Number_Avalanches) = [mean(x_whole) mean(y_whole)];
                 Num_part_ini(Number_Avalanches) = length(x_whole);
                 
                 file_ava_end = floor(t2(na)/image_file_length)+initial;
-                time_in_file_2 = mod(t2(na),image_file_length);
+                time_in_file_2 = mod(t2(na) - 1,image_file_length) + 1;
                 [x_whole, y_whole] = create_bottom(folder,En,file_ava_end,time_in_file_2);
                 Final_CM(:,Number_Avalanches) = [mean(x_whole); mean(y_whole)];
                 Num_part_end(Number_Avalanches) = length(x_whole);
