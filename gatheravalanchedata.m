@@ -1,7 +1,6 @@
 %% Gather data from series of experiments to do the statistics.
 
-filenumbers = [15 16 17 18 19 20 21 22 23 103 104 105 106 107   ]; %Files that contain the info
-FOLDER =      [1  1  1  1  1  1  2  2 2   1   1   2   2   2  2  ];
+filenumbers = [15 16 17 18 19 20 21 22 23 103 104 106 107  108 109 ]; %Files that contain the info
 Nofiles = length(filenumbers);
 kind = 2; 
 

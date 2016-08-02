@@ -1,5 +1,5 @@
 %Find the trayectories of the particles between files initial and final
-%using Hungaring  optimization algorithm assignmentoptimal
+%using Hungarina  optimization algorithm assignmentoptimal
 
 
 function  nfiles = mytrack(folder,En,NEn,initial,final,D,mk)

@@ -1,5 +1,5 @@
-function Number_Avalanches = avalanche_size(folder,En,kind)
-%% Measure size and shape of avalanches
+function Number_Avalanches = Pile_profile(folder,En,kind)
+%% Get the change of the pile profile to see if the avalanche was cuted off by the system size.
 
 %% Separate the avalanches according to kind criterium. 
 % If kind = 0 the separation is the same as in displacement. Meaning all
@@ -34,14 +34,7 @@ end
 
 alpha = alpha*pi/180;
 
-% if(En < 100)
-% 
-%     R = 579.9;
-% else
-%  
-%     R = 617.7;
-%     
-% end
+
 
 [Amp, xo, yo, phi_x] = modify_center_func(folder,En);
 phi_y = phi_x +0.1;

@@ -1,16 +1,17 @@
-filenumbers = [ 15 16 17 18 19 20 21 22 23 103 104 105 106 107 108 109 ]; %Files that contain the info
+filenumbers = [ 15 16 17 18 19 20 21 22  103 104  106 107 108 109 ]; %Files that contain the info
 Nofiles = length(filenumbers);
-nf = 10;
+nf = 11;
 initial = 1;
-kind = 2; 
+kind = 0; 
 %% Load files
-   En = filenumbers(nf);
-    filedirectory = sprintf('/Users/Aline/Documents/Research/MATLAB/particle_tracking/');
-    
-    filename = sprintf('%sAvalanches_%i_%i.mat',filedirectory,En,kind);
+    En = filenumbers(nf);
+    filedirectory = sprintf('/Users/Aline/Documents/Research/MATLAB/particle_tracking/'); 
+    filename = sprintf('%sAvalanche_Size_%i_%i.mat',filedirectory,En,kind);
     file_SCM = sprintf('%sSurface_CM_%i_%i.mat',filedirectory,En,kind);
     file_Potential = sprintf('%sPotential_Energy_%i_%i.mat',filedirectory,En,kind);
     file_CM = sprintf('%sCenter_of_Mass_%i.mat',filedirectory, En);
+    file_center =sprintf('%sCenter_%i.mat',filedirectory, En);
+
 %filename = sprintf('Avalanches_%i.mat',filenumbers(nf));
 load(filename,'git_version','Number_Avalanches','Noavalanches','Avalanche_time', ...
         'Avalanche_particles','Avalanche_displacement','Avalanche_energy','Avalanche_duration','Avalanche_potential',...
@@ -22,7 +23,7 @@ load(filename,'git_version','Number_Avalanches','Noavalanches','Avalanche_time',
         'Displacement_File_nb', 'Participation', 'In_imafile','Fn_imafile','in_trackedfile'...
         ,'Delta_x','Delta_y');
 %load(file_Potential);
-load(file_CM);
+load(file_center);
 if(En <100)
 
     R = 579.9;

@@ -1,9 +1,21 @@
 savefiles = false;
-%% Script to make the plots for the avalanches. 
 
+%% Experimental info
+fps = 694.4444;
+D = 10;
+alpha = 29;
+g = 9.8;
+d = 1.19e-3;
+m = 6.9e-9;
+%% Piles that didnt spaned the whole system
+i_stay = find(Pile_Profile_Change <.95);
+
+
+%% Script to make the plots for the avalanches. 
+U = -CHANGE_U(i_stay)*d/D*m;
 figure(10)
 clf
-[xP, yP] = logplot(-U,1e-11,35,5e-11,8e-7);
+[xP, yP] = logplot(U,1e-12,33,8e-12,1e-8);
 %open figure and plot
 pP = figure(10);
 pP.Color = [1 1 1];
