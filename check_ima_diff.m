@@ -3,7 +3,7 @@ function  [ima_diff, same_rot, file_same_rot1, file_same_rot2] = check_ima_diff(
 %% Get rotations info
 filedirectory = sprintf('/aline%i/rotdrum%i/o%02d/',folder,folder,En);
 avanofile = sprintf('%sAvanonestep%i.mat',filedirectory,En);
-load(avanofile,'avan');
+load(avanofile,'avan','alpha');
 n_files = size(avan,2);
 file_exist = zeros(1,n_files);
 with_undersquare = zeros(1,n_files);
