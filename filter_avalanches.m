@@ -6,7 +6,7 @@ function remain_nb_ava = filter_avalanches(folder,En)
 
 %% Info of experiment
 
-cutoff1 = 1e6; %cutoff for ima_diff
+cutoff1 = 7e5; %cutoff for ima_diff
 filedirectory = sprintf('/aline%i/rotdrum%i/o%02d/',folder,folder,En);
 
 %% Get the image difference of files within the same rotation
