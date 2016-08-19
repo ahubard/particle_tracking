@@ -8,14 +8,17 @@ g = 9.8;
 d = 1.19e-3;
 m = 6.9e-9;
 %% Piles that didnt spaned the whole system
-i_stay = find(Pile_Profile_Change <.95);
+i_stay = find(Pile_Profile_Change <.882);
+delta_U = [CHANGE_U EXTRA_U];
 
+delta_U = [CHANGE_U(i_stay) EXTRA_U];
 
 %% Script to make the plots for the avalanches. 
-U = -CHANGE_U(i_stay)*d/D*m;
+U = -delta_U*d/D*m;
 figure(10)
 clf
-[xP, yP] = logplot(U,1e-12,33,8e-12,1e-8);
+[xP, yP, expo] = logplot(U,1e-12,36,1e-11,1.1e-8);
+expo
 %open figure and plot
 pP = figure(10);
 pP.Color = [1 1 1];
@@ -24,7 +27,7 @@ pP = loglog(xP,yP,'.');
 pP(1).MarkerSize = 25;
 pP(1).Color = [.1 .7 .5];
 
-axis([xP(1)/2 2*xP(end) min(yP)/2 3*max(yP_n)]);
+axis([xP(1)/2 2*xP(end) min(yP)/2 3*max(yP)]);
 axP = gca;
 axP.FontSize = 20;
 axP.Box = 'on';

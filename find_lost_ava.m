@@ -1,5 +1,5 @@
 %%
-function  [nb_ava_wrong_i, new_ava_file1 ,new_ava_file2] = find_lost_ava(folder, En)
+function  [nb_ava_wrong_i, new_ava_file1 ,new_ava_file2] = find_lost_ava(En)
 % Find out which images have issues ussing the trainning data.
 %then check if they cutoff an avalanche or is a new different avalanche.
 
@@ -13,23 +13,25 @@ end
 Nofiles = length(filenumbers);
 kind = 2;
 Folder = 1;
+filedirectory = sprintf('');
 
 trainning_set = [];
-for ne = 1:Nofiles
-    filedirectory = sprintf('/aline%i/rotdrum%i/o%02d/',Folder,Folder,filenumbers(ne))
-    load(sprintf('%slearn_ava_%i.mat',filedirectory, filenumbers(ne)),...
+for nex = 1:Nofiles
+    %filedirectory = sprintf('/aline%i/rotdrum%i/o%02d/',Folder,Folder,filenumbers(ne));
+    
+    load(sprintf('%slearn_ava_%i.mat',filedirectory, filenumbers(nex)),...
         'ave_ima_diff','part_ratio','part_moved');
     
     trainning_set = [trainning_set [ave_ima_diff;part_ratio;part_moved]];
 end
 
 %use trainning set to get a classifier
-[trainedClassifier, validationAccuracy] = ...
+[trainedClassifier, ~] = ...
     trainClassifier_tofindava(trainning_set);
 
 %% Get data from experiment to fix
-filedirectory = sprintf('/aline%i/rotdrum%i/o%02d/',folder,folder,En);
-ima_info_file = sprintf('%s,images_info_%i.mat',filedirectory,En);
+%filedirectory = sprintf('/aline%i/rotdrum%i/o%02d/',folder,folder,En);
+ima_info_file = sprintf('%simages_info_%i.mat',filedirectory,En);
 load(ima_info_file,'i_missing_ava','ave_ima_diff','part_ratio',...
     'ima_diff','cutoff1');
 
@@ -78,7 +80,7 @@ for ii = 1:N_issues
                     new_ava_file1(ii) = file1(ii);
                     new_ava_file2(ii) = file2(ii);
                 else
-                    if(abs(mat_potentail(1,i_fin_1+1))>.8) %starts abruptly
+                    if(abs(mat_potential(1,i_fin_1+1))>.8) %starts abruptly
                         nb_ava_wrong_i(ii) =  i_fin_1+1;
                     else
                         new_ava_file1(ii) = file1(ii);
@@ -108,8 +110,13 @@ for ii = 1:N_issues
     
 end
 
+new_ava_file1 = new_ava_file1(new_ava_file1 > 0);
+new_ava_file2 = new_ava_file2(new_ava_file2 > 0);
+nb_ava_wrong_i = nb_ava_wrong_i(nb_ava_wrong_i > 0);
+
     
-    
+save(sprintf('%slost_ava_info_%i.mat',filedirectory,En),'new_ava_file1',...
+    'new_ava_file2','nb_ava_wrong_i')
     
     
     
