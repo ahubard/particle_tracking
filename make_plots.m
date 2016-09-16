@@ -8,34 +8,97 @@ g = 9.8;
 d = 1.19e-3;
 m = 6.9e-9;
 %% Piles that didnt spaned the whole system
-i_stay = find(Pile_Profile_Change <.882);
+%.882
+i_stay = find(Pile_Profile_Change <.9 & Num_boundary(1,:)<1.7e4 & Num_boundary(2,:) <25);
+i_go = setdiff(1:length(Pile_Profile_Change),i_stay);
+
+
+%% Energy distribution plots
+%Energy distribution Complete plot 
 delta_U = [CHANGE_U EXTRA_U];
-
-delta_U = [CHANGE_U(i_stay) EXTRA_U];
-
-%% Script to make the plots for the avalanches. 
 U = -delta_U*d/D*m;
-figure(10)
-clf
-[xP, yP, expo] = logplot(U,1e-12,36,1e-11,1.1e-8);
-expo
-%open figure and plot
-pP = figure(10);
-pP.Color = [1 1 1];
-pP = loglog(xP,yP,'.');
-%Data display
-pP(1).MarkerSize = 25;
-pP(1).Color = [.1 .7 .5];
+[xPW, yPW] = logplot(U,1e-12,36,1e-11,1.1e-8,0);
+pW = figure(1);
+pW.Color = [1 1 1];
+pW = loglog(xPW,yPW,'o');
 
-axis([xP(1)/2 2*xP(end) min(yP)/2 3*max(yP)]);
+axis([.9*xPW(1) xPW(end-1) min(yPW)*.9 4*max(yPW)]);
 axP = gca;
+axP.LineWidth = 2;
 axP.FontSize = 20;
 axP.Box = 'on';
+axP.XTick = [1e-12 1e-11 1e-10 1e-9 1e-8 1e-7];
+axP.YTick = [1e5 1e6 1e7 1e8 1e9 1e10 1e11];
 %labels
 xlabel('\DeltaU [J]','FontSize',20);
-ylabel ( 'p(\DeltaU)','FontSize',20);
+ylabel ('p(\DeltaU)','FontSize',20);
+%Data display
+pW(1).MarkerSize = 7;
+pW(1).Color = [.5 .7 .5];
+pW(1).MarkerFaceColor = [.5 .8 .6];
+P_leg = legend('Complete Experimental Data');
+P_leg.Box = 'off';
+P_leg.FontSize = 16;
+
+%% Distribution of avalanches that are not affected by the system size.
+
+delta_U = [CHANGE_U(i_stay) EXTRA_U];
+U = -delta_U*d/D*m;
+figure(2)
+clf
+[xP, yP, expo, normv, p] = logplot(U,1e-12,36,1e-11,1.1e-8,1);
+%open figure and plot
+pP = figure(2);
+pP.Color = [1 1 1];
+pP = loglog(xP,yP,'o',xP(3:end-1),normv*xP(3:end-1).^expo);
+axis([.9*xP(1) 1.1*xP(end-1) min(yP)*.9 4*max(yP)]);
+axP = gca;
+axP.LineWidth = 2;
+axP.FontSize = 20;
+axP.Box = 'on';
+axP.XTick = [1e-12 1e-11 1e-10 1e-9 1e-8 1e-7];
+axP.YTick = [1e5 1e6 1e7 1e8 1e9 1e10 1e11];
+%labels
+xlabel('\DeltaU [J]','FontSize',20);
+ylabel ('p(\DeltaU)','FontSize',20);
+%Data display
+pP(1).MarkerSize = 7;
+pP(1).Color = [.1 .7 .5];
+pP(1).MarkerFaceColor = [.1 .8 .6];
+pP(2).LineWidth = 3;
+pP(2).Color = [0 0 1];
+messa = ('p(\DeltaU) ~ \DeltaU');
+P_leg = legend('Experimental Data',sprintf('%s^{%.2f}',messa,expo));
+P_leg.Box = 'off';
+P_leg.FontSize = 16;
 
 
+%% Distribution of avalanches affected by the system size.
+delta_U = CHANGE_U(i_go) ;
+U = -delta_U*d/D*m;
+figure(3)
+[xPG, yPG] = logplot(U(2:end),1e-12,36,1e-11,1.1e-8,0);
+pG = figure(3);
+pG.Color = [1 1 1];
+pG = loglog(xPG,yPG,'o');
+
+axis([.9*xPW(1) 1.1*xPW(end-1) min(yPW)*.9 4*max(yPW)]);
+axP = gca;
+axP.LineWidth = 2;
+axP.FontSize = 20;
+axP.Box = 'on';
+axP.XTick = [1e-12 1e-11 1e-10 1e-9 1e-8 1e-7];
+axP.YTick = [1e5 1e6 1e7 1e8 1e9 1e10 1e11];
+%labels
+xlabel('\DeltaU [J]','FontSize',20);
+ylabel ('p(\DeltaU)','FontSize',20);
+%Data display
+pG(1).MarkerSize = 7;
+pG(1).Color = [.6 .7 .5];
+pG(1).MarkerFaceColor = [.6 .8 .6];
+P_leg = legend('Experimental Data');
+P_leg.Box = 'off';
+P_leg.FontSize = 16;
 
 
 %% First the log plot of the potential energy.
@@ -74,9 +137,9 @@ P_leg.FontSize = 16;
 %% Duration of avalanches
 %Create the variables and fit
 
-figure(2);
+figure(4);
 clf
-[xT, yT] = logplot(T,1/35,41,1/30,4);
+[xT, yT] = logplot(T,1/35,41,1/30,4,0);
 [xT_n, yT_n, expn_T, normv] = logplot(T(ii_non_spaning),1/35,41,0.05,4);
 %open figure and plot
 pT = figure(2);

@@ -30,10 +30,10 @@ F_Angle = [];
 Angle_change = [];
 DISPLA = [];
 %% Main loop over all the files
-for ne = 1:Nofiles
+for ne = 1:Nofiles-1
     En = filenumbers(ne);
     %get info of file to classify the avalanches
-    load(sprintf('lost_ava_info_%i.mat',En),'extra_ava_pot','nb_ava_wrong_i');
+    load(sprintf('lost_ava_info_%i.mat',En),'extra_ava_pot','nb_ava_wrong_i','extra_ava_DH');
     
     ava_size_file = sprintf('Avalanche_size_%i_%i.mat',En,kind);
     load(ava_size_file, 'In_imafile','Fn_imafile','Number_Avalanches',...
@@ -46,7 +46,7 @@ for ne = 1:Nofiles
     remain_nb_ava = setdiff(avalanche_nb,nb_ava_wrong_i);
     
     
-    EXTRA_U = [EXTRA_U extra_ava_pot];
+    EXTRA_U = [EXTRA_U extra_ava_DH(extra_ava_DH<0)];
     EXTRA_E = [EXTRA_E En*ones(size(extra_ava_pot))];
     
     CHANGE_U = [CHANGE_U Dheight(remain_nb_ava)];
